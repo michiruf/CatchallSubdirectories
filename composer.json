@@ -2,7 +2,11 @@
     "name": "michiruf/catch-all-subdirectories",
     "type": "project",
     "description": "Sort mails of an SMTP server into different subdirectories.",
-    "keywords": ["smtp", "catchall", "laravel"],
+    "keywords": [
+        "smtp",
+        "catchall",
+        "laravel"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.3",
@@ -17,7 +21,7 @@
         "laravel/sail": "^1.26",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.0",
-        "phpunit/phpunit": "^11.0.1",
+        "pestphp/pest": "^2.34",
         "spatie/laravel-ignition": "^2.4"
     },
     "autoload": {
@@ -35,7 +39,8 @@
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php artisan filament:upgrade"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
