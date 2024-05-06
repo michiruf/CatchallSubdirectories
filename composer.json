@@ -1,8 +1,8 @@
 {
-    "name": "laravel/laravel",
+    "name": "michiruf/catch-all-subdirectories",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "Sort mails of an SMTP server into different subdirectories.",
+    "keywords": ["smtp", "catchall", "laravel"],
     "license": "MIT",
     "require": {
         "php": "^8.2",
