@@ -68,6 +68,10 @@ class CatchAllSubdirectories implements ShouldQueue
             $mail->move($directory);
         });
 
+        // Finish the transaction by calling expunge
+        // https://www.php.net/manual/de/function.imap-expunge.php
+        $this->smtpConnection->expunge();
+
         return $this;
     }
 }
