@@ -19,9 +19,8 @@ class ReadImapDirectoryMails
      */
     public function execute(): Collection
     {
-        $inboxName = $this->inboxName ?? config('app.mail.inboxName', 'INBOX');
+        $inboxName = $this->inboxName ?? config('catchall.inbox_name', 'INBOX');
         $mailbox = $this->connection->getMailbox($inboxName);
         return collect($mailbox->getMessages());
-        // TODO Filter messages to be directly inside INBOX, not in subdirectories
     }
 }

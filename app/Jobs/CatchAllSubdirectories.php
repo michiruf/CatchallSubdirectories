@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Actions\ConnectImap;
 use App\Actions\CreateOrGetImapDirectory;
 use App\Actions\ReadImapDirectoryMails;
 use Ddeboer\Imap\Connection;
@@ -20,13 +21,13 @@ class CatchAllSubdirectories implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private readonly Connection $smtpConnection;
+    private ?Connection $smtpConnection;
 
     /** @var Collection<int, MessageInterface> */
     private Collection $mails;
 
     public function __construct(
-        Connection $connection,
+        ?Connection $connection = null,
         private readonly ?string $mailDomain = null
     ) {
         $this->smtpConnection = $connection;
@@ -35,8 +36,18 @@ class CatchAllSubdirectories implements ShouldQueue
     public function execute(): static
     {
         return $this
+            ->mayEstablishConnection()
             ->fetchMails()
             ->createSubdirectoriesAndMoveMails();
+    }
+
+    private function mayEstablishConnection(): static
+    {
+        if (! $this->smtpConnection) {
+            $this->smtpConnection = app(ConnectImap::class)->execute();
+        }
+
+        return $this;
     }
 
     private function fetchMails(): static
@@ -50,7 +61,7 @@ class CatchAllSubdirectories implements ShouldQueue
 
     private function createSubdirectoriesAndMoveMails(): static
     {
-        $mailDomain = $this->mailDomain ?? config('app.mail.mail_domain');
+        $mailDomain = $this->mailDomain ?? config('catchall.mail_domain');
 
         $this->mails->each(function (MessageInterface $mail) use ($mailDomain) {
             /** @var EmailAddress $relevantReceiver */

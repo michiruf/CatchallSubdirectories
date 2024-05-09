@@ -19,16 +19,16 @@ class ConnectImap
     public function execute(): Connection
     {
         $server = new Server(
-            $this->hostname ?? config('app.mail.hostname'),
-            $this->port ?? config('app.mail.port'),
-            ($this->validateCert ?? config('app.mail.validateCert', true))
+            $this->hostname ?? config('catchall.hostname'),
+            $this->port ?? config('catchall.port'),
+            ($this->validateCert ?? config('catchall.validate_cert', true))
                 ? '/imap/ssl/validate-cert'
                 : '/imap/ssl/novalidate-cert'
         );
 
         return $server->authenticate(
-            $this->username ?? config('app.mail.username'),
-            $this->password ?? config('app.mail.password')
+            $this->username ?? config('catchall.username'),
+            $this->password ?? config('catchall.password')
         );
     }
 }
