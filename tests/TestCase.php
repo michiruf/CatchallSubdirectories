@@ -6,9 +6,10 @@ use AllowDynamicProperties;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Tests\MailHelper\TestSmtpServer;
 
-#[AllowDynamicProperties]
 abstract class TestCase extends BaseTestCase
 {
+    protected TestSmtpServer $server;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -27,8 +28,7 @@ abstract class TestCase extends BaseTestCase
     {
         $this->server = (new TestSmtpServer(timeoutSeconds: 120))
             ->start()
-            ->awaitStart()
-            ->createTestMails();
+            ->awaitStart();
 
         expect($this->server->log())
             ->not->toBeEmpty();
@@ -36,10 +36,6 @@ abstract class TestCase extends BaseTestCase
 
     private function stopTestSmtp(): void
     {
-        if (!isset($this->server)) {
-            return;
-        }
-
         $this->server->remove();
     }
 }

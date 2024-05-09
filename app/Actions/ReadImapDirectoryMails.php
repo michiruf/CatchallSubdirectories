@@ -6,7 +6,7 @@ use Ddeboer\Imap\Connection;
 use Ddeboer\Imap\Message;
 use Illuminate\Support\Collection;
 
-class ReadSmtpDirectoryMails
+class ReadImapDirectoryMails
 {
     public function __construct(
         private readonly Connection $connection,

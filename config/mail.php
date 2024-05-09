@@ -48,6 +48,22 @@ return [
             'local_domain' => env('MAIL_EHLO_DOMAIN'),
         ],
 
+        'smtp-test' => [
+            'transport' => 'smtp',
+            'url' => null,
+            'host' => 'localhost',
+            'port' => 40025,
+            'encryption' => null,
+            'username' => null,
+            'password' => null,
+            'timeout' => null,
+            'local_domain' => null,
+
+            'allow_self_signed' => true,
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+        ],
+
         'ses' => [
             'transport' => 'ses',
         ],

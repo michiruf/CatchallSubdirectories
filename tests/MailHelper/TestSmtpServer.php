@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Str;
 
+/**
+ * @see https://github.com/antespi/docker-imap-devel
+ */
 class TestSmtpServer
 {
     public const string STARTUP_MESSAGE = 'SSL parameters regeneration completed';
@@ -18,10 +21,6 @@ class TestSmtpServer
         private readonly string $containerName = 'local',
         private readonly int $timeoutSeconds = 60
     ) {
-        // TODO Use this one -> no this is smtp (is there also imap?)
-        // https://github.com/rnwood/smtp4dev/wiki/Configuration
-        // docker run --rm -it -p 5000:80 -p 2525:25 rnwood/smtp4dev
-
         $this->processDescriptor = Str::of("--name $containerName")
             ->append(
                 ' -p 40025:25',
@@ -30,9 +29,9 @@ class TestSmtpServer
             )
             ->append(
                 ' -e MAILNAME=local',
-                // Specifying these values is not random, but must be set for a catchall! (except MAILNAME)
-                ' -e MAIL_ADDRESS=debug@local',
-                ' -e MAIL_PASS=debug'
+                // We must not specify a normal mail user, since the catch-all is configured automatically
+                //' -e MAIL_ADDRESS=debug@local',
+                //' -e MAIL_PASS=debug'
             )
             ->append(' -t antespi/docker-imap-devel:latest')
             ->toString();
@@ -93,7 +92,7 @@ class TestSmtpServer
 
     public function createTestMails(): static
     {
-        TestMailCreator::create($this->containerName, 'debug@local', 'debug');
+        TestMails::sendTestMails($this->containerName, 'debug@local', 'debug');
 
         return $this;
     }
