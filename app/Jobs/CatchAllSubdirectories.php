@@ -4,5 +4,4 @@ namespace App\Jobs;
 
 class CatchAllSubdirectories
 {
-
 }
