@@ -1,17 +1,9 @@
 <?php
 
-use App\Actions\ConnectImap;
 use App\Actions\CreateOrGetImapDirectory;
-use App\Actions\ReadImapDirectoryMails;
 
 it('can create or get a imap directory', function () {
-    $connection = app(ConnectImap::class, [
-        'hostname' => 'localhost',
-        'port' => 40993,
-        'username' => 'debug@local',
-        'password' => 'debug',
-        'validateCert' => false,
-    ])->execute();
+    $connection = establishImapTestConnection();
 
     // Create the directory
     $directory = app(CreateOrGetImapDirectory::class, [

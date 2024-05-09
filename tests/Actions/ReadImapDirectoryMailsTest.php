@@ -1,19 +1,10 @@
 <?php
 
-use App\Actions\ConnectImap;
 use App\Actions\ReadImapDirectoryMails;
 
 it('can read imap directory mails', function () {
     $this->server->createTestMails();
-
-    $connection = app(ConnectImap::class, [
-        'hostname' => 'localhost',
-        'port' => 40993,
-        'username' => 'debug@local',
-        'password' => 'debug',
-        'validateCert' => false,
-    ])->execute();
-
+    $connection = establishImapTestConnection();
 
     $mails = app(ReadImapDirectoryMails::class, [
         'connection' => $connection

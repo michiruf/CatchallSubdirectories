@@ -21,13 +21,6 @@ class ReadImapDirectoryMails
     {
         $inboxName = $this->inboxName ?? config('app.mail.inboxName', 'INBOX');
         $mailbox = $this->connection->getMailbox($inboxName);
-
-        $messages = collect();
-        foreach ($mailbox->getMessages() as $message) {
-            $messages->add($message);
-        }
-        return $messages;
-
         return collect($mailbox->getMessages());
     }
 }

@@ -11,6 +11,9 @@
 |
 */
 
+use App\Actions\ConnectImap;
+use Ddeboer\Imap\Connection;
+
 uses(
     Tests\TestCase::class,
     Illuminate\Foundation\Testing\RefreshDatabase::class,
@@ -42,7 +45,13 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function establishImapTestConnection(): Connection
 {
-    // ..
+    return app(ConnectImap::class, [
+        'hostname' => 'localhost',
+        'port' => 40993,
+        'username' => 'debug@local',
+        'password' => 'debug',
+        'validateCert' => false,
+    ])->execute();
 }
