@@ -12,12 +12,5 @@ it('can invoke command app:catch-all-subdirectories', function () {
     $this->artisan('app:catch-all-subdirectories')
         ->assertExitCode(Command::SUCCESS);
 
-    Bus::assertDispatched(CatchAllSubdirectories::class, function (CatchAllSubdirectories $job) {
-        // TODO Expect job stuff
-        expect()
-            ->and(true)->toBeTrue();
-
-        // True must be returned here to indicate it was dispatched properly
-        return true;
-    });
+    Bus::assertDispatched(CatchAllSubdirectories::class);
 });
