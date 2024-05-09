@@ -2,7 +2,6 @@
 
 namespace Tests;
 
-use AllowDynamicProperties;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Tests\MailHelper\TestSmtpServer;
 
@@ -30,6 +29,7 @@ abstract class TestCase extends BaseTestCase
             ->start()
             ->awaitStart();
 
+        // NOTE There should be no expect here, since we do want to see risky tests (with 0 assertions)
         expect($this->server->log())
             ->not->toBeEmpty();
     }
