@@ -33,7 +33,7 @@ class CatchAllSubdirectories implements ShouldQueue
         $this->smtpConnection = $connection;
     }
 
-    public function execute(): static
+    public function handle(): static
     {
         return $this
             ->mayEstablishConnection()
