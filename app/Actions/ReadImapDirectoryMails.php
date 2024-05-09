@@ -21,6 +21,7 @@ class ReadImapDirectoryMails
     {
         $inboxName = $this->inboxName ?? config('catchall.inbox_name', 'INBOX');
         $mailbox = $this->connection->getMailbox($inboxName);
+
         return collect($mailbox->getMessages());
     }
 }

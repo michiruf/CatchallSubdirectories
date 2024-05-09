@@ -7,7 +7,7 @@ it('can read imap directory mails', function () {
     $connection = establishImapTestConnection();
 
     $mails = app(ReadImapDirectoryMails::class, [
-        'connection' => $connection
+        'connection' => $connection,
     ])->execute();
 
     expect($mails)

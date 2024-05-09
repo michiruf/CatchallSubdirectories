@@ -2,7 +2,6 @@
 
 namespace Tests\MailHelper;
 
-use Illuminate\Mail\Mailer;
 use Illuminate\Mail\Message;
 use Illuminate\Support\Facades\Mail;
 
