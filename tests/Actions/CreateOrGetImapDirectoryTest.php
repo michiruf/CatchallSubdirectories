@@ -2,7 +2,7 @@
 
 use App\Actions\CreateOrGetImapDirectory;
 
-it('can create or get a imap directory', function () {
+it('can create or get an imap directory', function () {
     $connection = establishImapTestConnection();
 
     // Create the directory

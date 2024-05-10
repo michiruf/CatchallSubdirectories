@@ -14,7 +14,7 @@ it('can create catch all mail subdirectories', function () {
     app(CatchAllSubdirectories::class, [
         'connection' => $connection,
         'mailDomain' => 'local',
-    ])->execute();
+    ])->handle();
 
     // Expect inbox has no mails
     // And the specific folders do have mails

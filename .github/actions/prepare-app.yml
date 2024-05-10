@@ -1,0 +1,29 @@
+name: Prepare App
+description: Install PHP, Composer & Project Dependencies
+runs:
+  using: composite
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+        extensions: imap
+
+    - name: Cache Vendor
+      id: cache-vendor
+      uses: actions/cache@v4
+      with:
+        path: vendor
+        key: ${{ runner.os }}-vendor-${{ hashFiles('**/composer.lock') }}
+
+    - name: Install Dependencies
+      if: steps.cache-vendor.outputs.cache-hit != 'true' # Skip if cache hit
+      shell: sh
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+    - name: Create Dummy ENV
+      shell: sh
+      run: cp .env.example .env

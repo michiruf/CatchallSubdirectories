@@ -1,0 +1,19 @@
+name: Static Analysis
+
+on:
+  push:
+    tags:
+      - '*'
+    branches:
+      - master
+
+jobs:
+  analysis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+#      - name: Prepare App
+#        uses: ./.github/workflows/prepare-app
+#
+#      - name: Run Static Analysis
+#        run: ./vendor/bin/phpstan --error-format=github
