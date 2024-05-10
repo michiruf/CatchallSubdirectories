@@ -23,4 +23,4 @@ runs:
 
     - name: Create Dummy ENV
       shell: sh
-      run: cp .env.example .env
+      run: cp .env.example .env && php artisan key:generate
