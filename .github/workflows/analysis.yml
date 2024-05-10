@@ -12,8 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-#      - name: Prepare App
-#        uses: ./.github/workflows/prepare-app
-#
-#      - name: Run Static Analysis
-#        run: ./vendor/bin/phpstan --error-format=github
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare App
+        uses: ./.github/workflows/prepare-app
+
+      - name: Run Static Analysis
+        run: ./vendor/bin/phpstan --error-format=github
