@@ -1,11 +1,11 @@
 name: Run Tests
 on:
   push:
-    tags:
-      - '*'
     branches:
       - main
       - ci
+  # Make this workflow callable from other workflows
+  workflow_call:
 
 jobs:
   test:

@@ -5,18 +5,26 @@ on:
   push:
     tags:
       - '*'
+  # Make this workflow callable from other workflows
+  workflow_call:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-#      - name: Checkout
-#        uses: actions/checkout@v4
-#
-#      - name: Prepare App
-#        uses: ./.github/workflows/prepare-app
-#
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare App
+        uses: ./.github/workflows/prepare-app
+
+      - name: Run Tests
+        uses: ./.github/workflows/run-tests.yml
+
+      - name: Run Analysis
+        uses: ./.github/workflows/analysis.yml
+
 #      - name: Deploy to Server
 #        uses: ngocquyhoang/deploy@laravel
 #        with:
@@ -27,3 +35,5 @@ jobs:
 #          owner: owner
 #        env:
 #          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+
+      - run: echo 'Hello from deployment'
