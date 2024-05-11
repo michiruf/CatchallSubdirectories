@@ -9,17 +9,8 @@ runs:
         php-version: '8.3'
         extensions: imap
 
-    - name: Cache Vendor
-      id: cache-vendor
-      uses: actions/cache@v4
-      with:
-        path: vendor
-        key: ${{ runner.os }}-vendor-${{ hashFiles('**/composer.lock') }}
-
     - name: Install Dependencies
-      if: steps.cache-vendor.outputs.cache-hit != 'true' # Skip if cache hit
-      shell: sh
-      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+      uses: ramsey/composer-install@v3
 
     - name: Create Dummy ENV
       shell: sh

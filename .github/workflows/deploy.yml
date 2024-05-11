@@ -27,6 +27,8 @@ jobs:
       - name: Run Analysis
         uses: ./.github/workflows/analysis.yml
 
+      # TODO Maybe use deployer?
+      #      https://deployer.org/docs/7.x/recipe/laravel
 #      - name: Deploy to Server
 #        uses: ngocquyhoang/deploy@laravel
 #        with:
