@@ -1,5 +1,3 @@
-# see https://github.com/marketplace/actions/laravel-deploy
-
 name: Deploy
 on:
   push:
@@ -28,6 +26,7 @@ jobs:
 
       # TODO Maybe use deployer?
       #      https://deployer.org/docs/7.x/recipe/laravel
+      # https://github.com/marketplace/actions/laravel-deploy
 #      - name: Deploy to Server
 #        uses: ngocquyhoang/deploy@laravel
 #        with:

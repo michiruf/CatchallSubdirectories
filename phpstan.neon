@@ -3,7 +3,8 @@ includes:
 
 parameters:
     paths:
-        - app/
+        - app
+        #- tests
     level: 5 # Level 9 is the highest level
 
     checkOctaneCompatibility: true
