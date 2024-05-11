@@ -5,6 +5,7 @@ namespace App\Actions;
 use Ddeboer\Imap\Connection;
 use Ddeboer\Imap\MessageInterface;
 use Illuminate\Support\Collection;
+
 use function collect;
 
 class ReadImapDirectoryMails

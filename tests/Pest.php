@@ -12,7 +12,6 @@
 */
 
 use App\Actions\ConnectImap;
-use Ddeboer\Imap\Connection;
 use Ddeboer\Imap\ConnectionInterface;
 
 uses(
