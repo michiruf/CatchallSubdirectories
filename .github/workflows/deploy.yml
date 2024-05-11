@@ -8,7 +8,7 @@ on:
   # Make this workflow callable from other workflows
   workflow_call:
   # Make this workflow runnable on github
-  workflow_run:
+  workflow_dispatch:
 
 jobs:
   deploy:
