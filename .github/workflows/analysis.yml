@@ -20,4 +20,4 @@ jobs:
         uses: ./.github/workflows/prepare-app
 
       - name: Run Static Analysis
-        run: ./vendor/bin/phpstan --error-format=github
+        run: ./vendor/bin/phpstan --no-progress --error-format=github
