@@ -2,10 +2,9 @@ name: Run Tests
 on:
   push:
     branches:
-      - main
+      - master
       - ci
-  # Make this workflow callable from other workflows
-  workflow_call:
+  workflow_call: # Make this workflow callable from other workflows
 
 jobs:
   test:
@@ -18,5 +17,7 @@ jobs:
       - name: Prepare App
         uses: ./.github/workflows/prepare-app
 
+      # TODO Use --coverage ? (only available directly at the pest command)
+      #      Maybe see here: https://medium.com/@vlreshet/how-to-setup-phpunit-coverage-report-and-phpstan-report-using-github-actions-and-github-wiki-pages-86effdfd8c53
       - name: Run Tests
         run: php artisan test --exclude-group=long-running,wip -v

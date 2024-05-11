@@ -1,5 +1,6 @@
 name: Prepare App
 description: Install PHP, Composer & Project Dependencies
+
 runs:
   using: composite
   steps:

@@ -5,27 +5,26 @@ on:
   push:
     tags:
       - '*'
-  # Make this workflow callable from other workflows
-  workflow_call:
-  # Make this workflow runnable on github
-  workflow_dispatch:
+  workflow_call: # Make this workflow callable from other workflows
+  workflow_dispatch: # Make this workflow runnable on github
 
 jobs:
+  test:
+    uses: ./.github/workflows/run-tests.yml
+  analysis:
+    uses: ./.github/workflows/analysis.yml
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    needs:
+      - test
+      - analysis
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Prepare App
         uses: ./.github/workflows/prepare-app
-
-      - name: Run Tests
-        uses: ./.github/workflows/run-tests.yml
-
-      - name: Run Analysis
-        uses: ./.github/workflows/analysis.yml
 
       # TODO Maybe use deployer?
       #      https://deployer.org/docs/7.x/recipe/laravel
