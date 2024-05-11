@@ -2,7 +2,7 @@
 
 namespace App\Actions;
 
-use Ddeboer\Imap\Connection;
+use Ddeboer\Imap\ConnectionInterface;
 use Ddeboer\Imap\Server;
 
 class ConnectImap
@@ -16,7 +16,7 @@ class ConnectImap
     ) {
     }
 
-    public function execute(): Connection
+    public function execute(): ConnectionInterface
     {
         $server = new Server(
             $this->hostname ?? config('catchall.hostname'),
