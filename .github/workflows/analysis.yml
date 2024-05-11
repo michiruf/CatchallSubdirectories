@@ -1,5 +1,4 @@
 name: Static Analysis
-
 on:
   push:
     branches:
