@@ -1,0 +1,18 @@
+name: Prepare App
+description: Install PHP, Composer & Project Dependencies
+
+runs:
+  using: composite
+  steps:
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+        extensions: imap
+
+    - name: Install Dependencies
+      uses: ramsey/composer-install@v3
+
+    - name: Create Dummy ENV
+      shell: sh
+      run: cp .env.example .env && php artisan key:generate

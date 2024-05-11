@@ -6,6 +6,8 @@ use Ddeboer\Imap\Connection;
 use Ddeboer\Imap\MessageInterface;
 use Illuminate\Support\Collection;
 
+use function collect;
+
 class ReadImapDirectoryMails
 {
     public function __construct(
@@ -22,6 +24,7 @@ class ReadImapDirectoryMails
         $inboxName = $this->inboxName ?? config('catchall.inbox_name', 'INBOX');
         $mailbox = $this->connection->getMailbox($inboxName);
 
+        /** @phpstan-ignore-next-line  */
         return collect($mailbox->getMessages());
     }
 }

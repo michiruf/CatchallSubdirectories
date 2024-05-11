@@ -5,7 +5,7 @@ namespace App\Jobs;
 use App\Actions\ConnectImap;
 use App\Actions\CreateOrGetImapDirectory;
 use App\Actions\ReadImapDirectoryMails;
-use Ddeboer\Imap\Connection;
+use Ddeboer\Imap\ConnectionInterface;
 use Ddeboer\Imap\Message\EmailAddress;
 use Ddeboer\Imap\MessageInterface;
 use Illuminate\Bus\Queueable;
@@ -21,13 +21,13 @@ class CatchAllSubdirectories implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private ?Connection $smtpConnection;
+    private ?ConnectionInterface $smtpConnection;
 
     /** @var Collection<int, MessageInterface> */
     private Collection $mails;
 
     public function __construct(
-        ?Connection $connection = null,
+        ?ConnectionInterface $connection = null,
         private readonly ?string $mailDomain = null
     ) {
         $this->smtpConnection = $connection;

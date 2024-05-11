@@ -12,7 +12,7 @@
 */
 
 use App\Actions\ConnectImap;
-use Ddeboer\Imap\Connection;
+use Ddeboer\Imap\ConnectionInterface;
 
 uses(
     Tests\TestCase::class,
@@ -45,7 +45,7 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function establishImapTestConnection(): Connection
+function establishImapTestConnection(): ConnectionInterface
 {
     return app(ConnectImap::class, [
         'hostname' => 'localhost',

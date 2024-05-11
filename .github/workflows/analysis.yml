@@ -1,0 +1,20 @@
+name: Static Analysis
+on:
+  push:
+    branches:
+      - master
+  workflow_call: # Make this workflow callable from other workflows
+
+jobs:
+  analysis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare App
+        uses: ./.github/workflows/prepare-app
+
+      - name: Run Static Analysis
+        run: ./vendor/bin/phpstan --no-progress --error-format=github
