@@ -9,9 +9,11 @@ services:
     # https://dockerfile.readthedocs.io/en/latest/content/DockerImages/dockerfiles/php-nginx.html#environment-variables
     environment:
       - SSH_PUBLIC_KEY
+      # To debug sshd:
+      #- SERVICE_SSH_OPTS=-d
     volumes:
       - 'app-data:/app/'
-      - 'ssh-config-data:/etc/ssh/'
+      #- 'ssh-config-data:/etc/ssh/'
     networks:
       - default
     restart: unless-stopped
