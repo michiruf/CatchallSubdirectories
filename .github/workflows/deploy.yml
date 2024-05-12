@@ -21,9 +21,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Prepare App
-        uses: ./.github/workflows/prepare-app
-
       # TODO Maybe use deployer?
       #      https://deployer.org/docs/7.x/recipe/laravel
       # https://github.com/marketplace/actions/laravel-deploy

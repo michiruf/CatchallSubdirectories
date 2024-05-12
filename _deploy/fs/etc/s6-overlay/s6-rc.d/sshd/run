@@ -1,0 +1,10 @@
+#!/command/execlineb -P
+# https://github.com/antoineco/sshd-s6-docker/blob/master/services.d/sshd/run
+
+# TODO What does this?
+#s6-notifyoncheck -d
+
+foreground { s6-mkdir -p -m 750 /var/run/sshd }
+fdmove -c 2 1
+if { /usr/sbin/sshd -t }
+/usr/sbin/sshd -D -e

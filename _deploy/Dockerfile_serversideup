@@ -1,0 +1,62 @@
+FROM serversideup/php:8.3-fpm-nginx-alpine
+
+USER root
+
+RUN apk add --no-cache openssh-server
+
+# ssh-init
+#RUN mkdir /etc/s6-overlay/s6-rc.d/ssh-init \
+# && echo '#!/command/execlineb -P'                           >> /etc/s6-overlay/s6-rc.d/ssh-init/run \
+## && echo 'with-contenv'                                      >> /etc/s6-overlay/s6-rc.d/ssh-init/run \
+## && echo 's6-notifyoncheck -d'                               >> /etc/s6-overlay/s6-rc.d/ssh-init/run \
+# && echo 'fdmove -c 2 1'                                     >> /etc/s6-overlay/s6-rc.d/ssh-init/run \
+# && echo 'ssh-keygen -A'                                     >> /etc/s6-overlay/s6-rc.d/ssh-init/run \
+# && echo '/etc/s6-overlay/s6-rc.d/ssh-init/run'              >| /etc/s6-overlay/s6-rc.d/ssh-init/up \
+# && echo 'oneshot'                                           >| /etc/s6-overlay/s6-rc.d/ssh-init/type \
+# && echo 'nginx'                                             >| /etc/s6-overlay/s6-rc.d/ssh-init/dependencies \
+# && chmod -R +x /etc/s6-overlay/s6-rc.d/ssh-init \
+# && echo 'Setup ssh-init'
+#
+## ssh-user
+#RUN mkdir /etc/s6-overlay/s6-rc.d/ssh-user \
+# && echo '#!/command/execlineb -P'                           >> /etc/s6-overlay/s6-rc.d/ssh-user/run \
+# && echo 'with-contenv'                                      >> /etc/s6-overlay/s6-rc.d/ssh-user/run \
+# && echo 'fdmove -c 2 1'                                     >> /etc/s6-overlay/s6-rc.d/ssh-user/run \
+# && echo 'mkdir ~/.ssh/'                                     >> /etc/s6-overlay/s6-rc.d/ssh-user/run \
+# && echo 'echo "$SSH_PUBLIC_KEY" > ~/.ssh/authorized_keys'   >> /etc/s6-overlay/s6-rc.d/ssh-user/run \
+# && echo '/etc/s6-overlay/s6-rc.d/ssh-user/run'              >| /etc/s6-overlay/s6-rc.d/ssh-user/up \
+# && echo 'oneshot'                                           >| /etc/s6-overlay/s6-rc.d/ssh-user/type \
+# && echo 'ssh-init'                                          >| /etc/s6-overlay/s6-rc.d/ssh-user/dependencies \
+# && chmod -R +x /etc/s6-overlay/s6-rc.d/ssh-user \
+# && echo 'Setup ssh-user'
+#
+## ssh daemon
+#RUN mkdir /etc/s6-overlay/s6-rc.d/sshd \
+# && echo '#!/command/execlineb -P'                           >> /etc/s6-overlay/s6-rc.d/sshd/run \
+## && echo 'with-contenv'                                      >> /etc/s6-overlay/s6-rc.d/sshd/run \
+## && echo 's6-notifyoncheck -d'                               >> /etc/s6-overlay/s6-rc.d/sshd/run \
+# && echo 'fdmove -c 2 1'                                     >> /etc/s6-overlay/s6-rc.d/sshd/run \
+# && echo '/usr/sbin/sshd -D -e'                              >> /etc/s6-overlay/s6-rc.d/sshd/run \
+# && echo '/etc/s6-overlay/s6-rc.d/sshd/run'                  >| /etc/s6-overlay/s6-rc.d/sshd/up \
+# && echo 'longrun'                                           >| /etc/s6-overlay/s6-rc.d/sshd/type \
+# && echo 'ssh-user'                                          >| /etc/s6-overlay/s6-rc.d/sshd/dependencies \
+# && chmod -R +x /etc/s6-overlay/s6-rc.d/sshd \
+# && echo 'Setup sshd'
+
+COPY fs /
+
+## Register the services
+#RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/ssh-init \
+# && touch /etc/s6-overlay/s6-rc.d/user/contents.d/ssh-user \
+# && touch /etc/s6-overlay/s6-rc.d/user/contents.d/sshd \
+# && echo 'Registered services'
+
+# TODO This should not be done here, but in above tries, but it does not want to run...
+RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/sshd
+#RUN ssh-keygen -A
+#RUN chmod -R o+r /etc/ssh/
+#RUN chmod -R o+w /etc/ssh/
+#ENTRYPOINT ["tail", "-f", "/dev/null"]
+RUN apk add nano
+
+USER www-data

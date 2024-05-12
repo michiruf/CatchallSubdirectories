@@ -1,0 +1,12 @@
+#!/command/with-contenv sh
+##!/command/execlineb -P
+
+# With container env
+with-contenv
+
+# Redirect to stdout
+fdmove -c 2 1
+
+# Create key file
+mkdir ~/.ssh/
+echo "$SSH_PUBLIC_KEY" > ~/.ssh/authorized_keys
