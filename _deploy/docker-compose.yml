@@ -2,52 +2,30 @@ services:
   app:
     container_name: app
     build: .
-#    build:
-#      dockerfile: Dockerfile
-#      args:
-#        - SSH_PUBLIC_KEY
     ports:
       - '8022:22'
       - '8080:8080'
       - '8443:8443'
-    # Env: https://dockerfile.readthedocs.io/en/latest/content/DockerImages/dockerfiles/php-nginx.html#environment-variables
+    # https://dockerfile.readthedocs.io/en/latest/content/DockerImages/dockerfiles/php-nginx.html#environment-variables
     environment:
       - SSH_PUBLIC_KEY
     volumes:
-      #- 'www-data:/var/www/html/'
       - 'app-data:/app/'
+      - 'ssh-config-data:/etc/ssh/'
     networks:
       - default
     restart: unless-stopped
     stdin_open: true
     tty: true
 
-  #ssh:
-  #  container_name: ssh
-  #  image: quay.io/panubo/sshd:1.8
-  #  ports:
-  #    - '8022:22'
-  #  environment:
-  #    - SSH_USERS="ssh:82:82"
-  #    - SSH_GROUPS="ssh:82"
-  #    - SSH_PUBLIC_KEY
-  #  volumes:
-  #    - 'www-data:/data/'
-  #    - 'ssh-key-data:/etc/ssh/keys/'
-  #    - './ssh-auth.sh:/etc/entrypoint.d/ssh-auth.sh'
-  #    #- '~/.ssh/id_rsa.pub:/etc/authorized_keys/ssh:ro'
-  #  restart: unless-stopped
-  #  stdin_open: true
-  #  tty: true
-
   mysql:
     container_name: mysql
     image: mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD
+      - MYSQL_DATABASE
+      - MYSQL_USER
+      - MYSQL_PASSWORD
     volumes:
       - 'mysql-data:/var/lib/mysql/'
     networks:
@@ -59,7 +37,7 @@ services:
 volumes:
   app-data:
     driver: local
-  ssh-key-data:
+  ssh-config-data:
     driver: local
   mysql-data:
     driver: local
