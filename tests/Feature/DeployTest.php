@@ -8,6 +8,10 @@ use Tests\TestBootstrap\TestDeployServer;
 
 function updateKnownHosts(string $host = 'localhost', int $port = 8022): void
 {
+    // Assert that ssh-keygen is installed
+    expect(Process::command('which ssh-keygen')->run())
+        ->exitCode()->toBe(0, 'ssh-keygen must be available on the test system');
+
     // Update known hosts
     // See https://unix.stackexchange.com/a/276007
     $removeKeys = Process::run("ssh-keygen -R [$host]:$port");
