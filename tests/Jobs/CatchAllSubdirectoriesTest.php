@@ -3,6 +3,14 @@
 use App\Actions\ConnectImap;
 use App\Jobs\CatchAllSubdirectories;
 
+beforeEach(function () {
+    $this->startTestSmtp();
+});
+
+afterEach(function () {
+    $this->stopTestSmtp();
+});
+
 it('can create catch all mail subdirectories', function () {
     $this->server->createTestMails();
     $connection = establishImapTestConnection();

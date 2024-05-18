@@ -2,6 +2,14 @@
 
 use App\Actions\CreateOrGetImapDirectory;
 
+beforeEach(function () {
+    $this->startTestSmtp();
+});
+
+afterEach(function () {
+    $this->stopTestSmtp();
+});
+
 it('can create or get an imap directory', function () {
     $connection = establishImapTestConnection();
 

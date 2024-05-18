@@ -2,6 +2,14 @@
 
 use App\Actions\ReadImapDirectoryMails;
 
+beforeEach(function () {
+    $this->startTestSmtp();
+});
+
+afterEach(function () {
+    $this->stopTestSmtp();
+});
+
 it('can read imap directory mails', function () {
     $this->server->createTestMails();
     $connection = establishImapTestConnection();
