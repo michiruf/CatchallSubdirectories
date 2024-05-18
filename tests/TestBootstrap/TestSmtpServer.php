@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\MailHelper;
+namespace Tests\TestBootstrap;
 
 use Exception;
 use Illuminate\Process\ProcessResult;

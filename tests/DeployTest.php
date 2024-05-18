@@ -4,7 +4,7 @@
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Process;
-use Tests\DeployHelper\TestDeployServer;
+use Tests\TestBootstrap\TestDeployServer;
 
 function updateKnownHosts(string $host = 'localhost', int $port = 8022): void
 {

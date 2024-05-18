@@ -1,8 +1,7 @@
 <?php
 
-namespace Tests\DeployHelper;
+namespace Tests\TestBootstrap;
 
-use Exception;
 use Illuminate\Process\ProcessResult;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;

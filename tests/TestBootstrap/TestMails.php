@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\MailHelper;
+namespace Tests\TestBootstrap;
 
 use Illuminate\Mail\Message;
 use Illuminate\Support\Facades\Mail;

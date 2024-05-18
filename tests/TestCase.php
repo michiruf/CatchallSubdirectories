@@ -3,7 +3,7 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Tests\MailHelper\TestSmtpServer;
+use Tests\TestBootstrap\TestSmtpServer;
 
 abstract class TestCase extends BaseTestCase
 {
