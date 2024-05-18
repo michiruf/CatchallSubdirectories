@@ -31,4 +31,6 @@ it('can create catch all mail subdirectories', function () {
         ->and($connection->getMailbox('INBOX')->count())->toBe(0, 'Inbox should be empty after sorting into subdirectory')
         ->and($connection->getMailbox('INBOX\\debug')->count())->toBeGreaterThan(0, 'Folder "debug" should have entries')
         ->and($connection->getMailbox('INBOX\\another')->count())->toBeGreaterThan(0, 'Folder "another" should have entries');
+
+    $connection->close();
 })->covers(ConnectImap::class);

@@ -1,5 +1,6 @@
 <?php
 
+use App\Console\Commands\CatchAllSubdirectoriesCommand;
 use App\Jobs\CatchAllSubdirectories;
 use Illuminate\Support\Facades\Bus;
 use Symfony\Component\Console\Command\Command;
@@ -21,4 +22,4 @@ it('can invoke command app:catch-all-subdirectories', function () {
         ->assertExitCode(Command::SUCCESS);
 
     Bus::assertDispatched(CatchAllSubdirectories::class);
-});
+})->covers(CatchAllSubdirectoriesCommand::class);
