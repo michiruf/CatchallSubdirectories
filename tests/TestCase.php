@@ -36,6 +36,8 @@ abstract class TestCase extends BaseTestCase
 
     private function stopTestSmtp(): void
     {
-        $this->server->remove();
+        $this->server
+            ->stop()
+            ->clearPersistence();
     }
 }

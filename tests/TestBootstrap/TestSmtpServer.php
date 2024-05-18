@@ -3,36 +3,32 @@
 namespace Tests\TestBootstrap;
 
 use Exception;
-use Illuminate\Process\ProcessResult;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Str;
 
 /**
  * @see https://github.com/antespi/docker-imap-devel
  */
-class TestSmtpServer
+class TestSmtpServer extends TestServer
 {
-    public const string STARTUP_MESSAGE = 'SSL parameters regeneration completed';
+    public static ?string $startupMessage = 'SSL parameters regeneration completed';
 
     private string $processDescriptor;
 
     public function __construct(
         private readonly string $containerName = 'local',
-        private readonly int $timeoutSeconds = 60
+        int $timeoutSeconds = 60
     ) {
+        parent::__construct($timeoutSeconds);
         $this->processDescriptor = Str::of("--name $containerName")
             ->append(
                 ' -p 40025:25',
                 ' -p 40143:143',
                 ' -p 40993:993',
             )
-            ->append(
-                ' -e MAILNAME=local',
-                // We must not specify a normal mail user, since the catch-all is configured automatically
-                //' -e MAIL_ADDRESS=debug@local',
-                //' -e MAIL_PASS=debug'
-            )
+            // We must not specify a normal mail user, since the catch-all is configured automatically
+            // ' -e MAIL_ADDRESS=debug@local',
+            // ' -e MAIL_PASS=debug'
+            ->append(' -e MAILNAME=local')
             ->append(' -t antespi/docker-imap-devel:latest')
             ->toString();
     }
@@ -41,7 +37,7 @@ class TestSmtpServer
     {
         // Ensure that the container does not exist
         try {
-            $this->remove();
+            $this->clearPersistence();
         } catch (Exception) {
         }
 
@@ -57,7 +53,7 @@ class TestSmtpServer
         return $this;
     }
 
-    public function remove(): static
+    public function clearPersistence(): static
     {
         $this->run("docker rm -f $this->containerName");
 
@@ -69,46 +65,10 @@ class TestSmtpServer
         return $this->run("docker logs $this->containerName")->output();
     }
 
-    public function awaitMessage(string $message)
-    {
-        retry(
-            $this->timeoutSeconds,
-            fn () => throw_unless(
-                Str::contains($this->log(), $message),
-                "Could not receive message '$message' in time from container."
-            ),
-            1000,
-        );
-
-        return $this;
-    }
-
-    public function awaitStart(): self
-    {
-        $this->awaitMessage(static::STARTUP_MESSAGE);
-
-        return $this;
-    }
-
     public function createTestMails(): static
     {
         TestMails::sendTestMails($this->containerName, 'debug@local', 'debug');
 
         return $this;
-    }
-
-    private function run(string $command): ProcessResult
-    {
-        $process = Process::command($command)
-            ->timeout($this->timeoutSeconds)
-            ->start()
-            ->wait();
-
-        if ($process->exitCode() !== 0) {
-            Log::error($process->output());
-            throw new Exception($process->errorOutput());
-        }
-
-        return $process;
     }
 }

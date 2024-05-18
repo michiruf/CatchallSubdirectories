@@ -2,27 +2,22 @@
 
 namespace Tests\TestBootstrap;
 
-use Illuminate\Process\ProcessResult;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Process;
-use Illuminate\Support\Str;
-use RuntimeException;
-
-class TestDeployServer
+class TestDeployServer extends TestServer
 {
-    public const string STARTUP_MESSAGE = 'syslogd entered RUNNING';
-
-    private array $processEnv;
+    public static ?string $startupMessage = 'syslogd entered RUNNING';
 
     public function __construct(
         private readonly string $containerName = 'deploy',
-        private readonly int $timeoutSeconds = 60,
-        readonly string $sshPassword = 'test',
+        int $timeoutSeconds = 60,
+        string $sshPassword = 'test',
+        string $pathFromBase = '_deploy'
     ) {
+        parent::__construct($timeoutSeconds);
         $this->processEnv = [
             'USE_PUBLIC_KEY' => 'false',
             'SSH_PASSWORD' => $sshPassword,
         ];
+        $this->path = base_path($pathFromBase);
     }
 
     public function start(): static
@@ -49,42 +44,5 @@ class TestDeployServer
     public function log(): string
     {
         return $this->run("docker compose logs $this->containerName")->output();
-    }
-
-    public function awaitMessage(string $message): static
-    {
-        retry(
-            $this->timeoutSeconds,
-            fn () => throw_unless(
-                Str::contains($this->log(), $message),
-                "Could not receive message '$message' in time from container."
-            ),
-            1000,
-        );
-
-        return $this;
-    }
-
-    public function awaitStart(): static
-    {
-        $this->awaitMessage(static::STARTUP_MESSAGE);
-
-        return $this;
-    }
-
-    private function run(string $command): ProcessResult
-    {
-        $process = Process::path(base_path('_deploy'))
-            ->command($command)
-            ->env($this->processEnv)
-            ->timeout($this->timeoutSeconds)
-            ->run();
-
-        if ($process->exitCode() !== 0) {
-            Log::error($process->output());
-            throw new RuntimeException($process->errorOutput());
-        }
-
-        return $process;
     }
 }

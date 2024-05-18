@@ -29,7 +29,7 @@ beforeEach(function () {
         ->clearPersistence()
         ->start()
         ->awaitStart();
-    expect($this->deployServer->log())->toContain(TestDeployServer::STARTUP_MESSAGE);
+    expect($this->deployServer->log())->toContain(TestDeployServer::$startupMessage);
 
     updateKnownHosts();
 });
