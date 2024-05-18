@@ -30,4 +30,6 @@ it('can create or get an imap directory', function () {
     ])->execute();
     expect($sameDirectory->getFullEncodedName())
         ->toBe($directory->getFullEncodedName());
+
+    $connection->close();
 })->covers(CreateOrGetImapDirectory::class);

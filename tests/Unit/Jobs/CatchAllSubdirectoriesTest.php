@@ -1,6 +1,5 @@
 <?php
 
-use App\Actions\ConnectImap;
 use App\Jobs\CatchAllSubdirectories;
 
 beforeEach(function () {
@@ -33,4 +32,4 @@ it('can create catch all mail subdirectories', function () {
         ->and($connection->getMailbox('INBOX\\another')->count())->toBeGreaterThan(0, 'Folder "another" should have entries');
 
     $connection->close();
-})->covers(ConnectImap::class);
+})->covers(CatchAllSubdirectories::class);

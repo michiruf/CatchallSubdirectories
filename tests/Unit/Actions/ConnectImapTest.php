@@ -12,5 +12,8 @@ afterEach(function () {
 
 it('can connect to imap', function () {
     $connection = establishImapTestConnection();
+
     expect($connection->ping())->toBeTrue();
+
+    $connection->close();
 })->covers(ConnectImap::class);

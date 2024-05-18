@@ -71,4 +71,6 @@ it('can deploy the application', function () {
 
     expect(Http::get('http://localhost:8080'))
         ->status()->toBe(200);
+
+    // TODO Expect health endpoint when its ready
 })->onlyOnLinux();
