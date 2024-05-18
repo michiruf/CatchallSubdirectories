@@ -7,6 +7,7 @@ use Illuminate\Process\ProcessResult;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 class TestDeployServer
 {
@@ -27,12 +28,6 @@ class TestDeployServer
 
     public function start(): static
     {
-        // Ensure that the container does not exist
-        try {
-            $this->remove();
-        } catch (Exception) {
-        }
-
         $this->run('docker compose up -d');
 
         return $this;
@@ -45,16 +40,11 @@ class TestDeployServer
         return $this;
     }
 
-    public function remove(): static
+    public function clearPersistence(): static
     {
-        $this->run('docker compose down');
+        $this->run('docker compose down -v');
 
         return $this;
-    }
-
-    public function clearPersistence()
-    {
-        $this->run('docker volume prune -af');
     }
 
     public function log(): string
@@ -62,7 +52,7 @@ class TestDeployServer
         return $this->run("docker compose logs $this->containerName")->output();
     }
 
-    public function awaitMessage(string $message)
+    public function awaitMessage(string $message): static
     {
         retry(
             $this->timeoutSeconds,
@@ -76,7 +66,7 @@ class TestDeployServer
         return $this;
     }
 
-    public function awaitStart(): self
+    public function awaitStart(): static
     {
         $this->awaitMessage(static::STARTUP_MESSAGE);
 
@@ -89,12 +79,11 @@ class TestDeployServer
             ->command($command)
             ->env($this->processEnv)
             ->timeout($this->timeoutSeconds)
-            ->start()
-            ->wait();
+            ->run();
 
         if ($process->exitCode() !== 0) {
             Log::error($process->output());
-            throw new Exception($process->errorOutput());
+            throw new RuntimeException($process->errorOutput());
         }
 
         return $process;
