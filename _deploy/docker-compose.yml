@@ -4,16 +4,21 @@ services:
     build: .
     ports:
       - '8022:22'
-      - '8080:8080'
-      - '8443:8443'
+      - '8080:80'
+      - '8443:443'
     # https://dockerfile.readthedocs.io/en/latest/content/DockerImages/dockerfiles/php-nginx.html#environment-variables
     environment:
+      - USE_PUBLIC_KEY
       - SSH_PUBLIC_KEY
+      - SSH_PASSWORD
+      - WEB_DOCUMENT_ROOT=/app/current/public
       # To debug sshd:
       #- SERVICE_SSH_OPTS=-d
     volumes:
       - 'app-data:/app/'
-      #- 'ssh-config-data:/etc/ssh/'
+      # Persist host keys:
+      - 'ssh-config-data:/etc/ssh/'
+      - '/etc/timezone:/etc/timezone:ro'
     networks:
       - default
     restart: unless-stopped
@@ -30,6 +35,7 @@ services:
       - MYSQL_PASSWORD
     volumes:
       - 'mysql-data:/var/lib/mysql/'
+      - '/etc/timezone:/etc/timezone:ro'
     networks:
       - default
     restart: unless-stopped
