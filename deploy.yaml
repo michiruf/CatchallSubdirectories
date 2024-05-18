@@ -1,3 +1,6 @@
+# See https://github.com/lorisleiva/laravel-deployer/blob/main/episode-7/deploy.yaml
+# See https://deployer.org/docs/7.x/getting-started
+
 import:
   - recipe/laravel.php
   - contrib/php-fpm.php
@@ -5,30 +8,39 @@ import:
 
 config:
   application: 'catch-all-subdirectories'
-  repository: 'git@github.com:lorisleiva/mylaravelapp.git'
+  repository: 'https://github.com/michiruf/CatchAllSubdirectories.git'
   php_fpm_version: '8.3'
+  # This fixes errors with not being sudo or having acl installed
+  # https://github.com/deployphp/deployer/issues/1506
+  writable_mode: chmod
 
 hosts:
-  prod:
-    remote_user: root
-    hostname: mylaravelapp.com
-    deploy_path: '/var/www/{{hostname}}'
+  catchall-host:
+    hostname: localhost
+    port: 8022
+    remote_user: application
+    deploy_path: '/app'
 
 tasks:
   deploy:
     - deploy:prepare
     - deploy:vendors
+    - artisan:down
     - artisan:storage:link
     - artisan:view:cache
     - artisan:config:cache
     - artisan:migrate
-    - npm:install
-    - npm:run:prod
+    - artisan:up
+    #- npm:install
+    #- npm:run:prod
     - deploy:publish
-    - php-fpm:reload
-  npm:run:prod:
-    script:
-      - 'cd {{release_or_current_path}} && npm run prod'
+    # This requires sudo and should not be done
+    # See https://deployer.org/docs/7.x/contrib/php-fpm section "Caution"
+    #- php-fpm:reload
+    # TODO artisan:horizon
+  #npm:run:prod
+  #  script:
+  #    - 'cd {{release_or_current_path}} && npm run prod'
 
 after:
   deploy:failed: deploy:unlock

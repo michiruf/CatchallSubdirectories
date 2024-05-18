@@ -12,6 +12,7 @@ jobs:
   analysis:
     uses: ./.github/workflows/analysis.yml
   deploy:
+    environment: production
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs:
@@ -21,18 +22,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # TODO Maybe use deployer?
-      #      https://deployer.org/docs/7.x/recipe/laravel
-      # https://github.com/marketplace/actions/laravel-deploy
-#      - name: Deploy to Server
-#        uses: ngocquyhoang/deploy@laravel
-#        with:
-#          host: host
-#          user: user
-#          port: port
-#          path: path
-#          owner: owner
-#        env:
-#          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
-
-      - run: echo 'Hello from deployment'
+      - name: Deploy
+        uses: deployphp/action@v1
+        with:
+          private-key: ${{ secrets.PRIVATE_KEY }}
+          dep: deploy -o hostname=${{ secrets.HOSTNAME }}
