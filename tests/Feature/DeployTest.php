@@ -73,6 +73,7 @@ it('can deploy the application to the provided docker container in directory _de
     expect($createDotEnv)
         ->exitCode()->toBe(0, $createDotEnv->output());
 
+    // TODO Think about propagating docker env to user application inside the container
     updateDotEnv([
         'REDIS_HOST' => 'redis',
     ], 'application', $this->password);
