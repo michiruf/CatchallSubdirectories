@@ -2,15 +2,19 @@
 
 /** @noinspection MultipleExpectChainableInspection */
 
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Process;
 use Tests\TestBootstrap\TestDeployServer;
 
 function updateKnownHosts(string $host = 'localhost', int $port = 8022): void
 {
-    // Assert that ssh-keygen is installed
+    // Expect that ssh-keygen is installed
     expect(Process::command('which ssh-keygen')->run())
         ->exitCode()->toBe(0, 'ssh-keygen must be available on the test system');
+
+    // Expect that the ssh directory exists, which is needed by ssh-keygen
+    expect(File::isDirectory('/etc/ssh/'))->toBeTrue();
 
     // Update known hosts
     // See https://unix.stackexchange.com/a/276007
