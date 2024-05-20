@@ -21,6 +21,9 @@ services:
       - '/etc/timezone:/etc/timezone:ro'
     networks:
       - default
+    depends_on:
+      - mysql
+      - redis
     restart: unless-stopped
     stdin_open: true
     tty: true
@@ -42,10 +45,25 @@ services:
     stdin_open: true
     tty: true
 
+  redis:
+    container_name: redis
+    image: redis:alpine
+    volumes:
+      - 'redis-data:/data/'
+      - '/etc/timezone:/etc/timezone:ro'
+    networks:
+      - default
+    # command: redis-server --save 20 1 --loglevel warning --requirepass $PASSWORD
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+
 volumes:
   app-data:
     driver: local
   ssh-config-data:
     driver: local
   mysql-data:
+    driver: local
+  redis-data:
     driver: local

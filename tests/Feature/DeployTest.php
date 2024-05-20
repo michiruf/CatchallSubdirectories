@@ -20,6 +20,15 @@ function updateKnownHosts(string $host = 'localhost', int $port = 8022): void
     expect($insertKey)->exitCode()->toBe(0, $insertKey->output());
 }
 
+function updateDotEnv(array $env, string $user, string $password, string $host = 'localhost', int $port = 8022): void
+{
+    foreach ($env as $envName => $envValue) {
+        $command = "sshpass -p $password ssh $user@$host -p $port 'sed -i \"s|$envName=.*|$envName=$envValue|g\" /app/shared/.env'";
+        $updateEnv = Process::run($command);
+        expect($updateEnv)->exitCode()->toBe(0, "Error running:\n$command\nWith output:\n{$updateEnv->output()}");
+    }
+}
+
 beforeEach(function () {
     $this->password = 'test';
 
@@ -45,25 +54,38 @@ afterEach(function () {
     expect($this->deployServer->log())->toBe('');
 });
 
-it('can deploy the application', function () {
-    // These setups must only be done once on the server
+it('can deploy the application to the provided docker container in directory _deploy', function () {
+    // -----------------------------------------------------------------
+    // Perform the setup steps, that only need to be done once
+    // -----------------------------------------------------------------
     $initialDeploy = Process::path(base_path())
         ->command("sshpass -p $this->password vendor/bin/dep deploy")
         ->timeout(300)
         ->run();
     expect($initialDeploy)
-        ->exitCode()->toBe(0, $initialDeploy->output())
-        ->output()->toContain('.env file is empty');
-    $setupEnv = Process::run("sshpass -p $this->password ssh application@localhost -p 8022 'cp /app/current/.env.example /app/shared/.env'");
-    expect($setupEnv)
-        ->exitCode()->toBe(0, $setupEnv->output());
+        ->exitCode()->toBe(1, $initialDeploy->output())
+        ->and($initialDeploy->output())
+        ->toContain('.env file is empty')
+        ->toContain('successfully deployed')
+        ->toContain('Connection refused');
+
+    $createDotEnv = Process::run("sshpass -p $this->password ssh application@localhost -p 8022 'cp /app/current/.env.example /app/shared/.env'");
+    expect($createDotEnv)
+        ->exitCode()->toBe(0, $createDotEnv->output());
+
+    updateDotEnv([
+        'REDIS_HOST' => 'redis',
+    ], 'application', $this->password);
+
     $setupAppKey = Process::path(base_path())
         ->command("sshpass -p $this->password vendor/bin/dep artisan:key:generate")
         ->run();
     expect($setupAppKey)
         ->exitCode()->toBe(0, $setupAppKey->output());
 
+    // -----------------------------------------------------------------
     // Perform the deployment once more, when everything is set up
+    // -----------------------------------------------------------------
     $deploy = Process::path(base_path())
         ->command("sshpass -p $this->password vendor/bin/dep deploy")
         ->timeout(300)
@@ -73,8 +95,22 @@ it('can deploy the application', function () {
         ->output()->not->toContain('.env file is empty')
         ->output()->toContain('successfully deployed');
 
+    // Wait for horizon to get started properly (needed for tests below)
+    $this->deployServer->awaitMessage('Horizon started successfully');
+
+    // -----------------------------------------------------------------
+    // Start the tests
+    // -----------------------------------------------------------------
     expect(Http::get('http://localhost:8080'))
         ->status()->toBe(200);
 
+    $horizonStatus = Process::path(base_path())
+        ->command("sshpass -p $this->password vendor/bin/dep artisan:horizon:status")
+        ->run();
+    expect($horizonStatus)
+        ->exitCode()->toBe(0, $horizonStatus->output())
+        ->output()->toContain('Horizon is running');
+
     // TODO Expect health endpoint when its ready
-})->onlyOnLinux();
+    // TODO Expect job dispatching successful (php artisan app:catch-all-subdirectories)
+})->skipOnWindows();

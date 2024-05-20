@@ -16,13 +16,17 @@ class TestDeployServer extends TestServer
         $this->processEnv = [
             'USE_PUBLIC_KEY' => 'false',
             'SSH_PASSWORD' => $sshPassword,
+            'MYSQL_ROOT_PASSWORD' => 'test',
+            'MYSQL_DATABASE' => 'test',
+            'MYSQL_USER' => 'test',
+            'MYSQL_PASSWORD' => 'test',
         ];
         $this->path = base_path($pathFromBase);
     }
 
     public function start(): static
     {
-        $this->run('docker compose up -d');
+        $this->run('docker compose up -d --build');
 
         return $this;
     }

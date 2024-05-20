@@ -29,13 +29,17 @@ abstract class TestServer
 
     abstract public function log(): string;
 
-    public function awaitMessage(string $message): static
+    public function awaitMessage(string $message, bool $regex = false): static
     {
         retry(
             $this->timeoutSeconds,
             fn () => throw_unless(
-                Str::contains($this->log(), $message),
-                "Could not receive message '$message' in time from container."
+                $regex
+                    ? Str::match($message, $this->log())
+                    : Str::contains($this->log(), $message),
+                $regex
+                    ? "Could not match regex '$message' in time from container."
+                    : "Could not receive message '$message' in time from container."
             ),
             1000,
         );

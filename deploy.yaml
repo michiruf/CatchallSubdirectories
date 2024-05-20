@@ -3,13 +3,11 @@
 
 import:
   - recipe/laravel.php
-  - contrib/php-fpm.php
   - contrib/npm.php
 
 config:
   application: 'catch-all-subdirectories'
   repository: 'https://github.com/michiruf/CatchAllSubdirectories.git'
-  php_fpm_version: '8.3'
   # This fixes errors with not being sudo or having acl installed
   # https://github.com/deployphp/deployer/issues/1506
   writable_mode: chmod
@@ -34,10 +32,7 @@ tasks:
     #- npm:install
     #- npm:run:prod
     - deploy:publish
-    # This requires sudo and should not be done
-    # See https://deployer.org/docs/7.x/contrib/php-fpm section "Caution"
-    #- php-fpm:reload
-    # TODO artisan:horizon
+    - artisan:horizon:terminate
   #npm:run:prod
   #  script:
   #    - 'cd {{release_or_current_path}} && npm run prod'
