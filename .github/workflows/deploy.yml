@@ -28,4 +28,4 @@ jobs:
         uses: deployphp/action@v1
         with:
           private-key: ${{ secrets.PRIVATE_KEY }}
-          dep: deploy -o hostname=${{ secrets.HOSTNAME }} -o port= ${{ SSH_PORT }}
+          dep: deploy -o hostname=${{ secrets.HOSTNAME }} -o port= ${{ secrets.SSH_PORT }}
