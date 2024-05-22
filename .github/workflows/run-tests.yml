@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+      - deploy
   workflow_call: # Make this workflow callable from other workflows
 
 jobs:
