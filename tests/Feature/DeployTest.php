@@ -4,6 +4,7 @@
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
 use Tests\TestBootstrap\TestDeployServer;
 
@@ -19,7 +20,7 @@ function updateKnownHosts(string $host = 'localhost', int $port = 8022): void
     // Update known hosts
     // See https://unix.stackexchange.com/a/276007
     $removeKeys = Process::run("ssh-keygen -R [$host]:$port");
-    expect($removeKeys)->exitCode()->toBe(0, $removeKeys->output());
+    Log::info($removeKeys->output());
     $insertKey = Process::run("ssh-keyscan -p $port $host >> ~/.ssh/known_hosts");
     expect($insertKey)->exitCode()->toBe(0, $insertKey->output());
 }

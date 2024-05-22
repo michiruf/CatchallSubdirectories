@@ -49,7 +49,7 @@ abstract class TestServer
 
     public function awaitStart(): static
     {
-        if (!static::$startupMessage) {
+        if (! static::$startupMessage) {
             throw new RuntimeException('$startupMessage not set up');
         }
 
