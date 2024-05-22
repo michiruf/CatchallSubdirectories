@@ -22,6 +22,10 @@ jobs:
           sudo mkdir ~/.ssh
           sudo touch ~/.ssh/known_hosts
 
+      - run: |
+          ssh -V
+          ssh-keygen --help
+
       # TODO Use --coverage ? (only available directly at the pest command)
       #      Maybe see here: https://medium.com/@vlreshet/how-to-setup-phpunit-coverage-report-and-phpstan-report-using-github-actions-and-github-wiki-pages-86effdfd8c53
       - name: Run Tests
