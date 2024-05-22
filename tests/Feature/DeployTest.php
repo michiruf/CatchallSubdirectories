@@ -2,33 +2,19 @@
 
 /** @noinspection MultipleExpectChainableInspection */
 
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
 use Tests\TestBootstrap\TestDeployServer;
 
-function updateKnownHosts(string $host = 'localhost', int $port = 8022): void
+function sshCommand(string $password, string $command): string
 {
-    // Expect that ssh-keygen is installed
-    expect(Process::command('which ssh-keygen')->run())
-        ->exitCode()->toBe(0, 'ssh-keygen must be available on the test system');
-
-    // Expect that the ssh directory exists, which is needed by ssh-keygen
-    expect(File::isDirectory('/etc/ssh/'))->toBeTrue();
-
-    // Update known hosts
-    // See https://unix.stackexchange.com/a/276007
-    $removeKeys = Process::run("ssh-keygen -R [$host]:$port");
-    Log::info($removeKeys->output());
-    $insertKey = Process::run("ssh-keyscan -p $port $host >> ~/.ssh/known_hosts");
-    expect($insertKey)->exitCode()->toBe(0, $insertKey->output());
+    return "sshpass -p $password ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null application@localhost -p 8022 '$command'";
 }
 
-function updateDotEnv(array $env, string $user, string $password, string $host = 'localhost', int $port = 8022): void
+function updateDotEnv(string $password, array $env): void
 {
     foreach ($env as $envName => $envValue) {
-        $command = "sshpass -p $password ssh $user@$host -p $port 'sed -i \"s|$envName=.*|$envName=$envValue|g\" /app/shared/.env'";
+        $command = sshCommand($password, "sed -i \"s|$envName=.*|$envName=$envValue|g\" /app/shared/.env");
         $updateEnv = Process::run($command);
         expect($updateEnv)->exitCode()->toBe(0, "Error running:\n$command\nWith output:\n{$updateEnv->output()}");
     }
@@ -48,15 +34,13 @@ beforeEach(function () {
         ->start()
         ->awaitStart();
     expect($this->deployServer->log())->toContain(TestDeployServer::$startupMessage);
-
-    updateKnownHosts();
 });
 
 afterEach(function () {
-    $this->deployServer
-        ->stop()
-        ->clearPersistence();
-    expect($this->deployServer->log())->toBe('');
+//    $this->deployServer
+//        ->stop()
+//        ->clearPersistence();
+//    expect($this->deployServer->log())->toBe('');
 });
 
 it('can deploy the application to the provided docker container in directory _deploy', function () {
@@ -64,7 +48,7 @@ it('can deploy the application to the provided docker container in directory _de
     // Perform the setup steps, that only need to be done once
     // -----------------------------------------------------------------
     $initialDeploy = Process::path(base_path())
-        ->command("sshpass -p $this->password vendor/bin/dep deploy")
+        ->command("sshpass -p $this->password vendor/bin/dep deploy test")
         ->timeout(300)
         ->run();
     expect($initialDeploy)
@@ -74,17 +58,18 @@ it('can deploy the application to the provided docker container in directory _de
         ->toContain('successfully deployed')
         ->toContain('Connection refused');
 
-    $createDotEnv = Process::run("sshpass -p $this->password ssh application@localhost -p 8022 'cp /app/current/.env.example /app/shared/.env'");
+    $createDotEnvCommand = sshCommand($this->password, 'cp /app/current/.env.example /app/shared/.env');
+    $createDotEnv = Process::run($createDotEnvCommand);
     expect($createDotEnv)
-        ->exitCode()->toBe(0, $createDotEnv->output());
+        ->exitCode()->toBe(0, "Error running:\n$createDotEnvCommand\nWith output:\n{$createDotEnv->output()}");
 
     // TODO Think about propagating docker env to user application inside the container
-    updateDotEnv([
+    updateDotEnv($this->password, [
         'REDIS_HOST' => 'redis',
-    ], 'application', $this->password);
+    ]);
 
     $setupAppKey = Process::path(base_path())
-        ->command("sshpass -p $this->password vendor/bin/dep artisan:key:generate")
+        ->command("sshpass -p $this->password vendor/bin/dep artisan:key:generate test")
         ->run();
     expect($setupAppKey)
         ->exitCode()->toBe(0, $setupAppKey->output());
@@ -93,7 +78,7 @@ it('can deploy the application to the provided docker container in directory _de
     // Perform the deployment once more, when everything is set up
     // -----------------------------------------------------------------
     $deploy = Process::path(base_path())
-        ->command("sshpass -p $this->password vendor/bin/dep deploy")
+        ->command("sshpass -p $this->password vendor/bin/dep deploy test")
         ->timeout(300)
         ->run();
     expect($deploy)
@@ -111,7 +96,7 @@ it('can deploy the application to the provided docker container in directory _de
         ->status()->toBe(200);
 
     $horizonStatus = Process::path(base_path())
-        ->command("sshpass -p $this->password vendor/bin/dep artisan:horizon:status")
+        ->command("sshpass -p $this->password vendor/bin/dep artisan:horizon:status test")
         ->run();
     expect($horizonStatus)
         ->exitCode()->toBe(0, $horizonStatus->output())

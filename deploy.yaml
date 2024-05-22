@@ -13,11 +13,21 @@ config:
   writable_mode: chmod
 
 hosts:
-  catchall-host:
+  production:
+    hostname: hidden
+    port: 22
+    remote_user: application
+    deploy_path: '/app'
+  test:
     hostname: localhost
     port: 8022
     remote_user: application
     deploy_path: '/app'
+    # See https://github.com/deployphp/deployer/issues/2459
+    # NOTE We could get rid of this host here, if the ssh_arguments are overridable by ./vendor/bin/dep -o ...
+    ssh_arguments:
+      - '-o StrictHostKeyChecking=no'
+      - '-o UserKnownHostsFile=/dev/null'
 
 tasks:
   deploy:
