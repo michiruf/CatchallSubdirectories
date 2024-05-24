@@ -16,6 +16,9 @@ jobs:
       - name: Prepare App
         uses: ./.github/workflows/prepare-app
 
+      - name: Install sshpass for Tests
+        run: sudo apt-get install sshpass
+
       # TODO Use --coverage ? (only available directly at the pest command)
       #      Maybe see here: https://medium.com/@vlreshet/how-to-setup-phpunit-coverage-report-and-phpstan-report-using-github-actions-and-github-wiki-pages-86effdfd8c53
       - name: Run Tests

@@ -3,27 +3,13 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Tests\MailHelper\TestSmtpServer;
+use Tests\TestBootstrap\TestSmtpServer;
 
 abstract class TestCase extends BaseTestCase
 {
     protected TestSmtpServer $server;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        // We want to set the server up in the TestCase class, since beforeAll() of pest does not
-        // have access to $this
-        $this->startTestSmtp();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->stopTestSmtp();
-        parent::tearDown();
-    }
-
-    private function startTestSmtp(): void
+    protected function startTestSmtp(): void
     {
         $this->server = (new TestSmtpServer(timeoutSeconds: 120))
             ->start()
@@ -34,8 +20,10 @@ abstract class TestCase extends BaseTestCase
             ->not->toBeEmpty();
     }
 
-    private function stopTestSmtp(): void
+    protected function stopTestSmtp(): void
     {
-        $this->server->remove();
+        $this->server
+            ->stop()
+            ->clearPersistence();
     }
 }

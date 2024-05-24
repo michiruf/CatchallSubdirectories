@@ -2,6 +2,14 @@
 
 use App\Actions\CreateOrGetImapDirectory;
 
+beforeEach(function () {
+    $this->startTestSmtp();
+});
+
+afterEach(function () {
+    $this->stopTestSmtp();
+});
+
 it('can create or get an imap directory', function () {
     $connection = establishImapTestConnection();
 
@@ -22,4 +30,6 @@ it('can create or get an imap directory', function () {
     ])->execute();
     expect($sameDirectory->getFullEncodedName())
         ->toBe($directory->getFullEncodedName());
+
+    $connection->close();
 })->covers(CreateOrGetImapDirectory::class);

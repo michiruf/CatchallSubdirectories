@@ -2,6 +2,14 @@
 
 use App\Actions\ReadImapDirectoryMails;
 
+beforeEach(function () {
+    $this->startTestSmtp();
+});
+
+afterEach(function () {
+    $this->stopTestSmtp();
+});
+
 it('can read imap directory mails', function () {
     $this->server->createTestMails();
     $connection = establishImapTestConnection();
@@ -12,4 +20,6 @@ it('can read imap directory mails', function () {
 
     expect($mails)
         ->not->toBeEmpty('There are no test mails set up in the smtp server');
+
+    $connection->close();
 })->covers(ReadImapDirectoryMails::class);

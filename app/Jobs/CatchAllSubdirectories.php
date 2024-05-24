@@ -26,6 +26,8 @@ class CatchAllSubdirectories implements ShouldQueue
     /** @var Collection<int, MessageInterface> */
     private Collection $mails;
 
+    private bool $connectionEstablished = false;
+
     public function __construct(
         ?ConnectionInterface $connection = null,
         private readonly ?string $mailDomain = null
@@ -38,12 +40,14 @@ class CatchAllSubdirectories implements ShouldQueue
         return $this
             ->mayEstablishConnection()
             ->fetchMails()
-            ->createSubdirectoriesAndMoveMails();
+            ->createSubdirectoriesAndMoveMails()
+            ->mayCloseConnection();
     }
 
     private function mayEstablishConnection(): static
     {
         if (! $this->smtpConnection) {
+            $this->connectionEstablished = true;
             $this->smtpConnection = app(ConnectImap::class)->execute();
         }
 
@@ -82,6 +86,15 @@ class CatchAllSubdirectories implements ShouldQueue
         // Finish the transaction by calling expunge
         // https://www.php.net/manual/de/function.imap-expunge.php
         $this->smtpConnection->expunge();
+
+        return $this;
+    }
+
+    private function mayCloseConnection(): static
+    {
+        if ($this->connectionEstablished) {
+            $this->smtpConnection->close();
+        }
 
         return $this;
     }

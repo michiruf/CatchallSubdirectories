@@ -1,0 +1,51 @@
+# See https://github.com/lorisleiva/laravel-deployer/blob/main/episode-7/deploy.yaml
+# See https://deployer.org/docs/7.x/getting-started
+
+import:
+  - recipe/laravel.php
+  - contrib/npm.php
+
+config:
+  application: 'catch-all-subdirectories'
+  repository: 'https://github.com/michiruf/CatchAllSubdirectories.git'
+  # This fixes errors with not being sudo or having acl installed
+  # https://github.com/deployphp/deployer/issues/1506
+  writable_mode: chmod
+
+hosts:
+  production:
+    hostname: hidden
+    port: 22
+    remote_user: application
+    deploy_path: '/app'
+  test:
+    hostname: localhost
+    port: 8022
+    remote_user: application
+    deploy_path: '/app'
+    # See https://github.com/deployphp/deployer/issues/2459
+    # NOTE We could get rid of this host here, if the ssh_arguments are overridable by ./vendor/bin/dep -o ...
+    ssh_arguments:
+      - '-o StrictHostKeyChecking=no'
+      - '-o UserKnownHostsFile=/dev/null'
+
+tasks:
+  deploy:
+    - deploy:prepare
+    - deploy:vendors
+    - artisan:down
+    - artisan:storage:link
+    - artisan:view:cache
+    - artisan:config:cache
+    - artisan:migrate
+    - artisan:up
+    #- npm:install
+    #- npm:run:prod
+    - deploy:publish
+    - artisan:horizon:terminate
+  #npm:run:prod
+  #  script:
+  #    - 'cd {{release_or_current_path}} && npm run prod'
+
+after:
+  deploy:failed: deploy:unlock

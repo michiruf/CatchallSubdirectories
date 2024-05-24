@@ -6,12 +6,15 @@ on:
   workflow_call: # Make this workflow callable from other workflows
   workflow_dispatch: # Make this workflow runnable on github
 
+concurrency: deploy
+
 jobs:
   test:
     uses: ./.github/workflows/run-tests.yml
   analysis:
     uses: ./.github/workflows/analysis.yml
   deploy:
+    environment: production
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs:
@@ -21,21 +24,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Prepare App
-        uses: ./.github/workflows/prepare-app
-
-      # TODO Maybe use deployer?
-      #      https://deployer.org/docs/7.x/recipe/laravel
-      # https://github.com/marketplace/actions/laravel-deploy
-#      - name: Deploy to Server
-#        uses: ngocquyhoang/deploy@laravel
-#        with:
-#          host: host
-#          user: user
-#          port: port
-#          path: path
-#          owner: owner
-#        env:
-#          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
-
-      - run: echo 'Hello from deployment'
+      - name: Deploy
+        uses: deployphp/action@v1
+        with:
+          private-key: ${{ secrets.PRIVATE_KEY }}
+          dep: deploy production -o hostname=${{ secrets.HOSTNAME }} -o port=${{ secrets.SSH_PORT }}

@@ -17,6 +17,7 @@
         "laravel/tinker": "^2.9"
     },
     "require-dev": {
+        "deployer/deployer": "^7.4",
         "fakerphp/faker": "^1.23",
         "larastan/larastan": "^2.9",
         "laravel/pint": "^1.13",
