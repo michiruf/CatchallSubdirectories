@@ -37,10 +37,10 @@ beforeEach(function () {
 });
 
 afterEach(function () {
-//    $this->deployServer
-//        ->stop()
-//        ->clearPersistence();
-//    expect($this->deployServer->log())->toBe('');
+    //    $this->deployServer
+    //        ->stop()
+    //        ->clearPersistence();
+    //    expect($this->deployServer->log())->toBe('');
 });
 
 it('can deploy the application to the provided docker container in directory _deploy', function () {
