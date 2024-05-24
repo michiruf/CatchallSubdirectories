@@ -2,6 +2,7 @@
 
 use App\Console\Commands\CatchAllSubdirectoriesCommand;
 use Illuminate\Support\Facades\Schedule;
+use Spatie\Health\Commands\DispatchQueueCheckJobsCommand;
 use Spatie\Health\Commands\RunHealthChecksCommand;
 use Spatie\Health\Commands\ScheduleCheckHeartbeatCommand;
 
@@ -13,4 +14,5 @@ Schedule::command('horizon:snapshot')->everyFiveMinutes();
 
 // Health
 Schedule::command(ScheduleCheckHeartbeatCommand::class)->everyMinute();
+Schedule::command(DispatchQueueCheckJobsCommand::class)->everyMinute();
 Schedule::command(RunHealthChecksCommand::class)->everyMinute();

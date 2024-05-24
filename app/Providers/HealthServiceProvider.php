@@ -36,9 +36,11 @@ class HealthServiceProvider extends ServiceProvider
             EnvironmentCheck::new(),
             OptimizedAppCheck::new(),
             HorizonCheck::new(),
-            QueueCheck::new(),
             ScheduleCheck::new()
                 ->heartbeatMaxAgeInMinutes(2),
+            QueueCheck::new()
+                //->onQueue([...])
+                ->failWhenHealthJobTakesLongerThanMinutes(5),
             RedisCheck::new(),
             RedisMemoryUsageCheck::new(),
         ]);
