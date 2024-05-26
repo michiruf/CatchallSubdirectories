@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Actions\ConnectImap;
 use App\Actions\CreateOrGetImapDirectory;
 use App\Actions\ReadImapDirectoryMails;
 use Ddeboer\Imap\ConnectionInterface;
@@ -17,22 +16,18 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
-class CatchAllSubdirectories implements ShouldQueue
+class CatchAllSubdirectories extends SmtpJobBase implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private ?ConnectionInterface $smtpConnection;
-
     /** @var Collection<int, MessageInterface> */
     private Collection $mails;
-
-    private bool $connectionEstablished = false;
 
     public function __construct(
         ?ConnectionInterface $connection = null,
         private readonly ?string $mailDomain = null
     ) {
-        $this->smtpConnection = $connection;
+        parent::__construct($connection);
     }
 
     public function handle(): static
@@ -42,16 +37,6 @@ class CatchAllSubdirectories implements ShouldQueue
             ->fetchMails()
             ->createSubdirectoriesAndMoveMails()
             ->mayCloseConnection();
-    }
-
-    private function mayEstablishConnection(): static
-    {
-        if (!$this->smtpConnection) {
-            $this->connectionEstablished = true;
-            $this->smtpConnection = app(ConnectImap::class)->execute();
-        }
-
-        return $this;
     }
 
     private function fetchMails(): static
@@ -70,13 +55,16 @@ class CatchAllSubdirectories implements ShouldQueue
         $this->mails->each(function (MessageInterface $mail) use ($mailDomain) {
             /** @var ?EmailAddress $relevantReceiver */
             $relevantReceiver = collect($mail->getTo())
-                ->first(fn (EmailAddress $address) => $address->getHostname() === $mailDomain);
+                ->first(fn (EmailAddress $address) => Str::lower($address->getHostname()) === $mailDomain);
 
             if ($relevantReceiver === null) {
                 return;
             }
 
-            $directoryName = Str::before($relevantReceiver->getAddress(), '@');
+            $directoryName = Str::of($relevantReceiver->getAddress())
+                ->before('@')
+                ->title()
+                ->toString();
 
             $directory = app(CreateOrGetImapDirectory::class, [
                 'connection' => $this->smtpConnection,
@@ -90,15 +78,6 @@ class CatchAllSubdirectories implements ShouldQueue
         // Finish the transaction by calling expunge
         // https://www.php.net/manual/de/function.imap-expunge.php
         $this->smtpConnection->expunge();
-
-        return $this;
-    }
-
-    private function mayCloseConnection(): static
-    {
-        if ($this->connectionEstablished) {
-            $this->smtpConnection->close();
-        }
 
         return $this;
     }

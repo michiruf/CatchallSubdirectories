@@ -28,8 +28,10 @@ it('can create catch all mail subdirectories', function () {
     // Expectations here depend on data in `TestMails::sendTestMails`
     expect()
         ->and($connection->getMailbox('INBOX')->count())->toBe(0, 'Inbox should be empty after sorting into subdirectory')
-        ->and($connection->getMailbox('INBOX.debug')->count())->toBeGreaterThan(0, 'Folder "debug" should have entries')
-        ->and($connection->getMailbox('INBOX.another')->count())->toBeGreaterThan(0, 'Folder "another" should have entries');
+        ->and($connection->getMailbox('INBOX.Debug')->count())->toBeGreaterThan(0, 'Folder "debug" should have entries')
+        ->and($connection->getMailbox('INBOX.Another')->count())->toBeGreaterThan(0, 'Folder "another" should have entries');
 
+    $ping = $connection->ping();
+    expect($ping)->toBeTrue();
     $connection->close();
 })->covers(CatchAllSubdirectories::class);

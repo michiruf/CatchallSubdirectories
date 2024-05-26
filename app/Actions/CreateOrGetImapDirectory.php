@@ -21,7 +21,7 @@ class CreateOrGetImapDirectory
         $directoryIdentifier = Str::of($inboxName)->append('.')->append($this->directory)->toString();
 
         if (! $this->connection->hasMailbox($directoryIdentifier)) {
-            $this->connection->createMailbox($directoryIdentifier);
+            return $this->connection->createMailbox($directoryIdentifier);
         }
 
         return $this->connection->getMailbox($directoryIdentifier);

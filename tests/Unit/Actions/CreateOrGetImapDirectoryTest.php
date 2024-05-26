@@ -31,5 +31,7 @@ it('can create or get an imap directory', function () {
     expect($sameDirectory->getFullEncodedName())
         ->toBe($directory->getFullEncodedName());
 
+    $ping = $connection->ping();
+    expect($ping)->toBeTrue();
     $connection->close();
 })->covers(CreateOrGetImapDirectory::class);
