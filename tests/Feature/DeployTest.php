@@ -58,7 +58,7 @@ it('can start the deploy server', function () {
         ->start()
         ->awaitStart();
     expect($this->deployServer->log())->toContain(TestDeployServer::$startupMessage);
-})->depends('it has sshpass installed on the test system');
+});
 
 // -----------------------------------------------------------------
 // Perform the setup steps, that only need to be done once
@@ -76,7 +76,7 @@ it('can perform an initial deploy', function () {
         ->toContain('.env file is empty')
         ->toContain('successfully deployed')
         ->toContain('Connection refused');
-})->depends('it can start the deploy server');
+});
 
 it('can create and update a dotenv file', function () {
     $createDotEnvCommand = sshCommand($this->password, 'cp /app/current/.env.example /app/shared/.env');
@@ -96,7 +96,7 @@ it('can create and update a dotenv file', function () {
         'DB_USERNAME' => 'test',
         'DB_PASSWORD' => 'test',
     ]);
-})->depends('it can perform an initial deploy');
+});
 
 it('can generate an application key', function () {
     $setupAppKeyCommand = "sshpass -p $this->password vendor/bin/dep artisan:key:generate test";
@@ -105,7 +105,7 @@ it('can generate an application key', function () {
         ->run();
     expect($setupAppKey)
         ->exitCode()->toBe(0, error($setupAppKeyCommand, $setupAppKey));
-})->depends('it can create and update a dotenv file');
+});
 
 // -----------------------------------------------------------------
 // Perform the deployment once more, when everything is set up
@@ -126,7 +126,7 @@ it('can deploy again when everything is set up', function () {
     // Wait for horizon and workers to get started properly (needed for tests below)
     $this->deployServer->awaitMessage('Horizon started successfully');
     $this->deployServer->awaitMessage('Running scheduled tasks');
-})->depends('it can generate an application key');
+});
 
 // -----------------------------------------------------------------
 // Perform the tests against the running system
@@ -138,7 +138,7 @@ it('can access the website on the running system', function () {
         ->toBeGreaterThanOrEqual(200)
         ->toBeLessThan(400);
 
-})->depends('it can deploy again when everything is set up');
+});
 
 it('can check health on the running system', function () {
     retry(
@@ -162,14 +162,17 @@ it('can check health on the running system', function () {
         1000,
         fn ($exception) => $exception instanceof ExpectationFailedException
     );
-})->depends('can access the website on the running system');
+});
 
 it('can access horizon on the running system', function () {
-    expect(Http::get('http://localhost:8080/horizon/dashboard?ok'))
+    $response = Http::get('http://localhost:8080/horizon/dashboard?ok');
+    expect($response)
         ->status()
         ->toBeGreaterThanOrEqual(200)
         ->toBeLessThan(400)
-        ->cookies()->toContain('viewHorizon');
+        ->and(collect($response->cookies()->toArray()))
+        ->where(fn (array $data) => $data['Name'] == 'viewHorizon')
+        ->toHaveCount(1);
 });
 
 it('can stop the deploy server', function () {
@@ -177,4 +180,4 @@ it('can stop the deploy server', function () {
         ->stop()
         ->clearPersistence();
     expect($this->deployServer->log())->toBe('');
-})->skip();
+});
