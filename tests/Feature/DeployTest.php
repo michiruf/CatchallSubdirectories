@@ -25,6 +25,7 @@ function error(string $command, string|ProcessResult $output): string
     if ($output instanceof ProcessResult) {
         $output = $output->output();
     }
+
     return "Error running:\n$command\nWith output:\n$output}";
 }
 
