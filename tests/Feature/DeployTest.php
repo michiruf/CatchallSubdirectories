@@ -1,7 +1,5 @@
 <?php
 
-/** @noinspection MultipleExpectChainableInspection */
-
 use Illuminate\Process\ProcessResult;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Process;
@@ -33,38 +31,41 @@ function error(string $command, string|ProcessResult $output): string
 beforeEach(function () {
     $this->password = 'test';
 
+    // Service name from _deploy/docker-compose.yml
+    $this->deployServer = (new TestDeployServer('app', 300, $this->password));
+
+    // We want to test with the latest git tag instead of the main branch
+    // Unfortunately, this means that the current changes cannot be tested but must be committed and pushed first
+    $this->gitHash = once(fn () => Process::path(base_path())
+        ->command('git rev-parse HEAD')
+        ->run()
+        ->output());
+    expect($this->gitHash)
+        ->toBeString()
+        ->not->toBeEmpty();
+});
+
+it('has sshpass installed on the test system', function () {
     // Assert that sshpass is installed
     expect(Process::command('which sshpass')->run())
         ->exitCode()->toBe(0, 'sshpass must be installed on the test system');
+});
 
+it('can start the deploy server', function () {
     // First may clear the state, so we always start fresh, then start
-    // Service name from _deploy/docker-compose.yml
-    $this->deployServer = (new TestDeployServer('app', 300, $this->password))
+    $this->deployServer
         ->clearPersistence()
         ->start()
         ->awaitStart();
     expect($this->deployServer->log())->toContain(TestDeployServer::$startupMessage);
-});
+})->depends('it has sshpass installed on the test system');
 
-afterEach(function () {
-    //    $this->deployServer
-    //        ->stop()
-    //        ->clearPersistence();
-    //    expect($this->deployServer->log())->toBe('');
-});
+// -----------------------------------------------------------------
+// Perform the setup steps, that only need to be done once
+// -----------------------------------------------------------------
 
-it('can deploy the application to the provided docker container in directory _deploy', function () {
-    // We want to test with the latest git tag instead of the main branch
-    // Unfortunately, this means that the current changes cannot be tested but must be committed and pushed first
-    $gitHash = Process::path(base_path())
-        ->command('git rev-parse HEAD')
-        ->run()
-        ->output();
-
-    // -----------------------------------------------------------------
-    // Perform the setup steps, that only need to be done once
-    // -----------------------------------------------------------------
-    $initialDeployCommand = "sshpass -p $this->password vendor/bin/dep deploy test --revision=$gitHash";
+it('can perform an initial deploy', function () {
+    $initialDeployCommand = "sshpass -p $this->password vendor/bin/dep deploy test --revision=$this->gitHash";
     $initialDeploy = Process::path(base_path())
         ->command($initialDeployCommand)
         ->timeout(300)
@@ -75,7 +76,9 @@ it('can deploy the application to the provided docker container in directory _de
         ->toContain('.env file is empty')
         ->toContain('successfully deployed')
         ->toContain('Connection refused');
+})->depends('it can start the deploy server');
 
+it('can create and update a dotenv file', function () {
     $createDotEnvCommand = sshCommand($this->password, 'cp /app/current/.env.example /app/shared/.env');
     $createDotEnv = Process::run($createDotEnvCommand);
     expect($createDotEnv)
@@ -93,18 +96,23 @@ it('can deploy the application to the provided docker container in directory _de
         'DB_USERNAME' => 'test',
         'DB_PASSWORD' => 'test',
     ]);
+})->depends('it can perform an initial deploy');
 
+it('can generate an application key', function () {
     $setupAppKeyCommand = "sshpass -p $this->password vendor/bin/dep artisan:key:generate test";
     $setupAppKey = Process::path(base_path())
         ->command($setupAppKeyCommand)
         ->run();
     expect($setupAppKey)
         ->exitCode()->toBe(0, error($setupAppKeyCommand, $setupAppKey));
+})->depends('it can create and update a dotenv file');
 
-    // -----------------------------------------------------------------
-    // Perform the deployment once more, when everything is set up
-    // -----------------------------------------------------------------
-    $deployCommand = "sshpass -p $this->password vendor/bin/dep deploy test --revision=$gitHash";
+// -----------------------------------------------------------------
+// Perform the deployment once more, when everything is set up
+// -----------------------------------------------------------------
+
+it('can deploy again when everything is set up', function () {
+    $deployCommand = "sshpass -p $this->password vendor/bin/dep deploy test --revision=$this->gitHash";
     $deploy = Process::path(base_path())
         ->command($deployCommand)
         ->timeout(300)
@@ -114,14 +122,17 @@ it('can deploy the application to the provided docker container in directory _de
         ->and($deploy->output())
         ->not->toContain('.env file is empty')
         ->toContain('successfully deployed');
+})->depends('it can generate an application key');
 
+// -----------------------------------------------------------------
+// Perform the tests against the running system
+// -----------------------------------------------------------------
+
+it('can test the running system', function () {
     // Wait for horizon and workers to get started properly (needed for tests below)
     $this->deployServer->awaitMessage('Horizon started successfully');
     $this->deployServer->awaitMessage('Running scheduled tasks');
 
-    // -----------------------------------------------------------------
-    // Start the tests
-    // -----------------------------------------------------------------
     expect(Http::get('http://localhost:8080'))
         ->status()
         ->toBeGreaterThanOrEqual(200)
@@ -148,4 +159,11 @@ it('can deploy the application to the provided docker container in directory _de
         1000,
         fn ($exception) => $exception instanceof ExpectationFailedException
     );
-})->skipOnWindows();
+})->depends('it can deploy again when everything is set up');
+
+it('can stop the deploy server', function () {
+    $this->deployServer
+        ->stop()
+        ->clearPersistence();
+    expect($this->deployServer->log())->toBe('');
+});
