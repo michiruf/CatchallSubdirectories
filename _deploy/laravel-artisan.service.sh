@@ -1,19 +1,22 @@
 #!/usr/bin/env sh
+# shellcheck shell=sh
 set -e
 
 dir="/app/current"
 
 if [ ! -d "$dir" ]; then
-    echo "cannot start horizon yet: deployment not yet complete (there is no /app/current directory)"
+    echo "cannot execute artisan command \"$*\" yet: deployment not yet complete (there is no /app/current directory)"
     exit 1
 fi
 
 if [ ! -f "$dir/artisan" ]; then
-    echo "cannot start horizon yet: deployment not yet complete (there is no artisan file)"
+    echo "cannot execute artisan command \"$*\" yet: deployment not yet complete (there is no artisan file)"
     exit 1
 fi
 
-php "$dir/artisan" horizon
+# Some commands require to be in the artisan directory already, so we first need to switch directories
+cd "$dir"
+php artisan "$@"
 
-# Exit with horizons exit code
+# Exit with artisans exit code
 exit $?
