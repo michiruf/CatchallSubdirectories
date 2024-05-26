@@ -46,7 +46,7 @@ class CatchAllSubdirectories implements ShouldQueue
 
     private function mayEstablishConnection(): static
     {
-        if (! $this->smtpConnection) {
+        if (!$this->smtpConnection) {
             $this->connectionEstablished = true;
             $this->smtpConnection = app(ConnectImap::class)->execute();
         }
@@ -72,7 +72,7 @@ class CatchAllSubdirectories implements ShouldQueue
             $relevantReceiver = collect($mail->getTo())
                 ->first(fn (EmailAddress $address) => $address->getHostname() === $mailDomain);
 
-            if (! $relevantReceiver) {
+            if ($relevantReceiver !== null) {
                 return;
             }
 
