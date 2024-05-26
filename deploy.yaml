@@ -44,7 +44,7 @@ tasks:
     #- npm:run:prod
     - deploy:publish
     - artisan:horizon:terminate
-    #- artisan:schedule:interrupt
+    - artisan:schedule:interrupt
     - artisan:schedule:kill
     - artisan:queue:restart
   artisan:schedule:interrupt:
