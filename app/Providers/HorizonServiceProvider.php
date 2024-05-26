@@ -26,12 +26,12 @@ class HorizonServiceProvider extends HorizonApplicationServiceProvider
 
         Horizon::auth(function (Request $request) {
             $access = $request->has('ok')
-                || $request->cookie('viewHorizon', false)
+                || $request->cookie('viewHorizon', 'false') === 'true'
                 || Gate::check('viewHorizon', [$request->user()])
                 || app()->environment('local');
 
             if ($access) {
-                Cookie::queue('viewHorizon', true, 7 * 24 * 60);
+                Cookie::queue('viewHorizon', 'true', 7 * 24 * 60);
             }
 
             return $access;
