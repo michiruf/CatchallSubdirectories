@@ -68,7 +68,7 @@ class CatchAllSubdirectories implements ShouldQueue
         $mailDomain = $this->mailDomain ?? config('catchall.mail_domain');
 
         $this->mails->each(function (MessageInterface $mail) use ($mailDomain) {
-            /** @var EmailAddress $relevantReceiver */
+            /** @var ?EmailAddress $relevantReceiver */
             $relevantReceiver = collect($mail->getTo())
                 ->first(fn (EmailAddress $address) => $address->getHostname() === $mailDomain);
 
