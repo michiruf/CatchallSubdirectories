@@ -37,5 +37,4 @@ RUN set -x \
 RUN set -x \
     && sed -i 's|fastcgi_param.\+SCRIPT_FILENAME.\+\$request_filename\;|fastcgi_param SCRIPT_FILENAME \$realpath_root\$fastcgi_script_name;|' /opt/docker/etc/nginx/vhost.common.d/10-php.conf
 
-
 EXPOSE 22
