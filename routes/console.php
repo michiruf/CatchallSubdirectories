@@ -1,12 +1,18 @@
 <?php
 
 use App\Console\Commands\CatchAllSubdirectoriesCommand;
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
+use Spatie\Health\Commands\DispatchQueueCheckJobsCommand;
+use Spatie\Health\Commands\RunHealthChecksCommand;
+use Spatie\Health\Commands\ScheduleCheckHeartbeatCommand;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote')->hourly();
-
+// App
 Schedule::command(CatchAllSubdirectoriesCommand::class)->withoutOverlapping()->everyFiveMinutes();
+
+// Horizon
+Schedule::command('horizon:snapshot')->everyFiveMinutes();
+
+// Health
+Schedule::command(ScheduleCheckHeartbeatCommand::class)->everyMinute();
+Schedule::command(DispatchQueueCheckJobsCommand::class)->everyMinute();
+Schedule::command(RunHealthChecksCommand::class)->everyMinute();
