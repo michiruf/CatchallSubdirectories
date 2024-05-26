@@ -72,7 +72,7 @@ class CatchAllSubdirectories implements ShouldQueue
             $relevantReceiver = collect($mail->getTo())
                 ->first(fn (EmailAddress $address) => $address->getHostname() === $mailDomain);
 
-            if ($relevantReceiver !== null) {
+            if ($relevantReceiver === null) {
                 return;
             }
 
