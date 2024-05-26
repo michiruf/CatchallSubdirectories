@@ -18,7 +18,7 @@ class CreateOrGetImapDirectory
     public function execute(): MailboxInterface
     {
         $inboxName = $this->inboxName ?? config('catchall.inbox_name', 'INBOX');
-        $directoryIdentifier = Str::of($inboxName)->append('\\')->append($this->directory)->toString();
+        $directoryIdentifier = Str::of($inboxName)->append('.')->append($this->directory)->toString();
 
         if (! $this->connection->hasMailbox($directoryIdentifier)) {
             $this->connection->createMailbox($directoryIdentifier);
