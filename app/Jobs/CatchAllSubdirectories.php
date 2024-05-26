@@ -70,7 +70,11 @@ class CatchAllSubdirectories implements ShouldQueue
         $this->mails->each(function (MessageInterface $mail) use ($mailDomain) {
             /** @var EmailAddress $relevantReceiver */
             $relevantReceiver = collect($mail->getTo())
-                ->firstOrFail(fn (EmailAddress $address) => $address->getHostname() === $mailDomain);
+                ->first(fn (EmailAddress $address) => $address->getHostname() === $mailDomain);
+
+            if (! $relevantReceiver) {
+                return;
+            }
 
             $directoryName = Str::before($relevantReceiver->getAddress(), '@');
 
