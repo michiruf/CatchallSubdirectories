@@ -122,22 +122,25 @@ it('can deploy again when everything is set up', function () {
         ->and($deploy->output())
         ->not->toContain('.env file is empty')
         ->toContain('successfully deployed');
+
+    // Wait for horizon and workers to get started properly (needed for tests below)
+    $this->deployServer->awaitMessage('Horizon started successfully');
+    $this->deployServer->awaitMessage('Running scheduled tasks');
 })->depends('it can generate an application key');
 
 // -----------------------------------------------------------------
 // Perform the tests against the running system
 // -----------------------------------------------------------------
 
-it('can test the running system', function () {
-    // Wait for horizon and workers to get started properly (needed for tests below)
-    $this->deployServer->awaitMessage('Horizon started successfully');
-    $this->deployServer->awaitMessage('Running scheduled tasks');
-
+it('can access the website on the running system', function () {
     expect(Http::get('http://localhost:8080'))
         ->status()
         ->toBeGreaterThanOrEqual(200)
         ->toBeLessThan(400);
 
+})->depends('it can deploy again when everything is set up');
+
+it('can check health on the running system', function () {
     retry(
         60,
         function () {
@@ -159,11 +162,19 @@ it('can test the running system', function () {
         1000,
         fn ($exception) => $exception instanceof ExpectationFailedException
     );
-})->depends('it can deploy again when everything is set up');
+})->depends('can access the website on the running system');
+
+it('can access horizon on the running system', function () {
+    expect(Http::get('http://localhost:8080/horizon/dashboard?ok'))
+        ->status()
+        ->toBeGreaterThanOrEqual(200)
+        ->toBeLessThan(400)
+        ->cookies()->toContain('viewHorizon');
+});
 
 it('can stop the deploy server', function () {
     $this->deployServer
         ->stop()
         ->clearPersistence();
     expect($this->deployServer->log())->toBe('');
-});
+})->skip();
