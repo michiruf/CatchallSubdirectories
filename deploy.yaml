@@ -1,3 +1,5 @@
+# $schema: https://github.com/deployphp/deployer/blob/master/src/schema.json
+
 # See https://github.com/lorisleiva/laravel-deployer/blob/main/episode-7/deploy.yaml
 # See https://deployer.org/docs/7.x/getting-started
 
@@ -35,14 +37,28 @@ tasks:
     - deploy:vendors
     - artisan:down
     - artisan:storage:link
-    - artisan:view:cache
-    - artisan:config:cache
+    - artisan:optimize
     - artisan:migrate
     - artisan:up
     #- npm:install
     #- npm:run:prod
     - deploy:publish
     - artisan:horizon:terminate
+    - artisan:schedule:interrupt
+    - artisan:schedule:kill
+    - artisan:queue:restart
+  artisan:schedule:interrupt:
+    # 'schedule:interrupt' only interrupts 'schedule:run' commands, but not 'schedule:work'
+    - run: /opt/docker/bin/service.d/laravel-artisan.sh schedule:interrupt
+    - desc: Interrupt the laravel scheduler
+    #- cd: "{{current_path}}"
+    #- run: |
+    #    echo 'Interrupting laravel scheduler'
+    #    php artisan schedule:interrupt
+  artisan:schedule:kill:
+    - run: kill $(ps aux | grep '[a]rtisan schedule:work' | awk '{print $1}')
+    - desc: Kill the laravel schedule worker
+
   #npm:run:prod
   #  script:
   #    - 'cd {{release_or_current_path}} && npm run prod'
