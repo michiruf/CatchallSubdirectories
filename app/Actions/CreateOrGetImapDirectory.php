@@ -23,7 +23,6 @@ class CreateOrGetImapDirectory
         $directoryIdentifier = Str::of($inboxName)->append('.')->append($this->directory)->toString();
 
         if (! $this->connection->hasMailbox($directoryIdentifier)) {
-            Log::info("Creating new folder $directoryIdentifier");
             $directory = $this->connection->createMailbox($directoryIdentifier);
 
             if ($this->subscribe) {

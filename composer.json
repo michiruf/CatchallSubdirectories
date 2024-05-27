@@ -10,6 +10,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "ext-imap": "*",
         "ddeboer/imap": "^1.19",
         "filament/filament": "^3.2",
         "laravel/framework": "^11.0",

@@ -3,8 +3,11 @@
 namespace App\Console\Commands;
 
 use App\Jobs\UndoSubdirectories;
+use App\Loggers\LaravelCommandLogger;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\Console\Attribute\AsCommand;
+
 use function Laravel\Prompts\text;
 
 #[AsCommand(name: 'app:undo-subdirectories')]
@@ -12,7 +15,7 @@ class UndoSubdirectoriesCommand extends Command
 {
     protected $description = 'Undo moving mails into a subdirectory';
 
-    protected $signature = 'app:undo-subdirectories {prefix?} {target?} {--detach}';
+    protected $signature = 'app:undo-subdirectories {prefix?} {target?} {--detach} {--forcedelete}';
 
     public function handle(): int
     {
@@ -32,16 +35,32 @@ class UndoSubdirectoriesCommand extends Command
             return 130;
         }
 
+        if ($this->option('forcedelete') && ! $this->confirm('You have force delete turned on. Really sure?')) {
+            return 130;
+        }
+
         $args = [
             'prefix' => $prefix,
             'target' => $target,
+            'forceDelete' => $this->option('forcedelete'),
         ];
 
-        $this->option('detach')
-            ? UndoSubdirectories::dispatch(...$args)
-            : UndoSubdirectories::dispatchSync(...$args);
+        if ($this->option('detach')) {
+            UndoSubdirectories::dispatch(...$args);
 
-        $this->runCommand('app:print-directory-summary', [], $this->output);
+            return static::SUCCESS;
+        }
+
+        $previousLogger = Log::getFacadeRoot();
+        Log::swap(new LaravelCommandLogger($this));
+
+        UndoSubdirectories::dispatchSync(...$args);
+
+        $this->newLine(2);
+        $this->line('New directory summary');
+        $this->call('app:print-directory-summary');
+
+        Log::swap($previousLogger);
 
         return static::SUCCESS;
     }
