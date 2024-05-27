@@ -69,6 +69,7 @@ class CatchAllSubdirectories extends SmtpJobBase implements ShouldQueue
             $directory = app(CreateOrGetImapDirectory::class, [
                 'connection' => $this->smtpConnection,
                 'directory' => $directoryName,
+                'subscribe' => true,
             ])->execute();
 
             Log::info("Moving mail '{$mail->getSubject()}' sent to {$relevantReceiver->getAddress()} to directory $directoryName");

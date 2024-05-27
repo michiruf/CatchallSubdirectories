@@ -4,6 +4,7 @@ namespace App\Actions;
 
 use Ddeboer\Imap\Connection;
 use Ddeboer\Imap\MailboxInterface;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class CreateOrGetImapDirectory
@@ -11,7 +12,8 @@ class CreateOrGetImapDirectory
     public function __construct(
         private readonly Connection $connection,
         private readonly string $directory,
-        private readonly ?string $inboxName = null
+        private readonly ?string $inboxName = null,
+        private readonly bool $subscribe = false
     ) {
     }
 
@@ -21,7 +23,15 @@ class CreateOrGetImapDirectory
         $directoryIdentifier = Str::of($inboxName)->append('.')->append($this->directory)->toString();
 
         if (! $this->connection->hasMailbox($directoryIdentifier)) {
-            return $this->connection->createMailbox($directoryIdentifier);
+            Log::info("Creating new folder $directoryIdentifier");
+            $directory = $this->connection->createMailbox($directoryIdentifier);
+
+            if ($this->subscribe) {
+                Log::info("Subscribing to new folder {$directory->getName()}");
+                imap_subscribe($this->connection->getResource()->getStream(), $directory->getFullEncodedName());
+            }
+
+            return $directory;
         }
 
         return $this->connection->getMailbox($directoryIdentifier);

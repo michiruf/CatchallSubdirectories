@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Jobs\UndoSubdirectories;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Attribute\AsCommand;
-
 use function Laravel\Prompts\text;
 
 #[AsCommand(name: 'app:undo-subdirectories')]
@@ -41,6 +40,8 @@ class UndoSubdirectoriesCommand extends Command
         $this->option('detach')
             ? UndoSubdirectories::dispatch(...$args)
             : UndoSubdirectories::dispatchSync(...$args);
+
+        $this->runCommand('app:print-directory-summary', [], $this->output);
 
         return static::SUCCESS;
     }

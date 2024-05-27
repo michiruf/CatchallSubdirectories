@@ -3,10 +3,9 @@
 namespace App\Actions;
 
 use Ddeboer\Imap\Connection;
-use Ddeboer\Imap\ImapResource;
 use Ddeboer\Imap\MailboxInterface;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use ReflectionClass;
 use RuntimeException;
 
 class DeleteImapDirectory
@@ -25,8 +24,10 @@ class DeleteImapDirectory
             : $this->directory;
 
         if ($mailbox->count() !== 0) {
-            throw new RuntimeException('Cannot delete non empty directories.');
+            throw new RuntimeException("Cannot delete non empty directory '{$mailbox->getName()}'.");
         }
+
+        Log::info("Deleting folder {$mailbox->getName()}");
 
         // Reopen the resource manually, specifying that it should not be selected with OP_HALFOPEN
         // Since this resource is then already opened, the library will not open it again, and we can
