@@ -23,9 +23,9 @@ it('can invoke command app:print-directory-summary', function () {
     app()->bind(ConnectImap::class, fn () => $connectImapMock);
 
     $this->artisan('app:print-directory-summary')
-        ->expectsOutput('Sent -> 0')
-        ->expectsOutput('Trash -> 0')
         ->expectsOutput('Drafts -> 0')
         ->expectsOutput('INBOX -> 2')
+        ->expectsOutput('Sent -> 0')
+        ->expectsOutput('Trash -> 0')
         ->assertExitCode(Command::SUCCESS);
 })->covers(PrintDirectorySummaryCommand::class);

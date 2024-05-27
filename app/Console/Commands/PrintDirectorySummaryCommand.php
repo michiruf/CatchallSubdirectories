@@ -19,6 +19,7 @@ class PrintDirectorySummaryCommand extends Command
         $connection = app(ConnectImap::class)->execute();
 
         collect($connection->getMailboxes())
+            ->sortKeys()
             ->each(fn (MailboxInterface $directory) => $this->line("{$directory->getName()} -> {$directory->count()}"));
 
         $connection->close();
