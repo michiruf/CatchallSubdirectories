@@ -76,8 +76,6 @@ class UndoSubdirectories extends SmtpJobBase implements ShouldQueue
 
     private function deleteDirectories(): static
     {
-        dump($this->smtpConnection->ping());
-
         // Mark relevant mailboxes for deletion
         $this->relevantMailboxes->each(function (MailboxInterface $directory) {
             app(DeleteImapDirectory::class, [

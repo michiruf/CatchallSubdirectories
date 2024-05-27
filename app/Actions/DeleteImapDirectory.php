@@ -3,7 +3,10 @@
 namespace App\Actions;
 
 use Ddeboer\Imap\Connection;
+use Ddeboer\Imap\ImapResource;
 use Ddeboer\Imap\MailboxInterface;
+use Illuminate\Support\Str;
+use ReflectionClass;
 use RuntimeException;
 
 class DeleteImapDirectory
@@ -25,16 +28,25 @@ class DeleteImapDirectory
             throw new RuntimeException('Cannot delete non empty directories.');
         }
 
+        // Reopen the resource manually, specifying that it should not be selected with OP_HALFOPEN
+        // Since this resource is then already opened, the library will not open it again, and we can
+        // delete the resource properly on the dovecot test server
+        // After that, we select a parent resource again to avoid php error reporting
+        imap_reopen($this->connection->getResource()->getStream(), $mailbox->getFullEncodedName(), OP_HALFOPEN);
         $this->connection->deleteMailbox($mailbox);
+        $newSelectedMailbox = Str::of($mailbox->getFullEncodedName())->beforeLast('}')->append('}')->toString();
+        imap_reopen($this->connection->getResource()->getStream(), $newSelectedMailbox);
 
-        // TODO
+        // TODO Open an issue
         throw_if(
             ! $this->connection->ping(),
             'There is currently a bug, that dovecot responds with '.
             '"Selected mailbox was deleted, have to disconnect." that is either '.
-            'issued in the test environments dovecot server, or in the missing ability '.
-            'of the current library to reconnect a connection. '.
-            'The other actions that might be performed before, still were executed properly.'
+            'issued in the test environments 8 year old dovecot server, or in '.
+            'the missing ability of the current library to reconnect a connection '.
+            'or not open a resource when deleting. '.
+            'The other actions that might got performed before, still were executed '.
+            'properly.'
         );
 
         if (! $this->noExpunge) {

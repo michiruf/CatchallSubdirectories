@@ -27,6 +27,7 @@ it('can undo subdirectories', function () {
         });
     });
     $connection->expunge();
+    expect($connection->getMailbox('INBOX.foo')->count())->toBeGreaterThan(0, 'Folder "foo" should have entries');
 
     // Undo the subdirectory movement
     app(UndoSubdirectories::class, [
@@ -44,4 +45,4 @@ it('can undo subdirectories', function () {
     $ping = $connection->ping();
     expect($ping)->toBeTrue();
     $connection->close();
-})->covers(UndoSubdirectories::class)->skip('Failes due to a bug');
+})->covers(UndoSubdirectories::class);
