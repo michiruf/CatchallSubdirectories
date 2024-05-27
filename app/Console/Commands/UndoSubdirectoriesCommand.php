@@ -56,7 +56,8 @@ class UndoSubdirectoriesCommand extends Command
 
         UndoSubdirectories::dispatchSync(...$args);
 
-        // If in test environment on the ci server, this still gets called
+        // If in test environment on the ci server, this still gets called,
+        // so we introduce this 'if' to deny that
         if (! App::environment('testing')) {
             $this->newLine(2);
             $this->line('New directory summary');
