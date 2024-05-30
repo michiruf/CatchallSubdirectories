@@ -9,7 +9,7 @@ class ConnectImap
 {
     public function __construct(
         private readonly ?string $hostname = null,
-        private readonly ?int $port = 993,
+        private readonly ?int $port = null,
         private readonly ?string $username = null,
         private readonly ?string $password = null,
         private readonly ?bool $validateCert = null

@@ -32,7 +32,7 @@ RUN set -x \
   && docker-run-bootstrap \
   && docker-image-cleanup
 
-# Patch fastcgi to use the realpat_rooth instead of the document_root, so we do not need to reload fpm
+# Patch fastcgi to use the realpath_root instead of the document_root, so we do not need to reload fpm
 # See https://deployer.org/docs/7.x/avoid-php-fpm-reloading
 RUN set -x \
     && sed -i 's|fastcgi_param.\+SCRIPT_FILENAME.\+\$request_filename\;|fastcgi_param SCRIPT_FILENAME \$realpath_root\$fastcgi_script_name;|' /opt/docker/etc/nginx/vhost.common.d/10-php.conf

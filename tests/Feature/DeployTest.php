@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Process;
 use PHPUnit\Framework\ExpectationFailedException;
 use Tests\TestBootstrap\TestDeployServer;
 
+uses()->group('deploy');
+
 function sshCommand(string $password, string $command): string
 {
     return "sshpass -p $password ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null application@localhost -p 8022 '$command'";
@@ -138,7 +140,6 @@ it('can access the website on the running system', function () {
         ->status()
         ->toBeGreaterThanOrEqual(200)
         ->toBeLessThan(400);
-
 });
 
 it('can check health on the running system', function () {

@@ -6,9 +6,6 @@ use App\Jobs\CatchAllSubdirectories;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Attribute\AsCommand;
 
-/**
- * @see \Filament\Forms\Commands\MakeFieldCommand
- */
 #[AsCommand(name: 'app:catch-all-subdirectories')]
 class CatchAllSubdirectoriesCommand extends Command
 {

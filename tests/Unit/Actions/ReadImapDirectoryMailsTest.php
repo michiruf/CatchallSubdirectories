@@ -21,5 +21,7 @@ it('can read imap directory mails', function () {
     expect($mails)
         ->not->toBeEmpty('There are no test mails set up in the smtp server');
 
+    $ping = $connection->ping();
+    expect($ping)->toBeTrue();
     $connection->close();
 })->covers(ReadImapDirectoryMails::class);

@@ -19,9 +19,9 @@ it('can create or get an imap directory', function () {
         'directory' => 'foo',
     ])->execute();
     expect($directory)
-        ->getName()->toBe('INBOX\\foo')
+        ->getName()->toBe('INBOX.foo')
         ->count()->toBe(0)
-        ->and($connection->hasMailbox('INBOX\\foo'))->toBeTrue();
+        ->and($connection->hasMailbox('INBOX.foo'))->toBeTrue();
 
     // Get the directory again
     $sameDirectory = app(CreateOrGetImapDirectory::class, [
@@ -31,5 +31,7 @@ it('can create or get an imap directory', function () {
     expect($sameDirectory->getFullEncodedName())
         ->toBe($directory->getFullEncodedName());
 
+    $ping = $connection->ping();
+    expect($ping)->toBeTrue();
     $connection->close();
 })->covers(CreateOrGetImapDirectory::class);
