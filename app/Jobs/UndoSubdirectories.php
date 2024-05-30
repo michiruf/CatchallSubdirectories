@@ -15,9 +15,11 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
-class UndoSubdirectories extends SmtpJobBase implements ShouldQueue
+class UndoSubdirectories implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    private ConnectionInterface $smtpConnection;
 
     private MailboxInterface $targetMailbox;
 
@@ -27,23 +29,21 @@ class UndoSubdirectories extends SmtpJobBase implements ShouldQueue
     private Collection $relevantMailboxes;
 
     public function __construct(
-        ?ConnectionInterface $connection = null,
         private readonly string $prefix = 'INBOX.',
         private readonly string $target = 'INBOX',
         private readonly bool $forceDelete = false,
     ) {
-        parent::__construct($connection);
     }
 
-    public function handle(): static
+    public function handle(ConnectionInterface $connection): static
     {
+        $this->smtpConnection = $connection;
+
         return $this
-            ->mayEstablishConnection()
             ->findTargetMailbox()
             ->getRelevantMailboxes()
             ->moveMessages()
-            ->deleteDirectories()
-            ->mayCloseConnection();
+            ->deleteDirectories();
     }
 
     private function findTargetMailbox(): static

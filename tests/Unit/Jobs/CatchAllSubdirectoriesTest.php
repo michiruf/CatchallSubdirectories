@@ -12,16 +12,15 @@ afterEach(function () {
 
 it('can create catch all mail subdirectories', function () {
     $this->server->createTestMails();
-    $connection = establishImapTestConnection();
+    $connection = establishImapTestConnection(true);
 
     // Expect inbox has mails
     expect($connection->getMailbox('INBOX')->getMessages()->count())->toBeGreaterThan(0);
 
     // Perform the subdirectory movement
-    app(CatchAllSubdirectories::class, [
-        'connection' => $connection,
-        'mailDomain' => 'local',
-    ])->handle();
+    CatchAllSubdirectories::dispatch(
+        mailDomain: 'local',
+    );
 
     // Expect inbox has no mails
     // And the specific folders do have mails

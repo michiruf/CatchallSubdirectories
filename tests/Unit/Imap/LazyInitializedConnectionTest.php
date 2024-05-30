@@ -1,6 +1,6 @@
 <?php
 
-use App\Actions\ConnectImap;
+use App\Imap\LazyInitializedConnection;
 
 beforeEach(function () {
     $this->startTestSmtp();
@@ -14,6 +14,4 @@ it('can connect to imap', function () {
     $connection = establishImapTestConnection();
 
     expect($connection->ping())->toBeTrue();
-
-    $connection->close();
-})->covers(ConnectImap::class);
+})->covers(LazyInitializedConnection::class);

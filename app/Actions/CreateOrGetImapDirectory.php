@@ -2,7 +2,7 @@
 
 namespace App\Actions;
 
-use Ddeboer\Imap\Connection;
+use Ddeboer\Imap\ConnectionInterface;
 use Ddeboer\Imap\MailboxInterface;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 class CreateOrGetImapDirectory
 {
     public function __construct(
-        private readonly Connection $connection,
+        private readonly ConnectionInterface $connection,
         private readonly string $directory,
         private readonly ?string $inboxName = null,
         private readonly bool $subscribe = false

@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Actions\ConnectImap;
+use Ddeboer\Imap\ConnectionInterface;
 use Ddeboer\Imap\MailboxInterface;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -16,10 +16,8 @@ class MonitorMetricsCommand extends Command
 
     protected $signature = 'app:print-directory-summary';
 
-    public function handle(): int
+    public function handle(ConnectionInterface $connection): int
     {
-        $connection = app(ConnectImap::class)->execute();
-
         $directoryCount = collect($connection->getMailboxes())->count();
 
         metrics()->gauge(
@@ -27,12 +25,10 @@ class MonitorMetricsCommand extends Command
             $directoryCount,
         );
 
-        // TODO How could we report the directories existent?
+        // TODO How could we report the existing directories?
         //collect($connection->getMailboxes())
         //    ->sortKeys()
         //    ->each(fn (MailboxInterface $directory) => $this->line("{$directory->getName()} -> {$directory->count()}"));
-
-        $connection->close();
 
         return static::SUCCESS;
     }

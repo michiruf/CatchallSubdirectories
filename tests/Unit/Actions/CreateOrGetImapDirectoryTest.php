@@ -33,5 +33,4 @@ it('can create or get an imap directory', function () {
 
     $ping = $connection->ping();
     expect($ping)->toBeTrue();
-    $connection->close();
 })->covers(CreateOrGetImapDirectory::class);

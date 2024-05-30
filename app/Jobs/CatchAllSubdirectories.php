@@ -16,27 +16,27 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
-class CatchAllSubdirectories extends SmtpJobBase implements ShouldQueue
+class CatchAllSubdirectories implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    private ConnectionInterface $smtpConnection;
 
     /** @var Collection<int, MessageInterface> */
     private Collection $mails;
 
     public function __construct(
-        ?ConnectionInterface $connection = null,
         private readonly ?string $mailDomain = null
     ) {
-        parent::__construct($connection);
     }
 
-    public function handle(): static
+    public function handle(ConnectionInterface $connection): static
     {
+        $this->smtpConnection = $connection;
+
         return $this
-            ->mayEstablishConnection()
             ->fetchMails()
-            ->createSubdirectoriesAndMoveMails()
-            ->mayCloseConnection();
+            ->createSubdirectoriesAndMoveMails();
     }
 
     private function fetchMails(): static
