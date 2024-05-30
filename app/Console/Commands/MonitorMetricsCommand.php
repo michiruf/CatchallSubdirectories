@@ -5,8 +5,8 @@ namespace App\Console\Commands;
 use App\Actions\ConnectImap;
 use Ddeboer\Imap\MailboxInterface;
 use Illuminate\Console\Command;
-use Sentry\Metrics\MetricsUnit;
 use Symfony\Component\Console\Attribute\AsCommand;
+
 use function Sentry\metrics;
 
 #[AsCommand(name: 'app:print-directory-summary')]

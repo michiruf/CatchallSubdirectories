@@ -140,7 +140,6 @@ it('can access the website on the running system', function () {
         ->status()
         ->toBeGreaterThanOrEqual(200)
         ->toBeLessThan(400);
-
 });
 
 it('can check health on the running system', function () {

@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Console\Attribute\AsCommand;
+
 use function Laravel\Prompts\text;
 
 #[AsCommand(name: 'app:undo-subdirectories')]
