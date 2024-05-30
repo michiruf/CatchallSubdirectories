@@ -11,7 +11,6 @@
 |
 */
 
-use App\Actions\ConnectImap;
 use Ddeboer\Imap\ConnectionInterface;
 
 uses(
@@ -45,13 +44,21 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function establishImapTestConnection(): ConnectionInterface
+function establishImapTestConnection(bool $bindAgain = false): ConnectionInterface
 {
-    return app(ConnectImap::class, [
+    $connection = app(ConnectionInterface::class, [
         'hostname' => 'localhost',
         'port' => 40993,
         'username' => 'debug@local',
         'password' => 'debug',
         'validateCert' => false,
-    ])->execute();
+    ]);
+
+    // May bind again to not depend on the parameters
+    // Ensure that the connection gets closed manually in that case, since __destruct will not get called
+    if ($bindAgain) {
+        app()->bind(ConnectionInterface::class, fn () => $connection);
+    }
+
+    return $connection;
 }

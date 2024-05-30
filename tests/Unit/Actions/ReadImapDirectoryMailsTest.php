@@ -23,5 +23,4 @@ it('can read imap directory mails', function () {
 
     $ping = $connection->ping();
     expect($ping)->toBeTrue();
-    $connection->close();
 })->covers(ReadImapDirectoryMails::class);

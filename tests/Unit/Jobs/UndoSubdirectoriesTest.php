@@ -14,12 +14,12 @@ afterEach(function () {
 
 it('can undo subdirectories', function () {
     $this->server->createTestMails();
-    $connection = establishImapTestConnection();
+    $connection = establishImapTestConnection(true);
 
-    // Expect inbox has mails
+    // Expect inbox has mails exist
     expect($connection->getMailbox('INBOX')->getMessages()->count())->toBeGreaterThan(0);
 
-    // Move mails
+    // Move mails and expect new directory has mails
     $subdirectory = $connection->createMailbox('INBOX.foo');
     collect($connection->getMailboxes())->each(function (MailboxInterface $mailbox) use ($subdirectory) {
         collect($mailbox->getMessages())->each(function (MessageInterface $message) use ($subdirectory) {
@@ -30,11 +30,10 @@ it('can undo subdirectories', function () {
     expect($connection->getMailbox('INBOX.foo')->count())->toBeGreaterThan(0, 'Folder "foo" should have entries');
 
     // Undo the subdirectory movement
-    app(UndoSubdirectories::class, [
-        'connection' => $connection,
-        'prefix' => 'INBOX.',
-        'target' => 'INBOX',
-    ])->handle();
+    UndoSubdirectories::dispatch(
+        prefix: 'INBOX.',
+        target: 'INBOX',
+    );
 
     // Expect inbox has mails
     // And the INBOX.foo does not exist

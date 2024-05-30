@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Actions\ConnectImap;
+use Ddeboer\Imap\ConnectionInterface;
 use Ddeboer\Imap\MailboxInterface;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -14,15 +14,11 @@ class PrintDirectorySummaryCommand extends Command
 
     protected $signature = 'app:print-directory-summary';
 
-    public function handle(): int
+    public function handle(ConnectionInterface $connection): int
     {
-        $connection = app(ConnectImap::class)->execute();
-
         collect($connection->getMailboxes())
             ->sortKeys()
             ->each(fn (MailboxInterface $directory) => $this->line("{$directory->getName()} -> {$directory->count()}"));
-
-        $connection->close();
 
         return static::SUCCESS;
     }

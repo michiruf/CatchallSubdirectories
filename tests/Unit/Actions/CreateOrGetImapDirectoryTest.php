@@ -33,5 +33,24 @@ it('can create or get an imap directory', function () {
 
     $ping = $connection->ping();
     expect($ping)->toBeTrue();
-    $connection->close();
+})->covers(CreateOrGetImapDirectory::class);
+
+it('can create and subscribe to an imap directory', function () {
+    $connection = establishImapTestConnection();
+
+    $directory = app(CreateOrGetImapDirectory::class, [
+        'connection' => $connection,
+        'directory' => 'bar',
+        'subscribe' => true,
+    ])->execute();
+    expect($directory)
+        ->getName()->toBe('INBOX.bar')
+        ->count()->toBe(0)
+        ->and($connection->hasMailbox('INBOX.bar'))->toBeTrue();
+
+    // NOTE There should be a check, that verifies that is it really subscribed,
+    // but that might be not achievable with the current library
+
+    $ping = $connection->ping();
+    expect($ping)->toBeTrue();
 })->covers(CreateOrGetImapDirectory::class);
