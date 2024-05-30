@@ -10,7 +10,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: laravel-deployer
 
 jobs:
   build-and-push-image:
@@ -19,6 +19,7 @@ jobs:
       contents: read
       packages: write
       attestations: write
+      id-token: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
