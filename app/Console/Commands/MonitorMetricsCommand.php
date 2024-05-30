@@ -18,7 +18,9 @@ class MonitorMetricsCommand extends Command
 
     public function handle(ConnectionInterface $connection): int
     {
-        $directoryCount = collect($connection->getMailboxes())->count();
+        $directoryCount = collect($connection->getMailboxes())
+            ->filter(fn (MailboxInterface $directory) => str($directory->getName())->startsWith('INBOX'))
+            ->count();
 
         metrics()->gauge(
             'imap_directories',
