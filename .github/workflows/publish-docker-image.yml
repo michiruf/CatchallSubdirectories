@@ -10,7 +10,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: laravel-deployer
+  IMAGE_NAME: ${{ github.repository_owner }}/laravel-deployer
+  #IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build-and-push-image:
@@ -45,6 +46,7 @@ jobs:
           push: true
           tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
+          annotations: ${{ steps.metadata.outputs.annotations }}
 
       - name: Generate Artifact Attestation
         uses: actions/attest-build-provenance@v1
