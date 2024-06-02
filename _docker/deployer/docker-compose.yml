@@ -1,7 +1,25 @@
 services:
+  # The base service is a workaround to allow building the base image first,
+  # when we just want to have a compose file that is able to run the containers
+  # Check https://github.com/devthefuture-org/dockerfile-x/issues/6 again to see
+  # if there is any progress on how to use "incremental" Dockerfiles
+  base:
+    build:
+      context: ..
+      tags:
+        - base
+    entrypoint: bash -c
+    command: exit 0
+    restart: no
+
   app:
     container_name: app
-    build: .
+    build:
+      dockerfile: deployer/Dockerfile
+      context: ..
+      #context: .
+      #additional_contexts:
+      #    base: ..
     ports:
       - '8022:22'
       - '8080:80'

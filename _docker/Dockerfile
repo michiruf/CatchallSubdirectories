@@ -1,13 +1,9 @@
 FROM webdevops/php-nginx:8.3-alpine
 
-# Install ssh https://github.com/webdevops/Dockerfile/blob/master/docker/ssh/latest/Dockerfile
+# Patch fastcgi to use the realpath_root instead of the document_root, so we do not need to reload fpm
+# See https://deployer.org/docs/7.x/avoid-php-fpm-reloading
 RUN set -x \
-    && docker-service enable ssh \
-    && docker-run-bootstrap \
-    && docker-image-cleanup
-
-# Add script to set up ssh auth (script must not be executable)
-COPY --chmod=644 setup-ssh-auth.sh /opt/docker/provision/entrypoint.d/1-setup-ssh-auth.sh
+    && sed -i 's|fastcgi_param.\+SCRIPT_FILENAME.\+\$request_filename\;|fastcgi_param SCRIPT_FILENAME \$realpath_root\$fastcgi_script_name;|' /opt/docker/etc/nginx/vhost.common.d/10-php.conf
 
 # Add laravel horizon and workers supervisor script and configs
 COPY --chmod=755 laravel-artisan.service.sh /opt/docker/bin/service.d/laravel-artisan.sh
@@ -32,9 +28,6 @@ RUN set -x \
   && docker-run-bootstrap \
   && docker-image-cleanup
 
-# Patch fastcgi to use the realpath_root instead of the document_root, so we do not need to reload fpm
-# See https://deployer.org/docs/7.x/avoid-php-fpm-reloading
-RUN set -x \
-    && sed -i 's|fastcgi_param.\+SCRIPT_FILENAME.\+\$request_filename\;|fastcgi_param SCRIPT_FILENAME \$realpath_root\$fastcgi_script_name;|' /opt/docker/etc/nginx/vhost.common.d/10-php.conf
+
 
 EXPOSE 22

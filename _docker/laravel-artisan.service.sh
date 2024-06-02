@@ -5,7 +5,7 @@ set -e
 dir="/app/current"
 
 if [ ! -d "$dir" ]; then
-    echo "cannot execute artisan command \"$*\" yet: deployment not yet complete (there is no /app/current directory)"
+    echo "cannot execute artisan command \"$*\" yet: deployment not yet complete (there is no $dir directory)"
     exit 1
 fi
 
