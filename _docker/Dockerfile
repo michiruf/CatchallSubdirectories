@@ -5,11 +5,6 @@ FROM webdevops/php-nginx:8.3-alpine
 RUN set -x \
     && sed -i 's|fastcgi_param.\+SCRIPT_FILENAME.\+\$request_filename\;|fastcgi_param SCRIPT_FILENAME \$realpath_root\$fastcgi_script_name;|' /opt/docker/etc/nginx/vhost.common.d/10-php.conf
 
-# Add laravel horizon and workers supervisor script and configs
-COPY --chmod=755 laravel-artisan.service.sh /opt/docker/bin/service.d/laravel-artisan.sh
-COPY --chmod=644 laravel-horizon.supervisor.conf /opt/docker/etc/supervisor.d/laravel-horizon.conf
-COPY --chmod=644 laravel-schedule-worker.supervisor.conf /opt/docker/etc/supervisor.d/laravel-schedule-worker.conf
-
 # Add excimer php extension for profiling with sentry.io
 # This needs autoconf which is installed like here: https://github.com/webdevops/Dockerfile/blob/master/docker/php-dev/8.3-alpine/Dockerfile#L17
 RUN set -x \
@@ -28,6 +23,11 @@ RUN set -x \
   && docker-run-bootstrap \
   && docker-image-cleanup
 
+# Add laravel horizon and workers supervisor script and configs
+COPY --chmod=755 laravel-artisan.service.sh /opt/docker/bin/service.d/laravel-artisan.sh
+COPY --chmod=644 laravel-horizon.supervisor.conf /opt/docker/etc/supervisor.d/laravel-horizon.conf
+COPY --chmod=644 laravel-schedule-worker.supervisor.conf /opt/docker/etc/supervisor.d/laravel-schedule-worker.conf
 
-
-EXPOSE 22
+# Define env for laravel scripts and patch the web document root from webdevops container
+ENV LARAVEL_APPLICATION_PATH=${APPLICATION_PATH} \
+    WEB_DOCUMENT_ROOT=${LARAVEL_APPLICATION_PATH}/public

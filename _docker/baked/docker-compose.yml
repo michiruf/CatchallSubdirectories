@@ -14,19 +14,16 @@ services:
 
   app:
     container_name: app
-    build: .
+    build:
+      context: .
+      additional_contexts:
+        src_root: '../..'
     ports:
       - '8022:22'
       - '8080:80'
       - '8443:443'
     # https://dockerfile.readthedocs.io/en/latest/content/DockerImages/dockerfiles/php-nginx.html#environment-variables
     environment:
-      - USE_PUBLIC_KEY
-      - SSH_PUBLIC_KEY
-      - SSH_PASSWORD
-      # To debug sshd:
-      #- SERVICE_SSH_OPTS=-d
-
       # Laravel env
       # TODO Those are not picked up, because user application has another context
       # https://askubuntu.com/questions/1033217/how-to-export-env-variables-as-another-user
