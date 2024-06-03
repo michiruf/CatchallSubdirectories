@@ -1,0 +1,120 @@
+services:
+  # The base service is a workaround to allow building the base image first,
+  # when we just want to have a compose file that is able to run the containers
+  # Check https://github.com/devthefuture-org/dockerfile-x/issues/6 again to see
+  # if there is any progress on how to use "incremental" Dockerfiles
+  base:
+    build:
+      context: ..
+      tags:
+        - base
+    entrypoint: bash -c
+    command: exit 0
+    restart: no
+
+  app:
+    container_name: app
+    build:
+      context: .
+      additional_contexts:
+        src_root: '../..'
+    ports:
+      - '8022:22'
+      - '8080:80'
+      - '8443:443'
+    # https://dockerfile.readthedocs.io/en/latest/content/DockerImages/dockerfiles/php-nginx.html#environment-variables
+    environment:
+      - GIT_URL=https://github.com/michiruf/CatchAllSubdirectories.git
+      - BRANCH=master
+      - DEPLOY_COMMAND_SEPARATOR=;
+#      - DEPLOY_COMMANDS=
+#          artisan:down ;
+#          git:update ;
+#          composer:install --no-progress ;
+#          artisan:storage:link ;
+#          artisan:optimize ;
+#          artisan:migrate --force ;
+#          artisan:up ;
+#          npm:install ;
+#          npm:run:prod ;
+#          artisan:horizon:terminate ;
+#          artisan:schedule:interrupt ;
+#          "kill $(ps aux | grep '[a]rtisan schedule:work' | awk '{print $1}')" ;
+#          artisan:queue:restart ;
+
+      # Laravel env
+      # TODO Those are not picked up, because user application has another context
+      # https://askubuntu.com/questions/1033217/how-to-export-env-variables-as-another-user
+      # google: unix write env from one user to another
+      - APP_ENV=production
+      - APP_URL=https://example.org
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=${MYSQL_DATABASE}
+      - DB_USERNAME=${MYSQL_USER}
+      - DB_PASSWORD=${MYSQL_PASSWORD}
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=
+      - CATCHALL_HOSTNAME=mail.example.com
+      - CATCHALL_PORT=993
+      - CATCHALL_USERNAME=user@example.com
+      - CATCHALL_PASSWORD=
+      - CATCHALL_VALIDATE_CERT=true
+      - CATCHALL_INBOX_NAME=INBOX
+      - CATCHALL_MAIL_DOMAIN=example.com
+    volumes:
+      - 'app-data:/app/'
+      # Persist host keys:
+      - 'ssh-config-data:/etc/ssh/'
+      - '/etc/timezone:/etc/timezone:ro'
+    networks:
+      - default
+    depends_on:
+      - base
+      - mysql
+      - redis
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+
+  mysql:
+    container_name: mysql
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD
+      - MYSQL_DATABASE
+      - MYSQL_USER
+      - MYSQL_PASSWORD
+    volumes:
+      - 'mysql-data:/var/lib/mysql/'
+      - '/etc/timezone:/etc/timezone:ro'
+    networks:
+      - default
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+
+  redis:
+    container_name: redis
+    image: redis:alpine
+    volumes:
+      # Redis should not be persisted for performance reasons
+      #- 'redis-data:/data/'
+      - '/etc/timezone:/etc/timezone:ro'
+    networks:
+      - default
+    # command: redis-server --save 20 1 --loglevel warning --requirepass $PASSWORD
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+
+volumes:
+  app-data:
+    driver: local
+  ssh-config-data:
+    driver: local
+  mysql-data:
+    driver: local
+  redis-data:
+    driver: local

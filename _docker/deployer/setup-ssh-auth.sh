@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck shell=bash
+set -e
+. /opt/docker/etc/print.sh
 
 # Configure SSH https://stackoverflow.com/a/49018871 (but slightly changed)
 sed -i 's/#\?\(PermitRootLogin\)\s*.*$/\1 no/' /etc/ssh/sshd_config
@@ -31,5 +33,5 @@ if [ ! -d "$dir/.ssh" ]; then
     chmod go-w "$dir"
     chmod 700 "$dir/.ssh"
     chmod 600 "$dir/.ssh/authorized_keys"
-    echo "SSH auth set up successfully"
+    p '> ssh auth set up successfully' 'cyan'
 fi

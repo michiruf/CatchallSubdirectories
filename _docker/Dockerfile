@@ -28,6 +28,9 @@ COPY --chmod=755 laravel-artisan.service.sh /opt/docker/bin/service.d/laravel-ar
 COPY --chmod=644 laravel-horizon.supervisor.conf /opt/docker/etc/supervisor.d/laravel-horizon.conf
 COPY --chmod=644 laravel-schedule-worker.supervisor.conf /opt/docker/etc/supervisor.d/laravel-schedule-worker.conf
 
+# Add print helper
+COPY --chmod=755 print.sh /opt/docker/etc/print.sh
+
 # Define env for laravel scripts and patch the web document root from webdevops container
 ENV LARAVEL_APPLICATION_PATH=${APPLICATION_PATH} \
-    WEB_DOCUMENT_ROOT=${LARAVEL_APPLICATION_PATH}/public
+    WEB_DOCUMENT_ROOT=${APPLICATION_PATH}/public
