@@ -1,5 +1,5 @@
-#!/usr/bin/env bash
-# shellcheck shell=bash
+#!/usr/bin/env sh
+# shellcheck shell=sh
 set -e
 . /opt/docker/etc/print.sh
 
@@ -20,6 +20,7 @@ if [ "$USE_PUBLIC_KEY" = true ]; then
     usermod -p "$pass" "$APPLICATION_USER"
 else
     # See https://stackoverflow.com/a/75669312
+    # shellcheck disable=SC2039 # disable 'echo flags unsupported'
     echo -e "$SSH_PASSWORD\n$SSH_PASSWORD" | passwd "$APPLICATION_USER"
 fi
 usermod -U "$APPLICATION_USER"

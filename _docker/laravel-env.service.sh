@@ -12,22 +12,7 @@ case $1 in
     prepare)
         p "> preparing environment in '$user_env_file' with env values prefixed with '$prefix'" 'cyan'
         rm -f "$user_env_file"
-        #touch "$user_env_file" # ensure that the file exists, even if there are no laravel env variables
-        #chown "$APPLICATION_USER:$APPLICATION_GROUP" "$user_env_file"
-
-        #for var in $(printenv | grep "^${prefix}" | cut -d= -f1); do
-        #    eval "value=\$$var" # TODO Use printenv instead (see below)
-        #    var="${var#"$prefix"}"
-        #    # shellcheck disable=SC2154 # disable 'referenced but not assigned'
-        #    echo "$var=$value" >> "$user_env_file"
-        #done
-
-        #for line in $(printenv | grep "^${prefix}"); do
-        #    echo "$line" >> "$user_env_file"
-        #done
-
         printenv | grep "^${prefix}" > "$user_env_file"
-
         chown "$APPLICATION_USER:$APPLICATION_GROUP" "$user_env_file"
         ;;
 
