@@ -13,8 +13,8 @@ RUN set -x \
     && docker-run-bootstrap \
     && docker-image-cleanup
 
-# Add script to set up ssh auth (script must not be executable)
-COPY --chmod=644 setup-ssh-auth.sh /opt/docker/provision/entrypoint.d/1-setup-ssh-auth.sh
+# Add script to set up ssh auth
+COPY --chmod=644 ssh-auth.entrypoint.sh /opt/docker/provision/entrypoint.d/1-setup-ssh-auth.sh
 
 # Patch the laravel application path to be away of deployers 'current' directory
 ENV LARAVEL_APPLICATION_PATH=${APPLICATION_PATH}/current \
