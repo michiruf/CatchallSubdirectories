@@ -14,7 +14,7 @@ fi
 
 cd "$APPLICATION_PATH"
 
-# Clone if there is not .git directory yet
+# Clone if there is no .git directory yet
 if [ ! -d ".git" ]; then
     p '=> initial project setup' 'purple'
 
@@ -62,6 +62,9 @@ if [ "$perform_deploy" = true ] ; then
             git:update)
                 current_branch=$(git symbolic-ref --short HEAD)
                 git reset --hard "origin/$current_branch"
+                ;;
+            env:update)
+                /opt/docker/bin/service.d/laravel-env.sh apply
                 ;;
             composer:*)
                 eval "composer ${command#composer:} --ansi"

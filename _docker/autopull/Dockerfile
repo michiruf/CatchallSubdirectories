@@ -22,6 +22,7 @@ ENV DEPLOY_COMMAND_SEPARATOR=;
 ENV DEPLOY_COMMANDS \
 artisan:down ; \
 git:update ; \
+env:update ; \
 composer:install --no-progress ; \
 artisan:storage:link ; \
 artisan:optimize ; \
