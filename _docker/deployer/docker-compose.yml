@@ -27,27 +27,16 @@ services:
       # To debug sshd:
       #- SERVICE_SSH_OPTS=-d
 
-      # Laravel env
-      # TODO Those are not picked up, because user application has another context
-      # https://askubuntu.com/questions/1033217/how-to-export-env-variables-as-another-user
-      # google: unix write env from one user to another
-      - APP_ENV=prod
-      - APP_URL=https://example.org
-      - DB_CONNECTION=mysql
-      - DB_HOST=mysql
-      - DB_PORT=3306
-      - DB_DATABASE=${MYSQL_DATABASE}
-      - DB_USERNAME=${MYSQL_USER}
-      - DB_PASSWORD=${MYSQL_PASSWORD}
-      - REDIS_HOST=redis
-      - REDIS_PASSWORD=
-      - CATCHALL_HOSTNAME=mail.example.com
-      - CATCHALL_PORT=993
-      - CATCHALL_USERNAME=user@example.com
-      - CATCHALL_PASSWORD=
-      - CATCHALL_VALIDATE_CERT=true
-      - CATCHALL_INBOX_NAME=INBOX
-      - CATCHALL_MAIL_DOMAIN=example.com
+      # Laravel env (prefixed with 'LARAVEL_')
+      - LARAVEL_APP_ENV=production
+      - LARAVEL_APP_DEBUG=false
+      - LARAVEL_REDIS_HOST=redis
+      - LARAVEL_DB_CONNECTION=mysql
+      - LARAVEL_DB_HOST=mysql
+      - LARAVEL_DB_PORT=3306
+      - LARAVEL_DB_DATABASE=${MYSQL_DATABASE}
+      - LARAVEL_DB_USERNAME=${MYSQL_USER}
+      - LARAVEL_DB_PASSWORD=${MYSQL_PASSWORD}
     volumes:
       - 'app-data:/app/'
       # Persist host keys:
