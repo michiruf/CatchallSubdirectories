@@ -4,6 +4,7 @@ services:
   # Check https://github.com/devthefuture-org/dockerfile-x/issues/6 again to see
   # if there is any progress on how to use "incremental" Dockerfiles
   base:
+    container_name: base
     build:
       context: ..
       tags:
