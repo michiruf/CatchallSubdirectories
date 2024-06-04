@@ -31,6 +31,5 @@ COPY --chmod=644 laravel-schedule-worker.supervisor.conf /opt/docker/etc/supervi
 # Add print helper
 COPY --chmod=755 print.sh /opt/docker/etc/print.sh
 
-# Define env for laravel scripts and patch the web document root from webdevops container
-ENV LARAVEL_APPLICATION_PATH=${APPLICATION_PATH} \
-    WEB_DOCUMENT_ROOT=${APPLICATION_PATH}/public
+# Patch the web document root from webdevops container for laravels structure
+ENV WEB_DOCUMENT_ROOT=${APPLICATION_PATH}/public

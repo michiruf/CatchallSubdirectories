@@ -12,7 +12,7 @@ if [ -z "$GIT_URL" ]; then
     exit 1
 fi
 
-cd "$LARAVEL_APPLICATION_PATH"
+cd "$APPLICATION_PATH"
 
 # Clone if there is not .git directory yet
 if [ ! -d ".git" ]; then
@@ -20,7 +20,7 @@ if [ ! -d ".git" ]; then
 
     p "> clone repository with branch $BRANCH" 'cyan'
     # Flag the directory to be usable by both, root and the application user
-    git config --global --add safe.directory "$LARAVEL_APPLICATION_PATH"
+    git config --global --add safe.directory "$APPLICATION_PATH"
     git clone -b "$BRANCH" "$GIT_URL" .
     echo 'Done'
 

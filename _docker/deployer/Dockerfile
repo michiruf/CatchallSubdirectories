@@ -16,8 +16,8 @@ RUN set -x \
 # Add script to set up ssh auth
 COPY --chmod=644 ssh-auth.entrypoint.sh /opt/docker/provision/entrypoint.d/1-setup-ssh-auth.sh
 
-# Patch the laravel application path to be away of deployers 'current' directory
-ENV LARAVEL_APPLICATION_PATH=${APPLICATION_PATH}/current \
-    WEB_DOCUMENT_ROOT=${APPLICATION_PATH}/current/public
+# Patch the paths to be away of deployers 'current' directory
+ENV APPLICATION_PATH=/app/current \
+    WEB_DOCUMENT_ROOT=/app/current/public
 
 EXPOSE 22
