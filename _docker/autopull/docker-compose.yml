@@ -27,20 +27,21 @@ services:
       - GIT_URL=https://github.com/michiruf/CatchAllSubdirectories.git
       - BRANCH=master
       - DEPLOY_COMMAND_SEPARATOR=;
-#      - DEPLOY_COMMANDS=
-#          artisan:down ;
-#          git:update ;
-#          composer:install --no-progress ;
-#          artisan:storage:link ;
-#          artisan:optimize ;
-#          artisan:migrate --force ;
-#          artisan:up ;
-#          npm:install ;
-#          npm:run:prod ;
-#          artisan:horizon:terminate ;
-#          artisan:schedule:interrupt ;
-#          "kill $(ps aux | grep '[a]rtisan schedule:work' | awk '{print $1}')" ;
-#          artisan:queue:restart ;
+      - DEPLOY_COMMANDS=
+          artisan:down ;
+          git:update ;
+          env:update ;
+          composer:install --no-progress ;
+          artisan:storage:link ;
+          artisan:optimize ;
+          artisan:migrate --force ;
+          artisan:up ;
+          -npm:install ;
+          -npm:run:prod ;
+          artisan:horizon:terminate ;
+          artisan:schedule:interrupt ;
+          "kill $(ps aux | grep '[a]rtisan schedule:work' | awk '{print $1}')" ;
+          artisan:queue:restart ;
 
       # Laravel env (prefixed with 'LARAVEL_')
       - LARAVEL_APP_ENV=production
