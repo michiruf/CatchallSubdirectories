@@ -17,6 +17,6 @@ p() {
     color_input=$(echo "$2" | awk '{print toupper($0)}')
     eval "color=\$$color_input"
 
-    # shellcheck disable=SC2154
+    # shellcheck disable=SC2154 # disable 'referenced but not assigned'
     echo -e "${color}${text}${RESET}"
 }
