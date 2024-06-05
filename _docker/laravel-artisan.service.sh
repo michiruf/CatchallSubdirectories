@@ -3,6 +3,11 @@
 set -e
 . /opt/docker/etc/print.sh
 
+# Load environment file
+# 'set -a' ensures they are treated as exported
+# See https://superuser.com/a/1240860
+set -a; . /etc/environment; set +a
+
 if [ ! -d "$APPLICATION_PATH" ]; then
     p "cannot execute artisan command \"$*\" yet: deployment not yet complete (there is no $APPLICATION_PATH directory)" 'red'
     exit 1
