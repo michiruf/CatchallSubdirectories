@@ -17,7 +17,7 @@ RUN set -x \
 # Set the default branch
 ENV BRANCH=master
 
-## Set the default deploy commands and their separator
+# Set the default deploy commands and their separator
 ENV DEPLOY_COMMAND_SEPARATOR=;
 ENV DEPLOY_COMMANDS \
 artisan:down ; \
