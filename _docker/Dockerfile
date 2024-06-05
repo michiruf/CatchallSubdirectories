@@ -29,6 +29,7 @@ RUN set -x \
 COPY --chmod=755 print.sh /opt/docker/etc/print.sh
 COPY --chmod=755 --chown=$APPLICATION_UID:$APPLICATION_GID laravel-env.service.sh /opt/docker/bin/service.d/laravel-env.sh
 COPY --chmod=644 laravel-env.entrypoint.sh /opt/docker/provision/entrypoint.d/1-setup-laravel-env.sh
+COPY --chmod=644 docker-env.entrypoint.sh /opt/docker/provision/entrypoint.d/10-setup-docker-env.sh
 
 # Add laravel horizon and workers supervisor script and configs
 COPY --chmod=755 laravel-artisan.service.sh /opt/docker/bin/service.d/laravel-artisan.sh
