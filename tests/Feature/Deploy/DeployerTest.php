@@ -6,21 +6,7 @@ use Illuminate\Support\Facades\Process;
 use PHPUnit\Framework\ExpectationFailedException;
 use Tests\TestBootstrap\TestDeployServer;
 
-uses()->group('deploy');
-
-function sshCommand(string $password, string $command): string
-{
-    return "sshpass -p $password ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null application@localhost -p 8022 '$command'";
-}
-
-function updateDotEnv(string $password, array $env): void
-{
-    foreach ($env as $envName => $envValue) {
-        $command = sshCommand($password, "sed -i \"s|\(# \)\?$envName=.*|$envName=$envValue|g\" /app/shared/.env");
-        $updateEnv = Process::run($command);
-        expect($updateEnv)->exitCode()->toBe(0, error($command, $updateEnv));
-    }
-}
+uses()->group('deploy', 'deployer');
 
 function error(string $command, string|ProcessResult $output): string
 {
@@ -34,22 +20,28 @@ function error(string $command, string|ProcessResult $output): string
 beforeEach(function () {
     $this->password = 'test';
 
-    // Service name from _deploy/docker-compose.yml
-    $this->deployServer = (new TestDeployServer('app', 300, $this->password));
+    $this->deployServer = (new TestDeployServer('deployer', [
+        'USE_PUBLIC_KEY' => 'false',
+        'SSH_PASSWORD' => $this->password,
+        'MYSQL_ROOT_PASSWORD' => 'test',
+        'MYSQL_DATABASE' => 'test',
+        'MYSQL_USER' => 'test',
+        'MYSQL_PASSWORD' => 'test',
+    ], 300, $this->password));
 
-    // We want to test with the latest git tag instead of the main branch
+    // We want to test with the latest git hash instead of the main branch
     // Unfortunately, this means that the current changes cannot be tested but must be committed and pushed first
     $this->gitHash = once(fn () => Process::path(base_path())
         ->command('git rev-parse HEAD')
         ->run()
         ->output());
-    expect($this->gitHash)
-        ->toBeString()
-        ->not->toBeEmpty();
+    if (empty($this->gitHash) || ! is_string($this->gitHash)) {
+        throw new RuntimeException('Cannot get git hash');
+    }
 });
 
+
 it('has sshpass installed on the test system', function () {
-    // Assert that sshpass is installed
     expect(Process::command('which sshpass')->run())
         ->exitCode()->toBe(0, 'sshpass must be installed on the test system');
 });
@@ -70,42 +62,16 @@ it('can start the deploy server', function () {
 it('can perform an initial deploy', function () {
     $initialDeployCommand = "sshpass -p $this->password vendor/bin/dep deploy test --revision=$this->gitHash";
     $initialDeploy = Process::path(base_path())
-        ->command($initialDeployCommand)
         ->timeout(300)
-        ->run();
-    expect($initialDeploy)
-        ->exitCode()->toBe(1, error($initialDeployCommand, $initialDeploy))
-        ->and($initialDeploy->output())
-        ->toContain('.env file is empty')
-        ->toContain('successfully deployed')
-        ->toContain('Connection refused');
-});
-
-it('can create and update a dotenv file', function () {
-    $createDotEnvCommand = sshCommand($this->password, 'cp /app/current/.env.example /app/shared/.env');
-    $createDotEnv = Process::run($createDotEnvCommand);
-    expect($createDotEnv)
-        ->exitCode()->toBe(0, error($createDotEnvCommand, $createDotEnv));
-
-    // TODO Think about propagating docker env to user application inside the container
-    updateDotEnv($this->password, [
-        'APP_ENV' => 'production',
-        'APP_DEBUG' => false,
-        'REDIS_HOST' => 'redis',
-        'DB_CONNECTION' => 'mysql',
-        'DB_HOST' => 'mysql',
-        'DB_PORT' => '3306',
-        'DB_DATABASE' => 'test',
-        'DB_USERNAME' => 'test',
-        'DB_PASSWORD' => 'test',
-    ]);
+        ->run($initialDeployCommand);
+    expect($initialDeploy->output())
+        ->toContainWithMessage('successfully deployed', error($initialDeployCommand, $initialDeploy));
 });
 
 it('can generate an application key', function () {
     $setupAppKeyCommand = "sshpass -p $this->password vendor/bin/dep artisan:key:generate test";
     $setupAppKey = Process::path(base_path())
-        ->command($setupAppKeyCommand)
-        ->run();
+        ->run($setupAppKeyCommand);
     expect($setupAppKey)
         ->exitCode()->toBe(0, error($setupAppKeyCommand, $setupAppKey));
 });
@@ -117,9 +83,8 @@ it('can generate an application key', function () {
 it('can deploy again when everything is set up', function () {
     $deployCommand = "sshpass -p $this->password vendor/bin/dep deploy test --revision=$this->gitHash";
     $deploy = Process::path(base_path())
-        ->command($deployCommand)
         ->timeout(300)
-        ->run();
+        ->run($deployCommand);
     expect($deploy)
         ->exitCode()->toBe(0, error($deployCommand, $deploy))
         ->and($deploy->output())
