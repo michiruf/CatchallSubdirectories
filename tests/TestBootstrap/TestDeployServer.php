@@ -10,7 +10,6 @@ class TestDeployServer extends TestServer
         public string $variant,
         array $processEnv,
         int $timeoutSeconds = 60,
-        public string $sshPassword = 'test',
     ) {
         parent::__construct($timeoutSeconds, $processEnv);
     }

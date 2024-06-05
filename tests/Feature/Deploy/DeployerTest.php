@@ -27,7 +27,7 @@ beforeEach(function () {
         'MYSQL_DATABASE' => 'test',
         'MYSQL_USER' => 'test',
         'MYSQL_PASSWORD' => 'test',
-    ], 300, $this->password));
+    ], 300));
 
     // We want to test with the latest git hash instead of the main branch
     // Unfortunately, this means that the current changes cannot be tested but must be committed and pushed first
