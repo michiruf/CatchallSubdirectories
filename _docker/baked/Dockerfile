@@ -10,4 +10,4 @@ FROM base
 # Add project files using a manually defined context of the repository root: src_root
 COPY --from=src_root --chown=$APPLICATION_UID:$APPLICATION_GID . /app
 
-COPY --chmod=644 laravel-env-apply.entrypoint.sh /opt/docker/provision/entrypoint.d/2-apply-laravel-env.sh
+COPY --chmod=644 laravel-env-apply.entrypoint.sh /opt/docker/provision/entrypoint.d/11-apply-laravel-env.sh
