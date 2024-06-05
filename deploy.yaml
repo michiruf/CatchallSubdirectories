@@ -49,7 +49,7 @@ tasks:
     - artisan:schedule:kill
     - artisan:queue:restart
   env:update:
-    - run: /opt/docker/bin/service.d/laravel-env.sh apply
+    - run: /opt/docker/bin/service.d/laravel-env.sh
     - desc: Apply the environment variables to laravels .env
   artisan:schedule:interrupt:
     # 'schedule:interrupt' only interrupts 'schedule:run' commands, but not 'schedule:work'

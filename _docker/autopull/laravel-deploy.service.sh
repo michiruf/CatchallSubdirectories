@@ -64,7 +64,7 @@ if [ "$perform_deploy" = true ] ; then
                 git reset --hard "origin/$current_branch"
                 ;;
             env:update)
-                /opt/docker/bin/service.d/laravel-env.sh apply
+                /opt/docker/bin/service.d/laravel-env.sh
                 ;;
             composer:*)
                 eval "composer ${command#composer:} --ansi"

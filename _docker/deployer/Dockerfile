@@ -17,7 +17,10 @@ RUN set -x \
 COPY --chmod=644 ssh-auth.entrypoint.sh /opt/docker/provision/entrypoint.d/1-setup-ssh-auth.sh
 
 # Patch the paths to be away of deployers 'current' directory
+# Explicitly set the env file paths
 ENV APPLICATION_PATH=/app/current \
-    WEB_DOCUMENT_ROOT=/app/current/public
+    WEB_DOCUMENT_ROOT=/app/current/public \
+    APPLICATION_ENV_FILE=/app/shared/.env \
+    APPLICATION_ENV_EXAMPLE_FILE=/app/release/.env.example
 
 EXPOSE 22
