@@ -12,6 +12,7 @@
 */
 
 use Ddeboer\Imap\ConnectionInterface;
+use PHPUnit\Framework\Assert;
 
 uses(
     Tests\TestCase::class,
@@ -29,8 +30,9 @@ uses(
 |
 */
 
-expect()->extend('toBeOne', function () {
-    return $this->toBe(1);
+expect()->extend('toContainWithMessage', function ($actual, $message = '') {
+    // Unfortunately, we cannot pass a message to pest's toContain method
+    Assert::assertStringContainsString($actual, $this->value, $message);
 });
 
 /*
