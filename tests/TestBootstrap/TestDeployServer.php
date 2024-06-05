@@ -7,46 +7,42 @@ class TestDeployServer extends TestServer
     public static ?string $startupMessage = 'syslogd entered RUNNING';
 
     public function __construct(
-        private readonly string $containerName = 'deploy',
+        public string $variant,
+        array $processEnv,
         int $timeoutSeconds = 60,
-        string $sshPassword = 'test',
-        string $pathFromBase = '_deploy'
+        public string $sshPassword = 'test',
     ) {
-        parent::__construct($timeoutSeconds);
-        $this->processEnv = [
-            'USE_PUBLIC_KEY' => 'false',
-            'SSH_PASSWORD' => $sshPassword,
-            'MYSQL_ROOT_PASSWORD' => 'test',
-            'MYSQL_DATABASE' => 'test',
-            'MYSQL_USER' => 'test',
-            'MYSQL_PASSWORD' => 'test',
-        ];
-        $this->path = base_path($pathFromBase);
+        parent::__construct($timeoutSeconds, $processEnv);
     }
 
     public function start(): static
     {
-        $this->run('docker compose up -d --build');
+        $this->run($this->composeString('up -d --build'));
 
         return $this;
     }
 
     public function stop(): static
     {
-        $this->run('docker compose stop');
+        $this->run($this->composeString('stop'));
 
         return $this;
     }
 
     public function clearPersistence(): static
     {
-        $this->run('docker compose down -v');
+        $this->run($this->composeString('down -v'));
 
         return $this;
     }
 
     public function log(): string
     {
-        return $this->run("docker compose logs $this->containerName")->output();
+        return $this->run($this->composeString('logs app'))->output();
+    }
+
+    public function composeString($command): string
+    {
+        return "docker compose -f _docker/$this->variant/docker-compose.yml $command";
     }
 }
