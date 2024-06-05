@@ -25,10 +25,9 @@ RUN set -x \
 
 # Add print helper
 # Add env service as application user
-# Add env setup
+# Add env entrypoint
 COPY --chmod=755 print.sh /opt/docker/etc/print.sh
-COPY --chmod=755 --chown=$APPLICATION_UID:$APPLICATION_GID laravel-env2.service.sh /opt/docker/bin/service.d/laravel-env.sh
-#COPY --chmod=644 laravel-env.entrypoint.sh /opt/docker/provision/entrypoint.d/1-setup-laravel-env.sh
+COPY --chmod=755 --chown=$APPLICATION_UID:$APPLICATION_GID laravel-env.service.sh /opt/docker/bin/service.d/laravel-env.sh
 COPY --chmod=644 docker-env.entrypoint.sh /opt/docker/provision/entrypoint.d/10-setup-docker-env.sh
 
 # Add laravel horizon and workers supervisor script and configs
