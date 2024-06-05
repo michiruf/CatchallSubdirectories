@@ -14,7 +14,7 @@ RUN set -x \
     && docker-image-cleanup
 
 # Add script to set up ssh auth
-COPY --chmod=644 ssh-auth.entrypoint.sh /opt/docker/provision/entrypoint.d/1-setup-ssh-auth.sh
+COPY --chmod=644 ssh-auth.entrypoint.sh /opt/docker/provision/entrypoint.d/11-setup-ssh-auth.sh
 
 # Patch the paths to be away of deployers 'current' directory
 # Explicitly set the env file paths
