@@ -1,6 +1,9 @@
 <?php
 
 use App\Imap\LazyInitializedConnection;
+use Tests\TestBootstrap\Traits\CanTestSmtpServer;
+
+uses(CanTestSmtpServer::class);
 
 beforeEach(function () {
     $this->startTestSmtp();
@@ -11,7 +14,7 @@ afterEach(function () {
 });
 
 it('can connect to imap', function () {
-    $connection = establishImapTestConnection();
+    $connection = $this->establishImapTestConnection();
 
     expect($connection->ping())->toBeTrue();
 })->covers(LazyInitializedConnection::class);

@@ -3,6 +3,9 @@
 use App\Jobs\UndoSubdirectories;
 use Ddeboer\Imap\MailboxInterface;
 use Ddeboer\Imap\MessageInterface;
+use Tests\TestBootstrap\Traits\CanTestSmtpServer;
+
+uses(CanTestSmtpServer::class);
 
 beforeEach(function () {
     $this->startTestSmtp();
@@ -14,7 +17,7 @@ afterEach(function () {
 
 it('can undo subdirectories', function () {
     $this->server->createTestMails();
-    $connection = establishImapTestConnection(true);
+    $connection = $this->establishImapTestConnection(true);
 
     // Expect inbox has mails exist
     expect($connection->getMailbox('INBOX')->getMessages()->count())->toBeGreaterThan(0);
