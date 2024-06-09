@@ -1,6 +1,9 @@
 <?php
 
 use App\Actions\CreateOrGetImapDirectory;
+use Tests\TestBootstrap\Traits\CanTestSmtpServer;
+
+uses(CanTestSmtpServer::class);
 
 beforeEach(function () {
     $this->startTestSmtp();
@@ -11,7 +14,7 @@ afterEach(function () {
 });
 
 it('can create or get an imap directory', function () {
-    $connection = establishImapTestConnection();
+    $connection = $this->establishImapTestConnection();
 
     // Create the directory
     $directory = app(CreateOrGetImapDirectory::class, [
@@ -36,7 +39,7 @@ it('can create or get an imap directory', function () {
 })->covers(CreateOrGetImapDirectory::class);
 
 it('can create and subscribe to an imap directory', function () {
-    $connection = establishImapTestConnection();
+    $connection = $this->establishImapTestConnection();
 
     $directory = app(CreateOrGetImapDirectory::class, [
         'connection' => $connection,

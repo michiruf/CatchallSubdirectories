@@ -1,6 +1,9 @@
 <?php
 
 use App\Actions\ReadImapDirectoryMails;
+use Tests\TestBootstrap\Traits\CanTestSmtpServer;
+
+uses(CanTestSmtpServer::class);
 
 beforeEach(function () {
     $this->startTestSmtp();
@@ -12,7 +15,7 @@ afterEach(function () {
 
 it('can read imap directory mails', function () {
     $this->server->createTestMails();
-    $connection = establishImapTestConnection();
+    $connection = $this->establishImapTestConnection();
 
     $mails = app(ReadImapDirectoryMails::class, [
         'connection' => $connection,
