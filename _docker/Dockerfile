@@ -23,14 +23,11 @@ RUN set -x \
   && docker-run-bootstrap \
   && docker-image-cleanup
 
-# Add print helper
-# Add env service as application user
-# Add env entrypoint
+# Add configs and scripts
 COPY --chmod=755 print.sh /opt/docker/etc/print.sh
-COPY --chmod=755 --chown=$APPLICATION_UID:$APPLICATION_GID laravel-env.service.sh /opt/docker/bin/service.d/laravel-env.sh
-COPY --chmod=644 docker-env.entrypoint.sh /opt/docker/provision/entrypoint.d/10-setup-docker-env.sh
-
-# Add laravel horizon and workers supervisor script and configs
+COPY --chmod=755 provision.service.sh /opt/docker/bin/service.d/provision.sh
+COPY --chmod=644 prepare-env.entrypoint.sh /opt/docker/provision/entrypoint.d/10-prepare-env.sh
+COPY --chmod=755 laravel-dotenv.service.sh /opt/docker/bin/service.d/laravel-dotenv.sh
 COPY --chmod=755 laravel-artisan.service.sh /opt/docker/bin/service.d/laravel-artisan.sh
 COPY --chmod=644 laravel-horizon.supervisor.conf /opt/docker/etc/supervisor.d/laravel-horizon.conf
 COPY --chmod=644 laravel-schedule-worker.supervisor.conf /opt/docker/etc/supervisor.d/laravel-schedule-worker.conf

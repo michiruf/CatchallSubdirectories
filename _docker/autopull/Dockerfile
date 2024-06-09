@@ -8,11 +8,11 @@
 FROM base
 
 # Copy the deploy service
-COPY --chmod=755 laravel-deploy.service.sh /opt/docker/bin/service.d/laravel-deploy.sh
+COPY --chmod=755 laravel-autopull.service.sh /opt/docker/bin/service.d/laravel-autopull.sh
 
 # Register a crontab to periodically call the deploy service
 RUN set -x \
-  && echo -e '*\t*\t*\t*\t*\t/opt/docker/bin/service.d/laravel-deploy.sh' >> /etc/crontabs/root
+  && echo -e '*\t*\t*\t*\t*\t/opt/docker/bin/service.d/laravel-autopull.sh' >> /etc/crontabs/root
 
 # Set the default branch
 ENV BRANCH=master

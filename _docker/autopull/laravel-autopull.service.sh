@@ -3,7 +3,6 @@
 set -e
 . /opt/docker/etc/print.sh
 
-artisan='/opt/docker/bin/service.d/laravel-artisan.sh'
 perform_deploy=false
 
 # Check if required GIT_URL exists
@@ -16,9 +15,9 @@ cd "$APPLICATION_PATH"
 
 # Clone if there is no .git directory yet
 if [ ! -d ".git" ]; then
-    p '=> initial project setup' 'purple'
+    p "=> initial project setup, because '$APPLICATION_PATH/.git' does not exist'" 'purple'
 
-    p "> clone repository with branch $BRANCH" 'cyan'
+    p "> clone repository with branch '$BRANCH'" 'cyan'
     # Flag the directory to be usable by both, root and the application user
     git config --global --add safe.directory "$APPLICATION_PATH"
     git clone -b "$BRANCH" "$GIT_URL" .
@@ -28,7 +27,13 @@ if [ ! -d ".git" ]; then
     chown -R "$APPLICATION_UID":"$APPLICATION_GID" .
 
     p '> install composer dependencies' 'cyan'
-    composer install --no-interaction --no-progress -q # TODO remove -q
+    /opt/docker/bin/service.d/provision.sh composer:install --no-interaction --no-progress
+
+    p '> prepare laravel env' 'cyan'
+    /opt/docker/bin/service.d/provision.sh env:update
+
+    p '> generate app key' 'cyan'
+    /opt/docker/bin/service.d/provision.sh artisan:key:generate
 
     perform_deploy=true
 fi
@@ -45,45 +50,10 @@ fi
 if [ "$perform_deploy" = true ] ; then
     p '=> performing deploy now' 'purple'
 
-    old_ifs=$IFS
-    IFS=$DEPLOY_COMMAND_SEPARATOR
-    for command in $DEPLOY_COMMANDS; do
-        # Trim command
-        command=$(echo "$command" | xargs)
-
-        # Inform the user
+    IFS=$DEPLOY_COMMAND_SEPARATOR; for command in $DEPLOY_COMMANDS; do
         p "> $command" 'cyan'
-
-        # Switch what to do with the command
-        case $command in
-            -*)
-                p "skipping command since it starts with '-'" 'yellow'
-                ;;
-            git:update)
-                current_branch=$(git symbolic-ref --short HEAD)
-                git reset --hard "origin/$current_branch"
-                ;;
-            env:update)
-                /opt/docker/bin/service.d/laravel-env.sh
-                ;;
-            composer:*)
-                eval "composer ${command#composer:} --ansi"
-                ;;
-            artisan:*)
-                # artisan wrapper script already has ansi
-                eval "$artisan ${command#artisan:}"
-                ;;
-            npm:*)
-                p "received npm command: ${command#npm:}, but npm commands are not yet implemented, neither is npm installed" 'red'
-                exit 1
-                ;;
-            *)
-                eval "$command" || p "exited with $?" 'red'
-                #[ $? != 0 ] && exit $?
-                ;;
-        esac
+        /opt/docker/bin/service.d/provision.sh "$command"
     done
-    IFS=$old_ifs
 
     p '=> deploy completed' 'purple'
 fi

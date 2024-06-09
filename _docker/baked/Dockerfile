@@ -8,15 +8,21 @@
 FROM base
 
 # Add project files using a manually defined context of the repository root: src_root
-COPY --from=src_root --chown=$APPLICATION_UID:$APPLICATION_GID . /app
+COPY --from=src_root --chown=$APPLICATION_UID:$APPLICATION_GID . /app-src
 # In case the image was built locally, there might be an .env that was copied over and there might
 # be some secrets, when developing locally
-# TODO Maybe us git to clean? -> no, because things could be persistent!!! -> yes, because we are in the image!
-RUN set -e && \
-    rm -f /app/.env && \
-    rm -Rf /app/vendor
-#RUN git reset --hard origin/$branch && git submodule update --init --recursive
+RUN set -x && \
+    cd /app-src && \
+    git config --global --add safe.directory /app-src && \
+    git clean -f -d -x --dry-run && \
+    composer install --no-progress
 
-# TODO Add composer install in here?
+COPY --chmod=644 laravel-deploy.entrypoint.sh /opt/docker/provision/entrypoint.d/11-laravel-deploy.sh
 
-COPY --chmod=644 laravel-deploy.entrypoint.sh /opt/docker/provision/entrypoint.d/11-deploy-laravel.sh
+# Set the default deploy commands and their separator
+ENV DEPLOY_COMMAND_SEPARATOR=;
+ENV DEPLOY_COMMANDS \
+env:update ; \
+artisan:storage:link ; \
+artisan:optimize ; \
+artisan:migrate --force

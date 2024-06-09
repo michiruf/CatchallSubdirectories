@@ -40,7 +40,6 @@ beforeEach(function () {
     }
 });
 
-
 it('has sshpass installed on the test system', function () {
     expect(Process::command('which sshpass')->run())
         ->exitCode()->toBe(0, 'sshpass must be installed on the test system');
