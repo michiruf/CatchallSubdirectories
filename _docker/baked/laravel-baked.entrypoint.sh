@@ -8,7 +8,6 @@ set -e
 # See https://superuser.com/a/1240860
 set -a; . /etc/environment; set +a
 
-provision="/opt/docker/bin/service.d/provision.sh"
 cd "$APPLICATION_PATH"
 
 # Move project over if app directory empty and perform initial setups
@@ -19,14 +18,14 @@ if [ -z "$(ls -A "$APPLICATION_PATH")" ]; then
     find /app-src -maxdepth 1 -mindepth 1 \( ! -name '.' ! -name '..' \) -exec mv {} "$APPLICATION_PATH" \;
 
     p '> generate app key' 'cyan'
-    $provision artisan:key:generate --force
+    /opt/docker/bin/service.d/provision.sh artisan:key:generate --force
 fi
 
 p '=> performing deploy now' 'purple'
 
 IFS=$DEPLOY_COMMAND_SEPARATOR; for command in $DEPLOY_COMMANDS; do
     p "> $command" 'cyan'
-    $provision "$command"
+    /opt/docker/bin/service.d/provision.sh "$command"
 done
 
 p '=> deploy completed' 'purple'

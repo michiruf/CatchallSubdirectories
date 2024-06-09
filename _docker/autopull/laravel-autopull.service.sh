@@ -23,17 +23,10 @@ if [ ! -d ".git" ]; then
     git clone -b "$BRANCH" "$GIT_URL" .
     echo 'Done'
 
-    p '> adjust rights' 'cyan'
-    chown -R "$APPLICATION_UID":"$APPLICATION_GID" .
-
-    p '> install composer dependencies' 'cyan'
-    /opt/docker/bin/service.d/provision.sh composer:install --no-interaction --no-progress
-
-    p '> prepare laravel env' 'cyan'
-    /opt/docker/bin/service.d/provision.sh env:update
-
-    p '> generate app key' 'cyan'
-    /opt/docker/bin/service.d/provision.sh artisan:key:generate
+    IFS=$INITIAL_DEPLOY_COMMAND_SEPARATOR; for command in $INITIAL_DEPLOY_COMMANDS; do
+        p "> $command" 'cyan'
+        /opt/docker/bin/service.d/provision.sh "$command"
+    done
 
     perform_deploy=true
 fi
@@ -54,6 +47,9 @@ if [ "$perform_deploy" = true ] ; then
         p "> $command" 'cyan'
         /opt/docker/bin/service.d/provision.sh "$command"
     done
+
+    p '> adjust rights' 'cyan'
+    chown -R "$APPLICATION_UID":"$APPLICATION_GID" .
 
     p '=> deploy completed' 'purple'
 fi

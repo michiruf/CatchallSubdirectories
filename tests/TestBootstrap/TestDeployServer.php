@@ -2,6 +2,8 @@
 
 namespace Tests\TestBootstrap;
 
+use Illuminate\Process\ProcessResult;
+
 class TestDeployServer extends TestServer
 {
     public static ?string $startupMessage = 'syslogd entered RUNNING';
@@ -38,6 +40,11 @@ class TestDeployServer extends TestServer
     public function log(): string
     {
         return $this->run($this->composeString('logs app'))->output();
+    }
+
+    public function exec(string $command): ProcessResult
+    {
+        return $this->run($this->composeString("exec app $command"), false);
     }
 
     public function composeString($command): string

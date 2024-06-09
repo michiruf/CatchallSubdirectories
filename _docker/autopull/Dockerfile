@@ -20,11 +20,18 @@ ENV BRANCH=master
 # Set the default deploy commands and their separator
 ENV DEPLOY_COMMAND_SEPARATOR=;
 ENV DEPLOY_COMMANDS \
-artisan:down ; \
-git:update ; \
-env:update ; \
-composer:install --no-progress ; \
-artisan:storage:link ; \
-artisan:optimize ; \
-artisan:migrate --force ; \
-artisan:up
+  artisan:down ; \
+  git:update ; \
+  composer:install --no-progress ; \
+  env:update ; \
+  artisan:storage:link ; \
+  artisan:optimize ; \
+  artisan:migrate --force ; \
+  permissions:fix ; \
+  artisan:up
+ENV INITIAL_DEPLOY_COMMAND_SEPARATOR=;
+ENV INITIAL_DEPLOY_COMMANDS \
+  composer:install --no-progress ; \
+  env:update ; \
+  artisan:key:generate --force ; \
+  permissions:fix

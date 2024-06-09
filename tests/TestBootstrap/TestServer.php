@@ -57,16 +57,20 @@ abstract class TestServer
         return $this;
     }
 
-    public function run(string $command): ProcessResult
+    public function run(string $command, bool $throwOnError = true): ProcessResult
     {
         $process = Process::path($this->path ?? base_path())
             ->env($this->processEnv ?? [])
             ->timeout($this->timeoutSeconds)
             ->run($command);
 
-        if ($process->exitCode() !== 0) {
-            Log::error($process->output());
-            throw new RuntimeException($process->errorOutput());
+        if ($throwOnError && $process->exitCode() !== 0) {
+            $errorOutput = $process->errorOutput();
+            if (Str::length($errorOutput) == 0) {
+                $errorOutput = $process->output();
+            }
+            Log::error($errorOutput);
+            throw new RuntimeException($errorOutput);
         }
 
         return $process;

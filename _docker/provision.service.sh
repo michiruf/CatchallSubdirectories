@@ -18,6 +18,9 @@ case $command in
     env:update)
         /opt/docker/bin/service.d/laravel-dotenv.sh
         ;;
+    permissions:fix)
+        chown -R "$APPLICATION_UID":"$APPLICATION_GID" .
+        ;;
     composer:*)
         eval "composer ${command#composer:} --ansi"
         ;;

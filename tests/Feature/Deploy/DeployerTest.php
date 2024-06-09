@@ -43,20 +43,18 @@ it('can start the deploy server', function () {
 // -----------------------------------------------------------------
 
 it('can perform an initial deploy', function () {
-    $initialDeployCommand = "sshpass -p $this->password vendor/bin/dep deploy test --revision=$this->gitHash";
     $initialDeploy = Process::path(base_path())
         ->timeout(300)
-        ->run($initialDeployCommand);
+        ->run("sshpass -p $this->password vendor/bin/dep deploy test --revision=$this->gitHash");
     expect($initialDeploy->output())
-        ->toContainWithMessage('successfully deployed', $this->formatError($initialDeployCommand, $initialDeploy));
+        ->toContainWithMessage('successfully deployed', $this->formatError($initialDeploy));
 });
 
 it('can generate an application key', function () {
-    $setupAppKeyCommand = "sshpass -p $this->password vendor/bin/dep artisan:key:generate test";
     $setupAppKey = Process::path(base_path())
-        ->run($setupAppKeyCommand);
+        ->run("sshpass -p $this->password vendor/bin/dep artisan:key:generate test");
     expect($setupAppKey)
-        ->exitCode()->toBe(0, $this->formatError($setupAppKeyCommand, $setupAppKey));
+        ->exitCode()->toBe(0, $this->formatError($setupAppKey));
 });
 
 // -----------------------------------------------------------------
@@ -64,12 +62,11 @@ it('can generate an application key', function () {
 // -----------------------------------------------------------------
 
 it('can deploy again when everything is set up', function () {
-    $deployCommand = "sshpass -p $this->password vendor/bin/dep deploy test --revision=$this->gitHash";
     $deploy = Process::path(base_path())
         ->timeout(300)
-        ->run($deployCommand);
+        ->run("sshpass -p $this->password vendor/bin/dep deploy test --revision=$this->gitHash");
     expect($deploy)
-        ->exitCode()->toBe(0, $this->formatError($deployCommand, $deploy))
+        ->exitCode()->toBe(0, $this->formatError($deploy))
         ->and($deploy->output())
         ->not->toContain('.env file is empty')
         ->toContain('successfully deployed');
@@ -82,6 +79,10 @@ it('can deploy again when everything is set up', function () {
 // -----------------------------------------------------------------
 // Perform the tests against the running system
 // -----------------------------------------------------------------
+
+it('has correct file ownerships', function () {
+    $this->fileOwnerShipTest();
+});
 
 it('can access the website on the running system', function () {
     $this->websiteAccessTest();

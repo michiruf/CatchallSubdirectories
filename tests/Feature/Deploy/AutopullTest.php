@@ -22,8 +22,8 @@ it('can wait for the deploy server to complete deployment', function () {
     $this->deployServer->awaitMessage('=> deploy completed');
 })->throwsNoExceptions();
 
-it('has correct deployed file ownerships', function () {
-    // TODO
+it('has correct file ownerships', function () {
+    $this->fileOwnerShipTest();
 });
 
 it('can access the website on the running system', function () {

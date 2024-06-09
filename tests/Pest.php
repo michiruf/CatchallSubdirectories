@@ -11,6 +11,7 @@
 |
 */
 
+use Pest\Exceptions\InvalidExpectationValue;
 use PHPUnit\Framework\Assert;
 
 uses(
@@ -29,9 +30,13 @@ uses(
 |
 */
 
-expect()->extend('toContainWithMessage', function ($actual, $message = '') {
+expect()->extend('toContainWithMessage', function ($needle, $message = '') {
     // Unfortunately, we cannot pass a message to pest's toContain method
-    Assert::assertStringContainsString($actual, $this->value, $message);
+    if (is_string($this->value)) {
+        Assert::assertStringContainsString((string) $needle, $this->value);
+    } else {
+        Assert::assertContains($needle, $this->value, $message);
+    }
 });
 
 /*

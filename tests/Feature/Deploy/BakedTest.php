@@ -21,6 +21,10 @@ it('can start the deploy server', function () {
     $this->startDeployServer();
 });
 
+it('has correct file ownerships', function () {
+    $this->fileOwnerShipTest();
+});
+
 it('can access the website on the running system', function () {
     $this->websiteAccessTest();
 });

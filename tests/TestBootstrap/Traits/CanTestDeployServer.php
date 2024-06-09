@@ -34,6 +34,17 @@ trait CanTestDeployServer
         expect($this->deployServer->log())->toBe('');
     }
 
+    public function fileOwnerShipTest(): void
+    {
+        // Normal-Command: find "$APPLICATION_PATH" -exec ls -ld {} + | awk '{print $3}' | sort | uniq -c
+        // SH-Command: sh -c 'find "$APPLICATION_PATH" -exec ls -ld {} + | awk '\''{print $3}'\'' | sort | uniq -c'
+        // Note that '\'' is an escaped ' in shell, but we then need to escape for php too:
+        $cmd = $this->deployServer->exec('sh -c \'find "$APPLICATION_PATH" -exec ls -ld {} + | awk \'\\\'\'{print $3}\'\\\'\' | sort | uniq -c\'');
+        expect($cmd)
+            ->exitCode()->toBe(0, $this->formatError($cmd))
+            ->output()->not->toContainWithMessage('root', 'Some files are owned by root');
+    }
+
     public function websiteAccessTest(): void
     {
         expect(Http::get('http://localhost:8080'))
@@ -79,12 +90,8 @@ trait CanTestDeployServer
             ->toHaveCount(1);
     }
 
-    public function formatError(string $command, string|ProcessResult $output): string
+    public function formatError(ProcessResult $process): string
     {
-        if ($output instanceof ProcessResult) {
-            $output = $output->output();
-        }
-
-        return "Error running:\n$command\nWith output:\n$output}";
+        return "Error running:\n{$process->command()}\nWith output:\n{$process->output()}";
     }
 }

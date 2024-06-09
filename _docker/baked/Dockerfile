@@ -17,12 +17,13 @@ RUN set -x && \
     git clean -f -d -x --dry-run && \
     composer install --no-progress
 
-COPY --chmod=644 laravel-deploy.entrypoint.sh /opt/docker/provision/entrypoint.d/11-laravel-deploy.sh
+COPY --chmod=644 laravel-baked.entrypoint.sh /opt/docker/provision/entrypoint.d/11-laravel-baked.sh
 
 # Set the default deploy commands and their separator
 ENV DEPLOY_COMMAND_SEPARATOR=;
 ENV DEPLOY_COMMANDS \
-env:update ; \
-artisan:storage:link ; \
-artisan:optimize ; \
-artisan:migrate --force
+  env:update ; \
+  artisan:storage:link ; \
+  artisan:optimize ; \
+  artisan:migrate --force ; \
+  permissions:fix
