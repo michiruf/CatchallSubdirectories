@@ -1,0 +1,80 @@
+name: Publish Docker Images
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_call: # Make this workflow callable from other workflows
+  workflow_dispatch: # Make this workflow runnable on github
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  # TODO Enable this later
+  #test:
+  #  uses: ./.github/workflows/run-tests.yml
+  #analysis:
+  #  uses: ./.github/workflows/analysis.yml
+  build-base:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    ## We do need to depend on these tests, since the baked variant must be tested
+    ## If these images get separated to a different repo at some point, the
+    ## Baked variant will still remain in this repo and still must be tested
+    #needs:
+    #  - test
+    #  - analysis
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Publish Base Image
+        uses: ./.github/workflows/publish-docker-image
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          image: ${{ github.repository_owner }}/laravel
+          tag: base
+          build-context: _docker
+          do-attestation: false # TODO Remove
+
+  build-variants:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    needs:
+      - build-base
+    strategy:
+      matrix:
+        variant:
+          - name: autopull
+            image-scope: laravel
+          - name: baked
+            image-scope: catchall-subdirectories
+          - name: deployer
+            image-scope: laravel
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Publish Image Variant '${{ matrix.variant.name }}'
+        uses: ./.github/workflows/publish-docker-image
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          image: ${{ github.repository_owner }}/${{ matrix.variant.image-scope }}
+          tag: ${{ matrix.variant.name }}
+          build-context: _docker/${{ matrix.variant.name }}
+          additional-contexts: |
+            src_root=../..
+          do-attestation: false # TODO Remove

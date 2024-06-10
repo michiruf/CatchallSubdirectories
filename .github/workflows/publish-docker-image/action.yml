@@ -1,0 +1,74 @@
+name: Publish Docker Image
+description: Build, Tag & Publish a Docker Image
+
+inputs:
+  registry:
+    description: Registry URL
+    required: true
+  username:
+    description: Registry username
+    required: true
+  password:
+    description: Registry password
+    required: true
+  image:
+    description: Name of the image
+    required: true
+  tag:
+    description: Tag name of the image
+    required: true
+  # version # TODO?
+  build-context:
+    description: Build context path
+    default: .
+    required: false
+  additional-contexts:
+    description: Addition build contexts, newline separated 'context_name=path' values
+    required: false
+  do-attestation:
+    description: Whether artifact attestation should be done
+    default: 'true'
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Authenticate with Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ inputs.registry }}
+        username: ${{ inputs.username }}
+        password: ${{ inputs.password }}
+
+    - name: Extract Docker Metadata
+      id: metadata
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ inputs.registry }}/${{ inputs.image }}
+        tags: |
+          type=semver,prefix=${{ inputs.tag }}-,pattern={{version}}
+          type=semver,prefix=${{ inputs.tag }}-,pattern={{major}}.{{minor}}
+          type=semver,prefix=${{ inputs.tag }}-,pattern={{major}}
+          type=sha,prefix=${{ inputs.tag }}-
+        flavor: |
+          latest=auto
+          prefix=${{ inputs.tag }}-
+
+    - name: Build & Push Docker Image
+      id: push
+      uses: docker/build-push-action@v5
+      with:
+        context: ${{ inputs.build-context }}
+        build-contexts: ${{ inputs.additional-contexts }}
+        push: true
+        tags: ${{ steps.metadata.outputs.tags }}
+        labels: ${{ steps.metadata.outputs.labels }}
+        annotations: ${{ steps.metadata.outputs.annotations }}
+
+    - name: Generate Artifact Attestation
+      if: ${{ inputs.do-attestation == 'true' }}
+      uses: actions/attest-build-provenance@v1
+      with:
+        subject-name: ${{ inputs.registry }}/${{ inputs.image }}
+        subject-digest: ${{ steps.push.outputs.digest }}
+        push-to-registry: true
