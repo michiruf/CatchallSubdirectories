@@ -52,7 +52,7 @@ runs:
           type=sha,prefix=${{ inputs.tag }}-
         flavor: |
           latest=auto
-          prefix=${{ inputs.tag }}-
+          prefix=${{ inputs.tag }}-,onlatest=true
 
     - name: Build & Push Docker Image
       id: push

@@ -66,6 +66,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Alias Base Image Tag
+        run: |
+          docker image tag ${{ github.repository_owner }}/laravel:base-latest base
+        #  docker pull ${{ github.repository_owner }}/laravel:base-latest
+
       - name: Publish Image Variant '${{ matrix.variant.name }}'
         uses: ./.github/workflows/publish-docker-image
         with:
