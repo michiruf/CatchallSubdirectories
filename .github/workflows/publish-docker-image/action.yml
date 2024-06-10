@@ -17,7 +17,6 @@ inputs:
   tag:
     description: Tag name of the image
     required: true
-  # version # TODO?
   build-context:
     description: Build context path
     default: .
@@ -27,7 +26,7 @@ inputs:
     required: false
   do-attestation:
     description: Whether artifact attestation should be done
-    default: 'true'
+    default: 'false' # TODO Change back to 'true'
     required: false
 
 runs:

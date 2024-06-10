@@ -42,7 +42,6 @@ jobs:
           image: ${{ github.repository_owner }}/laravel
           tag: base
           build-context: _docker
-          do-attestation: false # TODO Remove
 
   build-variants:
     runs-on: ubuntu-latest
@@ -81,5 +80,4 @@ jobs:
           tag: ${{ matrix.variant.name }}
           build-context: _docker/${{ matrix.variant.name }}
           additional-contexts: |
-            src_root=../..
-          do-attestation: false # TODO Remove
+            src_root=.
