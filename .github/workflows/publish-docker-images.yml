@@ -68,6 +68,7 @@ jobs:
 
       - name: Alias Base Image Tag
         run: |
+          docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/laravel:base-latest
           docker image tag ${{ env.REGISTRY }}/${{ github.repository_owner }}/laravel:base-latest base
 
       - name: Publish Image Variant '${{ matrix.variant.name }}'
