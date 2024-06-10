@@ -1,8 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Http;
-use PHPUnit\Framework\ExpectationFailedException;
-use Tests\TestBootstrap\TestDeployServer;
 use Tests\TestBootstrap\Traits\CanTestDeployServer;
 
 uses(CanTestDeployServer::class);

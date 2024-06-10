@@ -45,5 +45,4 @@ trait CanTestSmtpServer
 
         return $connection;
     }
-
 }
