@@ -48,22 +48,22 @@ runs:
           type=semver,pattern={{version}}
           type=semver,pattern={{major}}.{{minor}}
           type=semver,pattern={{major}}
-          type=sha,format=short
+          type=sha
         flavor: |
           latest=true
           prefix=${{ inputs.tag }}-,onlatest=true
 
-#    - name: Build & Push Docker Image
-#      id: push
-#      uses: docker/build-push-action@v5
-#      with:
-#        context: ${{ inputs.build-context }}
-#        build-contexts: ${{ inputs.additional-contexts }}
-#        push: true
-#        tags: ${{ steps.metadata.outputs.tags }}
-#        labels: ${{ steps.metadata.outputs.labels }}
-#        annotations: ${{ steps.metadata.outputs.annotations }}
-#
+    - name: Build & Push Docker Image
+      id: push
+      uses: docker/build-push-action@v5
+      with:
+        context: ${{ inputs.build-context }}
+        build-contexts: ${{ inputs.additional-contexts }}
+        push: true
+        tags: ${{ steps.metadata.outputs.tags }}
+        labels: ${{ steps.metadata.outputs.labels }}
+        annotations: ${{ steps.metadata.outputs.annotations }}
+
 #    - name: Generate Artifact Attestation
 #      if: ${{ inputs.do-attestation == 'true' }}
 #      uses: actions/attest-build-provenance@v1
