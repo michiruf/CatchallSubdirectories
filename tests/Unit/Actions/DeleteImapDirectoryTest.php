@@ -2,6 +2,9 @@
 
 use App\Actions\DeleteImapDirectory;
 use Ddeboer\Imap\MessageInterface;
+use Tests\TestBootstrap\Traits\CanTestSmtpServer;
+
+uses(CanTestSmtpServer::class);
 
 beforeEach(function () {
     $this->startTestSmtp();
@@ -12,7 +15,7 @@ afterEach(function () {
 });
 
 it('can delete directories', function () {
-    $connection = establishImapTestConnection();
+    $connection = $this->establishImapTestConnection();
     $directoryName = 'INBOX.foo';
 
     $connection->createMailbox($directoryName);
@@ -29,7 +32,7 @@ it('can delete directories', function () {
 });
 
 it('cannot delete non-empty directories', function () {
-    $connection = establishImapTestConnection();
+    $connection = $this->establishImapTestConnection();
     $this->server->createTestMails();
     $directoryName = 'INBOX.foo';
 
@@ -47,7 +50,7 @@ it('cannot delete non-empty directories', function () {
 })->throws(RuntimeException::class, 'Cannot delete non empty directory \'INBOX.foo\'.');
 
 it('can delete empty directories by force', function () {
-    $connection = establishImapTestConnection();
+    $connection = $this->establishImapTestConnection();
     $this->server->createTestMails();
     $directoryName = 'INBOX.foo';
 

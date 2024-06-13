@@ -36,6 +36,7 @@ tasks:
     - deploy:prepare
     - deploy:vendors
     - artisan:down
+    - env:update
     - artisan:storage:link
     - artisan:optimize
     - artisan:migrate
@@ -47,6 +48,9 @@ tasks:
     - artisan:schedule:interrupt
     - artisan:schedule:kill
     - artisan:queue:restart
+  env:update:
+    - run: /opt/docker/bin/service.d/laravel-dotenv.sh
+    - desc: Apply the environment variables to laravels .env
   artisan:schedule:interrupt:
     # 'schedule:interrupt' only interrupts 'schedule:run' commands, but not 'schedule:work'
     - run: /opt/docker/bin/service.d/laravel-artisan.sh schedule:interrupt

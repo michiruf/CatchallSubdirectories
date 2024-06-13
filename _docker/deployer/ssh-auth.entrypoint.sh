@@ -1,5 +1,7 @@
-#!/usr/bin/env bash
-# shellcheck shell=bash
+#!/usr/bin/env sh
+# shellcheck shell=sh
+set -e
+. /opt/docker/etc/print.sh
 
 # Configure SSH https://stackoverflow.com/a/49018871 (but slightly changed)
 sed -i 's/#\?\(PermitRootLogin\)\s*.*$/\1 no/' /etc/ssh/sshd_config
@@ -18,6 +20,7 @@ if [ "$USE_PUBLIC_KEY" = true ]; then
     usermod -p "$pass" "$APPLICATION_USER"
 else
     # See https://stackoverflow.com/a/75669312
+    # shellcheck disable=SC2039 # disable 'echo flags unsupported'
     echo -e "$SSH_PASSWORD\n$SSH_PASSWORD" | passwd "$APPLICATION_USER"
 fi
 usermod -U "$APPLICATION_USER"
@@ -31,5 +34,5 @@ if [ ! -d "$dir/.ssh" ]; then
     chmod go-w "$dir"
     chmod 700 "$dir/.ssh"
     chmod 600 "$dir/.ssh/authorized_keys"
-    echo "SSH auth set up successfully"
+    p '> ssh auth set up successfully' 'cyan'
 fi

@@ -14,10 +14,9 @@ abstract class TestServer
 
     public string $path;
 
-    public array $processEnv;
-
     public function __construct(
-        protected readonly int $timeoutSeconds = 60
+        public int $timeoutSeconds = 60,
+        public array $processEnv = [],
     ) {
     }
 
@@ -58,17 +57,20 @@ abstract class TestServer
         return $this;
     }
 
-    public function run(string $command): ProcessResult
+    public function run(string $command, bool $throwOnError = true): ProcessResult
     {
-        $process = Process::command($command)
-            ->path($this->path ?? base_path())
+        $process = Process::path($this->path ?? base_path())
             ->env($this->processEnv ?? [])
             ->timeout($this->timeoutSeconds)
-            ->run();
+            ->run($command);
 
-        if ($process->exitCode() !== 0) {
-            Log::error($process->output());
-            throw new RuntimeException($process->errorOutput());
+        if ($throwOnError && $process->exitCode() !== 0) {
+            $errorOutput = $process->errorOutput();
+            if (Str::length($errorOutput) == 0) {
+                $errorOutput = $process->output();
+            }
+            Log::error($errorOutput);
+            throw new RuntimeException($errorOutput);
         }
 
         return $process;

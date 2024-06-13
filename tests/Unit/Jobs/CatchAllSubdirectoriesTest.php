@@ -1,6 +1,9 @@
 <?php
 
 use App\Jobs\CatchAllSubdirectories;
+use Tests\TestBootstrap\Traits\CanTestSmtpServer;
+
+uses(CanTestSmtpServer::class);
 
 beforeEach(function () {
     $this->startTestSmtp();
@@ -12,7 +15,7 @@ afterEach(function () {
 
 it('can create catch all mail subdirectories', function () {
     $this->server->createTestMails();
-    $connection = establishImapTestConnection(true);
+    $connection = $this->establishImapTestConnection(true);
 
     // Expect inbox has mails
     expect($connection->getMailbox('INBOX')->getMessages()->count())->toBeGreaterThan(0);

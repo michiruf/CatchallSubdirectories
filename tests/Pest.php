@@ -11,10 +11,10 @@
 |
 */
 
-use Ddeboer\Imap\ConnectionInterface;
+use PHPUnit\Framework\Assert;
 
 uses(
-    Tests\TestCase::class,
+    Illuminate\Foundation\Testing\TestCase::class,
     Illuminate\Foundation\Testing\RefreshDatabase::class,
 )->in(__DIR__);
 
@@ -29,8 +29,13 @@ uses(
 |
 */
 
-expect()->extend('toBeOne', function () {
-    return $this->toBe(1);
+expect()->extend('toContainWithMessage', function ($needle, $message = '') {
+    // Unfortunately, we cannot pass a message to pest's toContain method
+    if (is_string($this->value)) {
+        Assert::assertStringContainsString((string) $needle, $this->value);
+    } else {
+        Assert::assertContains($needle, $this->value, $message);
+    }
 });
 
 /*
@@ -43,22 +48,3 @@ expect()->extend('toBeOne', function () {
 | global functions to help you to reduce the number of lines of code in your test files.
 |
 */
-
-function establishImapTestConnection(bool $bindAgain = false): ConnectionInterface
-{
-    $connection = app(ConnectionInterface::class, [
-        'hostname' => 'localhost',
-        'port' => 40993,
-        'username' => 'debug@local',
-        'password' => 'debug',
-        'validateCert' => false,
-    ]);
-
-    // May bind again to not depend on the parameters
-    // Ensure that the connection gets closed manually in that case, since __destruct will not get called
-    if ($bindAgain) {
-        app()->bind(ConnectionInterface::class, fn () => $connection);
-    }
-
-    return $connection;
-}

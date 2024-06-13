@@ -2,6 +2,9 @@
 
 use App\Console\Commands\PrintDirectorySummaryCommand;
 use Symfony\Component\Console\Command\Command;
+use Tests\TestBootstrap\Traits\CanTestSmtpServer;
+
+uses(CanTestSmtpServer::class);
 
 beforeEach(function () {
     $this->startTestSmtp();
@@ -13,7 +16,7 @@ afterEach(function () {
 
 it('can invoke command app:print-directory-summary', function () {
     $this->server->createTestMails();
-    $connection = establishImapTestConnection(true);
+    $connection = $this->establishImapTestConnection(true);
 
     $this->artisan('app:print-directory-summary')
         ->expectsOutput('Drafts -> 0')
