@@ -66,7 +66,7 @@ jobs:
       - name: Prepare App for Tests
         uses: ./.github/workflows/prepare-app
 
-      - name: Install sshpass for Tests
+      - name: Install sshpass for Tests for Variant 'deployer'
         if: ${{ matrix.variant.name == 'deployer' }}
         run: sudo apt-get install sshpass
 
