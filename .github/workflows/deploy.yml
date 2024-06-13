@@ -11,18 +11,24 @@ concurrency: deploy
 jobs:
   test:
     uses: ./.github/workflows/run-tests.yml
-  analysis:
-    uses: ./.github/workflows/analysis.yml
   deploy:
     environment: production
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs:
       - test
-      - analysis
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Install sshpass for Tests
+        run: sudo apt-get install sshpass
+
+      - name: Prepare App for Tests
+        uses: ./.github/workflows/prepare-app
+
+      - name: Run Deployer Tests
+        run: php artisan test --group=deployer -v
 
       - name: Deploy
         uses: deployphp/action@v1
