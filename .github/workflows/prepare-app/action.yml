@@ -14,7 +14,7 @@ runs:
       with:
         php-version: '8.3'
         extensions: imap
-        coverage: ${{ inputs.coverage == 'true' && 'pcov' || 'none' } }}
+        coverage: ${{ inputs.coverage == 'true' && 'pcov' || 'none' }}
 
     - name: Install Dependencies
       uses: ramsey/composer-install@v3
