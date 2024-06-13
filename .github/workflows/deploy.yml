@@ -3,6 +3,8 @@ on:
   push:
     tags:
       - '*'
+    branches:
+      - restructure-ci-tests
   workflow_call: # Make this workflow callable from other workflows
   workflow_dispatch: # Make this workflow runnable on github
 
