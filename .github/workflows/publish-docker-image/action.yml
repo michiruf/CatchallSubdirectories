@@ -25,8 +25,8 @@ inputs:
     description: Addition build contexts, newline separated 'context_name=path' values
     required: false
   do-attestation:
-    description: Whether artifact attestation should be done
-    default: 'true'
+    description: Whether artifact attestation should be done. This creates additional artifacts on the github package
+    default: 'false'
     required: false
 
 runs:
@@ -64,10 +64,10 @@ runs:
         labels: ${{ steps.metadata.outputs.labels }}
         annotations: ${{ steps.metadata.outputs.annotations }}
 
-#    - name: Generate Artifact Attestation
-#      if: ${{ inputs.do-attestation == 'true' }}
-#      uses: actions/attest-build-provenance@v1
-#      with:
-#        subject-name: ${{ inputs.registry }}/${{ inputs.image }}
-#        subject-digest: ${{ steps.push.outputs.digest }}
-#        push-to-registry: true
+    - name: Generate Artifact Attestation
+      if: ${{ inputs.do-attestation == 'true' }}
+      uses: actions/attest-build-provenance@v1
+      with:
+        subject-name: ${{ inputs.registry }}/${{ inputs.image }}
+        subject-digest: ${{ steps.push.outputs.digest }}
+        push-to-registry: true
