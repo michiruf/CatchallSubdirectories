@@ -90,6 +90,18 @@ trait CanTestDeployServer
             ->toHaveCount(1);
     }
 
+    public function pulseAccessTest(): void
+    {
+        $response = Http::get('http://localhost:8080/pulse?ok');
+        expect($response)
+            ->status()
+            ->toBeGreaterThanOrEqual(200)
+            ->toBeLessThan(400)
+            ->and(collect($response->cookies()->toArray()))
+            ->where(fn (array $data) => $data['Name'] == 'viewPulse')
+            ->toHaveCount(1);
+    }
+
     public function formatError(ProcessResult $process): string
     {
         return "Error running:\n{$process->command()}\nWith output:\n{$process->output()}";

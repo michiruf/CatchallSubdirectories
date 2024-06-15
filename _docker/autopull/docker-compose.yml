@@ -42,7 +42,8 @@ services:
           artisan:horizon:terminate ;
           artisan:schedule:interrupt ;
           "kill $(ps aux | grep '[a]rtisan schedule:work' | awk '{print $1}')" ;
-          artisan:queue:restart
+          artisan:queue:restart ;
+          artisan:pulse:restart
 
       # Laravel env (prefixed with 'LARAVEL_')
       - LARAVEL_APP_ENV=production

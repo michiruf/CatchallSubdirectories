@@ -31,6 +31,7 @@ COPY --chmod=755 laravel-dotenv.service.sh /opt/docker/bin/service.d/laravel-dot
 COPY --chmod=755 laravel-artisan.service.sh /opt/docker/bin/service.d/laravel-artisan.sh
 COPY --chmod=644 laravel-horizon.supervisor.conf /opt/docker/etc/supervisor.d/laravel-horizon.conf
 COPY --chmod=644 laravel-schedule-worker.supervisor.conf /opt/docker/etc/supervisor.d/laravel-schedule-worker.conf
+COPY --chmod=644 laravel-pulse.supervisor.conf /opt/docker/etc/supervisor.d/laravel-pulse.conf
 
 # Patch the web document root from webdevops container for laravels structure
 ENV WEB_DOCUMENT_ROOT=${APPLICATION_PATH}/public
