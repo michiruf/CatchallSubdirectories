@@ -20,28 +20,19 @@ class HorizonServiceProvider extends HorizonApplicationServiceProvider
         // Horizon::routeSlackNotificationsTo('slack-webhook-url', '#channel');
     }
 
-    protected function authorization(): void
-    {
-        $this->gate();
-
-        Horizon::auth(function (Request $request) {
-            $access = $request->has('ok')
-                || $request->cookie('viewHorizon', 'false') === 'true'
-                || Gate::check('viewHorizon', [$request->user()])
-                || app()->environment('local');
-
-            if ($access) {
-                Cookie::queue('viewHorizon', 'true', 7 * 24 * 60);
-            }
-
-            return $access;
-        });
-    }
-
     protected function gate(): void
     {
-        Gate::define('viewHorizon', function (User $user) {
-            return in_array($user->email, [
+        Gate::define('viewHorizon', function (?User $user) {
+            /** @var Request $request */
+            $request = request();
+            $access = $request->has('ok') || $request->cookie('viewHorizon', 'false') === 'true';
+            if ($access) {
+                Cookie::queue('viewHorizon', 'true', 7 * 24 * 60);
+
+                return true;
+            }
+
+            return $user && in_array($user->email, [
                 //
             ]);
         });
