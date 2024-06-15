@@ -38,6 +38,10 @@ it('can access horizon on the running system', function () {
     $this->horizonAccessTest();
 });
 
+it('can access pulse on the running system', function () {
+    $this->pulseAccessTest();
+});
+
 it('can stop the deploy server', function () {
     $this->stopDeployServer();
 });

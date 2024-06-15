@@ -48,6 +48,7 @@ tasks:
     - artisan:schedule:interrupt
     - artisan:schedule:kill
     - artisan:queue:restart
+    - artisan:pulse:restart
   env:update:
     - run: /opt/docker/bin/service.d/laravel-dotenv.sh
     - desc: Apply the environment variables to laravels .env
@@ -63,6 +64,9 @@ tasks:
     # The brackets are there to disable grep self matching
     - run: kill $(ps aux | grep '[a]rtisan schedule:work' | awk '{print $1}')
     - desc: Kill the laravel schedule worker
+  artisan:pulse:restart:
+    - run: /opt/docker/bin/service.d/laravel-artisan.sh pulse:restart
+    - desc: Interrupt the laravel pulse worker
 
   #npm:run:prod
   #  script:
