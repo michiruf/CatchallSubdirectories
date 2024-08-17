@@ -20,7 +20,6 @@ services:
       additional_contexts:
         src_root: ../..
     ports:
-      - '8022:22'
       - '8080:80'
       - '8443:443'
     # https://dockerfile.readthedocs.io/en/latest/content/DockerImages/dockerfiles/php-nginx.html#environment-variables
