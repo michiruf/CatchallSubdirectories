@@ -19,8 +19,7 @@ class LazyInitializedConnection implements ConnectionInterface
         private readonly ?string $username = null,
         private readonly ?string $password = null,
         private readonly ?bool $validateCert = null
-    ) {
-    }
+    ) {}
 
     protected function ensureConnected(): void
     {

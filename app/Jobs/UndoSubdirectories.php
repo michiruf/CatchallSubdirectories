@@ -32,8 +32,7 @@ class UndoSubdirectories implements ShouldQueue
         private readonly string $prefix = 'INBOX.',
         private readonly string $target = 'INBOX',
         private readonly bool $forceDelete = false,
-    ) {
-    }
+    ) {}
 
     public function handle(ConnectionInterface $connection): static
     {

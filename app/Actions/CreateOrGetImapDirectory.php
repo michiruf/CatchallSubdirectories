@@ -14,8 +14,7 @@ class CreateOrGetImapDirectory
         private readonly string $directory,
         private readonly ?string $inboxName = null,
         private readonly bool $subscribe = false
-    ) {
-    }
+    ) {}
 
     public function execute(): MailboxInterface
     {

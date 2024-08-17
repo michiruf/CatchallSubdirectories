@@ -17,8 +17,7 @@ abstract class TestServer
     public function __construct(
         public int $timeoutSeconds = 60,
         public array $processEnv = [],
-    ) {
-    }
+    ) {}
 
     abstract public function start(): static;
 

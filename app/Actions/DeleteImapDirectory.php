@@ -14,8 +14,7 @@ class DeleteImapDirectory
         private readonly string|MailboxInterface $directory,
         private readonly bool $noExpunge = false,
         private readonly bool $forceDelete = false,
-    ) {
-    }
+    ) {}
 
     public function execute(): void
     {

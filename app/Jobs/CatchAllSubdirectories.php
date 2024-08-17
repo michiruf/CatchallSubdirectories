@@ -27,8 +27,7 @@ class CatchAllSubdirectories implements ShouldQueue
 
     public function __construct(
         private readonly ?string $mailDomain = null
-    ) {
-    }
+    ) {}
 
     public function handle(ConnectionInterface $connection): static
     {

@@ -13,8 +13,7 @@ class ReadImapDirectoryMails
     public function __construct(
         private readonly ConnectionInterface $connection,
         private readonly ?string $inboxName = null
-    ) {
-    }
+    ) {}
 
     /**
      * @return Collection<int, MessageInterface>
