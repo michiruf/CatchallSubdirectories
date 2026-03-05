@@ -28,7 +28,7 @@ class MonitorMetricsCommand extends Command
         );
 
         // TODO How could we report the existing directories?
-        //collect($connection->getMailboxes())
+        // collect($connection->getMailboxes())
         //    ->sortKeys()
         //    ->each(fn (MailboxInterface $directory) => $this->line("{$directory->getName()} -> {$directory->count()}"));
 

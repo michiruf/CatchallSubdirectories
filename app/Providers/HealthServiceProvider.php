@@ -39,7 +39,7 @@ class HealthServiceProvider extends ServiceProvider
             ScheduleCheck::new()
                 ->heartbeatMaxAgeInMinutes(2),
             QueueCheck::new()
-                //->onQueue([...])
+                // ->onQueue([...])
                 ->failWhenHealthJobTakesLongerThanMinutes(5),
             RedisCheck::new(),
             RedisMemoryUsageCheck::new(),
