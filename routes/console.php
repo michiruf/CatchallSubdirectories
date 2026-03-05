@@ -24,3 +24,4 @@ Schedule::command('horizon:snapshot')->everyFiveMinutes()->sentryMonitor();
 Schedule::command(ScheduleCheckHeartbeatCommand::class)->everyMinute()->sentryMonitor();
 Schedule::command(DispatchQueueCheckJobsCommand::class)->everyMinute()->sentryMonitor();
 Schedule::command(RunHealthChecksCommand::class)->everyMinute()->sentryMonitor();
+Schedule::command('model:prune', ['--model' => [HealthCheckResultHistoryItem::class]])->daily();
