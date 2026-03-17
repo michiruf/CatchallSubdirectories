@@ -13,13 +13,14 @@ RUN set -x \
       make \
       autoconf \
       g++ \
-  && pecl install excimer \
-  && apk del -f --purge \
+  && (pecl install excimer || true) \
+  && (apk del -f --purge \
       autoconf \
       linux-headers \
       g++ \
       make \
-  && docker-php-ext-enable excimer \
+      || true) \
+  && (docker-php-ext-enable excimer || true) \
   && docker-run-bootstrap \
   && docker-image-cleanup
 
