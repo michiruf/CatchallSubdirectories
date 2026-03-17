@@ -18,6 +18,7 @@ use Spatie\Health\Checks\Checks\RedisMemoryUsageCheck;
 use Spatie\Health\Checks\Checks\ScheduleCheck;
 use Spatie\Health\Checks\Checks\UsedDiskSpaceCheck;
 use Spatie\Health\Facades\Health;
+use Spatie\SecurityAdvisories\SecurityAdvisoriesCheck;
 
 class HealthServiceProvider extends ServiceProvider
 {
@@ -43,6 +44,7 @@ class HealthServiceProvider extends ServiceProvider
                 ->failWhenHealthJobTakesLongerThanMinutes(5),
             RedisCheck::new(),
             RedisMemoryUsageCheck::new(),
+            SecurityAdvisoriesCheck::new(),
         ]);
     }
 }
