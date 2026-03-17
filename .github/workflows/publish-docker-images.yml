@@ -24,7 +24,7 @@ jobs:
       - test
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Publish Base Image
         uses: ./.github/workflows/publish-docker-image
@@ -59,7 +59,7 @@ jobs:
             additional-contexts:
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Prepare App for Tests
         uses: ./.github/workflows/prepare-app
