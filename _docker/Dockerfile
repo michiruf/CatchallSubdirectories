@@ -1,28 +1,35 @@
-FROM webdevops/php-nginx:8.3-alpine
+FROM webdevops/php-nginx:8.4-alpine
 
 # Patch fastcgi to use the realpath_root instead of the document_root, so we do not need to reload fpm
 # See https://deployer.org/docs/7.x/avoid-php-fpm-reloading
 RUN set -x \
     && sed -i 's|fastcgi_param.\+SCRIPT_FILENAME.\+\$request_filename\;|fastcgi_param SCRIPT_FILENAME \$realpath_root\$fastcgi_script_name;|' /opt/docker/etc/nginx/vhost.common.d/10-php.conf
 
-# Add excimer php extension for profiling with sentry.io
-# This needs autoconf which is installed like here: https://github.com/webdevops/Dockerfile/blob/master/docker/php-dev/8.3-alpine/Dockerfile#L17
+# Add imap php extension (removed from PHP core in 8.4, needed by ddeboer/imap)
+# and excimer php extension for profiling with sentry.io
+# Build deps are installed once and cleaned up after both extensions are built
 RUN set -x \
   && apk-install \
       linux-headers \
       make \
       autoconf \
       g++ \
-  && (pecl install excimer || true) \
-  && (apk del -f --purge \
+      imap-dev \
+      openssl-dev \
+      krb5-dev \
+  && pecl install imap \
+  && docker-php-ext-enable imap \
+  && (pecl install excimer && docker-php-ext-enable excimer || true) \
+  && apk del -f --purge \
       autoconf \
       linux-headers \
       g++ \
       make \
-      || true) \
-  && (docker-php-ext-enable excimer || true) \
+      imap-dev \
+      openssl-dev \
+      krb5-dev \
   && docker-run-bootstrap \
-  && docker-image-cleanup
+  && (docker-image-cleanup || true)
 
 # Add configs and scripts
 COPY --chmod=755 print.sh /opt/docker/etc/print.sh
