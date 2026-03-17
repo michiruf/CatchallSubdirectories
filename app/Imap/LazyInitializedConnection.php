@@ -125,6 +125,12 @@ class LazyInitializedConnection implements ConnectionInterface
         $this->connection->deleteMailbox($mailbox);
     }
 
+    public function subscribeMailbox(string $name): void
+    {
+        $this->ensureConnected();
+        $this->connection->subscribeMailbox($name);
+    }
+
     public function count(): int
     {
         $this->ensureConnected();
