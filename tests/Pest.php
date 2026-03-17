@@ -11,11 +11,13 @@
 |
 */
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\TestCase;
 use PHPUnit\Framework\Assert;
 
 uses(
-    Illuminate\Foundation\Testing\TestCase::class,
-    Illuminate\Foundation\Testing\RefreshDatabase::class,
+    TestCase::class,
+    RefreshDatabase::class,
 )->in(__DIR__);
 
 /*

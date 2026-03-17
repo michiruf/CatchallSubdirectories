@@ -1,10 +1,17 @@
 <?php
 
+use App\Providers\AppServiceProvider;
+use App\Providers\Filament\AdminPanelProvider;
+use App\Providers\HealthServiceProvider;
+use App\Providers\HorizonServiceProvider;
+use App\Providers\PulseAuthorizationServiceProvider;
+use App\Providers\TelescopeServiceProvider;
+
 return [
-    App\Providers\AppServiceProvider::class,
-    App\Providers\Filament\AdminPanelProvider::class,
-    App\Providers\HealthServiceProvider::class,
-    App\Providers\HorizonServiceProvider::class,
-    App\Providers\PulseAuthorizationServiceProvider::class,
-    App\Providers\TelescopeServiceProvider::class,
+    AppServiceProvider::class,
+    AdminPanelProvider::class,
+    HealthServiceProvider::class,
+    HorizonServiceProvider::class,
+    PulseAuthorizationServiceProvider::class,
+    TelescopeServiceProvider::class,
 ];
