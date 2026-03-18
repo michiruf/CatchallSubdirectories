@@ -54,19 +54,12 @@ jobs:
           - name: baked
             image-scope: catchall-subdirectories
             additional-contexts: src_root=.
-          - name: deployer
-            image-scope: laravel
-            additional-contexts:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
 
       - name: Prepare App for Tests
         uses: ./.github/workflows/prepare-app
-
-      - name: Install sshpass for Tests for Variant 'deployer'
-        if: ${{ matrix.variant.name == 'deployer' }}
-        run: sudo apt-get install sshpass
 
       - name: Run Tests for Variant '${{ matrix.variant.name }}'
         run: php artisan test --group=${{ matrix.variant.name }} -v
