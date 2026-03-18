@@ -16,10 +16,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // Force usage of https when loading vite resources on a production or staging server
+        // Force usage of https when loading vite resources on a production or staging server by default if not configured
         $isProduction = config('app.env') === 'production';
         $isStaging = config('app.env') === 'staging' || str(config('app.url'))->contains('staging');
-        if ($isProduction || $isStaging) {
+        if (config('app.force_https', $isProduction || $isStaging)) {
             URL::forceScheme('https');
 
             // Set that the request was made via https, because else signatures cannot get validated

@@ -19,6 +19,7 @@ services:
       context: .
       additional_contexts:
         src_root: ../..
+        base: service:base
     ports:
       - '8080:80'
       - '8443:443'
@@ -34,6 +35,7 @@ services:
       - LARAVEL_DB_DATABASE=${MYSQL_DATABASE}
       - LARAVEL_DB_USERNAME=${MYSQL_USER}
       - LARAVEL_DB_PASSWORD=${MYSQL_PASSWORD}
+      - LARAVEL_APP_FORCE_HTTPS=false
     volumes:
       - 'app-data:/app/'
       # Persist host keys:
