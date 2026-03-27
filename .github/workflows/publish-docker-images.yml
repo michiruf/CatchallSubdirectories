@@ -59,7 +59,11 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Prepare App for Tests
-        uses: ./.github/workflows/prepare-app
+        uses: michiruf/laravel-ci/prepare-app@main
+        with:
+          coverage: ${{ inputs.coverage == 'true' && 'pcov' || 'none' }}
+          php-version: '8.4'
+          php-additional-extensions: 'imap'
 
       - name: Run Tests for Variant '${{ matrix.variant.name }}'
         run: php artisan test --group=${{ matrix.variant.name }} -v
