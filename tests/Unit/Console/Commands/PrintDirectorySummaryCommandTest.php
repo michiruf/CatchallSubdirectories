@@ -21,19 +21,8 @@ it('can invoke command app:print-directory-summary', function () {
     $connection = $this->establishImapTestConnection(true);
 
     // Debug: diagnose CI failure
-    dump('Mail storage:', trim(shell_exec('docker exec local find / -path /proc -prune -o -path /sys -prune -o -name "cur" -print -o -name "new" -print 2>/dev/null')));
-    dump('Dovecot mail location:', trim(shell_exec('docker exec local doveconf mail_location 2>&1')));
-
-    // Test the resolved connection directly
-    $resolved = app(ConnectionInterface::class);
-    dump('Resolved class:', get_class($resolved));
-    dump('Ping:', $resolved->ping());
-    $mailboxes = $resolved->getMailboxes();
-    dump('Mailbox count:', count($mailboxes));
-    dump('Mailbox names:', array_map(fn ($m) => $m->getName(), $mailboxes));
-    dump('Mailbox keys:', array_keys($mailboxes));
-
-    Artisan::call('app:print-directory-summary');
+    $exitCode = Artisan::call('app:print-directory-summary');
+    dump('Exit code:', $exitCode);
     dump('Command output:', Artisan::output());
 
     $this->artisan('app:print-directory-summary')

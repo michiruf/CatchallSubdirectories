@@ -16,7 +16,13 @@ class PrintDirectorySummaryCommand extends Command
 
     public function handle(ConnectionInterface $connection): int
     {
-        collect($connection->getMailboxes())
+        // TODO: Remove debug
+        dump('Command handle - connection class:', get_class($connection));
+        $mailboxes = $connection->getMailboxes();
+        dump('Command handle - mailbox count:', count($mailboxes));
+        dump('Command handle - mailbox keys:', array_keys($mailboxes));
+
+        collect($mailboxes)
             ->sortKeys()
             ->each(fn (MailboxInterface $directory) => $this->line("{$directory->getName()} -> {$directory->count()}"));
 
