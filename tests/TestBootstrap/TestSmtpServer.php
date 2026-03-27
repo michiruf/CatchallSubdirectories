@@ -4,6 +4,9 @@ namespace Tests\TestBootstrap;
 
 use Exception;
 use Illuminate\Support\Str;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
+use Symfony\Component\Mime\Email;
 
 /**
  * @see https://github.com/antespi/docker-imap-devel
@@ -65,9 +68,27 @@ class TestSmtpServer extends TestServer
         return $this->run("docker logs $this->containerName")->output();
     }
 
-    public function createTestMails(): static
+    public function createTestMails(string $hostname = 'localhost', $port = 40025): static
     {
-        TestMails::sendTestMails($this->containerName, 'debug@local', 'debug');
+        $transport = new EsmtpTransport($hostname, $port);
+        $transport->setAutoTls(false);
+        $mailer = new Mailer($transport);
+
+        $mailer->send(
+            (new Email)
+                ->from('foo@foo.local')
+                ->to('debug@local')
+                ->subject('Test Email')
+                ->text('Hello World!')
+        );
+
+        $mailer->send(
+            (new Email)
+                ->from('bar@bar.local')
+                ->to('another@local')
+                ->subject('Test Email')
+                ->text('Hello World!')
+        );
 
         return $this;
     }
