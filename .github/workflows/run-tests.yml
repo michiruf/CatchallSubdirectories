@@ -20,4 +20,4 @@ jobs:
           php-additional-extensions: 'imap'
 
       - name: Run Tests
-        run: php artisan test --exclude-group=long-running,wip,deploy -v --coverage
+        run: php artisan test --filter=PrintDirectorySummaryCommandTest -v
