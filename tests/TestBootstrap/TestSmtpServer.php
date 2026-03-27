@@ -68,7 +68,7 @@ class TestSmtpServer extends TestServer
         return $this->run("docker logs $this->containerName")->output();
     }
 
-    public function createTestMails(string $hostname = 'localhost', $port = 40025): static
+    public function createTestMails(string $hostname = 'localhost', int $port = 40025): static
     {
         $transport = new EsmtpTransport($hostname, $port);
         $transport->setAutoTls(false);
