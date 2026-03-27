@@ -17,10 +17,10 @@ class PrintDirectorySummaryCommand extends Command
     public function handle(ConnectionInterface $connection): int
     {
         // TODO: Remove debug
-        dump('Command handle - connection class:', get_class($connection));
+        $this->line('DEBUG: handle called, connection: '.get_class($connection));
         $mailboxes = $connection->getMailboxes();
-        dump('Command handle - mailbox count:', count($mailboxes));
-        dump('Command handle - mailbox keys:', array_keys($mailboxes));
+        $this->line('DEBUG: mailbox count: '.count($mailboxes));
+        $this->line('DEBUG: keys: '.implode(', ', array_keys($mailboxes)));
 
         collect($mailboxes)
             ->sortKeys()
