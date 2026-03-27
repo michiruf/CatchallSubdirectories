@@ -9,12 +9,12 @@ use Symfony\Component\Console\Attribute\AsCommand;
 
 use function Sentry\metrics;
 
-#[AsCommand(name: 'app:print-directory-summary')]
+#[AsCommand(name: 'app:monitor-metrics')]
 class MonitorMetricsCommand extends Command
 {
-    protected $description = 'Print a summary of directories';
+    protected $description = 'Monitor metrics';
 
-    protected $signature = 'app:print-directory-summary';
+    protected $signature = 'app:monitor-metrics';
 
     public function handle(ConnectionInterface $connection): int
     {
