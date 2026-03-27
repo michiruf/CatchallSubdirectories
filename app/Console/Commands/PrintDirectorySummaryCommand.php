@@ -16,13 +16,9 @@ class PrintDirectorySummaryCommand extends Command
 
     public function handle(ConnectionInterface $connection): int
     {
-        // TODO: Remove debug
-        $this->line('DEBUG: handle called, connection: '.get_class($connection));
-        $mailboxes = $connection->getMailboxes();
-        $this->line('DEBUG: mailbox count: '.count($mailboxes));
-        $this->line('DEBUG: keys: '.implode(', ', array_keys($mailboxes)));
+        dd($connection);
 
-        collect($mailboxes)
+        collect($connection->getMailboxes())
             ->sortKeys()
             ->each(fn (MailboxInterface $directory) => $this->line("{$directory->getName()} -> {$directory->count()}"));
 

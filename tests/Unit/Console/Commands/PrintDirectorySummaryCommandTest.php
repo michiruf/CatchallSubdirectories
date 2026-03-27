@@ -20,11 +20,6 @@ it('can invoke command app:print-directory-summary', function () {
     $this->server->createTestMails();
     $connection = $this->establishImapTestConnection(true);
 
-    // Debug: diagnose CI failure
-    $exitCode = Artisan::call('app:print-directory-summary');
-    dump('Exit code:', $exitCode);
-    dump('Command output:', Artisan::output());
-
     $this->artisan('app:print-directory-summary')
         ->expectsOutput('Drafts -> 0')
         ->expectsOutput('INBOX -> 2')
