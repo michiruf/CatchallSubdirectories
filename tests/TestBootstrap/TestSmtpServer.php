@@ -90,6 +90,8 @@ class TestSmtpServer extends TestServer
                 ->text('Hello World!')
         );
 
+        $this->awaitMessage('saved mail to INBOX');
+
         return $this;
     }
 }
