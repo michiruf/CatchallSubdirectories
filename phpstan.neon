@@ -9,7 +9,6 @@ parameters:
 
     checkOctaneCompatibility: true
     checkModelProperties: true
-    checkMissingIterableValueType: false
 
 #    ignoreErrors:
 #        - '#PHPDoc tag @var#'
