@@ -1,6 +1,7 @@
 <?php
 
 use App\Jobs\CatchAllSubdirectories;
+use App\Models\Alias;
 use Tests\TestBootstrap\Traits\CanTestSmtpServer;
 
 uses(CanTestSmtpServer::class);
@@ -35,5 +36,25 @@ it('can create catch all mail subdirectories', function () {
 
     $ping = $connection->ping();
     expect($ping)->toBeTrue();
+    $connection->close();
+})->covers(CatchAllSubdirectories::class);
+
+it('redirects mail to aliased directory', function () {
+    Alias::create([
+        'source_prefix' => 'debug',
+        'destination_prefix' => 'redirected',
+    ]);
+
+    $this->server->createTestMails();
+    $connection = $this->establishImapTestConnection(true);
+
+    CatchAllSubdirectories::dispatch(
+        mailDomain: 'local',
+    );
+
+    expect($connection->getMailbox('INBOX')->count())->toBe(0, 'Inbox should be empty after sorting')
+        ->and($connection->getMailbox('INBOX.Redirected')->count())->toBeGreaterThan(0, 'Aliased folder "Redirected" should have entries')
+        ->and($connection->getMailbox('INBOX.Another')->count())->toBeGreaterThan(0, 'Folder "Another" should still have entries');
+
     $connection->close();
 })->covers(CatchAllSubdirectories::class);
