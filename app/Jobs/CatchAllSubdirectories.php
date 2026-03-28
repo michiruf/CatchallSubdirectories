@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Actions\CreateOrGetImapDirectory;
 use App\Actions\ReadImapDirectoryMails;
+use App\Models\Alias;
 use Ddeboer\Imap\ConnectionInterface;
 use Ddeboer\Imap\Message\EmailAddress;
 use Ddeboer\Imap\MessageInterface;
@@ -60,10 +61,14 @@ class CatchAllSubdirectories implements ShouldQueue
                 return;
             }
 
-            $directoryName = Str::of($relevantReceiver->getAddress())
+            $prefix = Str::of($relevantReceiver->getAddress())
                 ->before('@')
-                ->title()
+                ->lower()
                 ->toString();
+
+            $alias = Alias::where('source_prefix', $prefix)->first();
+
+            $directoryName = Str::title($alias?->destination_prefix ?? $prefix);
 
             $directory = app(CreateOrGetImapDirectory::class, [
                 'connection' => $this->smtpConnection,
