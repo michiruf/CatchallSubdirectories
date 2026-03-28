@@ -10,4 +10,7 @@ return [
     'inbox_name' => env('CATCHALL_INBOX_NAME', 'INBOX'),
     'mail_domain' => env('CATCHALL_MAIL_DOMAIN', 'example.com'),
 
+    'single_user_mode' => env('SINGLE_USER_MODE', true),
+    'single_user_password' => env('SINGLE_USER_PASSWORD', 'password'),
+
 ];

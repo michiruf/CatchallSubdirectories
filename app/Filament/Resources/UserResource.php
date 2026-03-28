@@ -19,6 +19,16 @@ class UserResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return ! config('catchall.single_user_mode');
+    }
+
+    public static function canAccess(): bool
+    {
+        return ! config('catchall.single_user_mode');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([

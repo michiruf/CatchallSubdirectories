@@ -2,10 +2,12 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Auth\SingleUserLogin;
 use App\Filament\Widgets\AppEnvironmentWidget;
 use App\Filament\Widgets\HorizonOverviewWidget;
 use App\Filament\Widgets\SmtpOverviewWidget;
 use App\Filament\Widgets\UserCountWidget;
+use Filament\Auth\Pages\Login;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -32,7 +34,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->login()
+            ->login(config('catchall.single_user_mode') ? SingleUserLogin::class : Login::class)
             ->maxContentWidth(Width::Full)
             ->colors([
                 'primary' => Color::Amber,
