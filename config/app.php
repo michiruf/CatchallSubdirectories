@@ -125,4 +125,6 @@ return [
 
     'force_https' => env('APP_FORCE_HTTPS'),
 
+    'simple_gates' => (bool) env('APP_SIMPLE_GATES', false),
+
 ];

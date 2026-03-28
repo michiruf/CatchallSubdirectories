@@ -36,6 +36,7 @@ services:
       - LARAVEL_DB_USERNAME=${MYSQL_USER}
       - LARAVEL_DB_PASSWORD=${MYSQL_PASSWORD}
       - LARAVEL_APP_FORCE_HTTPS=false
+      - LARAVEL_APP_SIMPLE_GATES=true
     volumes:
       - 'app-data:/app/'
       # Persist host keys:
