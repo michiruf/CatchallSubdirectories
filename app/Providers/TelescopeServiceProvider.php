@@ -3,8 +3,6 @@
 namespace App\Providers;
 
 use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Telescope\IncomingEntry;
 use Laravel\Telescope\Telescope;
@@ -48,18 +46,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
     protected function gate(): void
     {
         Gate::define('viewTelescope', function (?User $user) {
-            /** @var Request $request */
-            $request = request();
-            $access = $request->has('ok') || $request->cookie('viewTelescope', 'false') === 'true';
-            if ($access) {
-                Cookie::queue('viewTelescope', 'true', 7 * 24 * 60);
-
-                return true;
-            }
-
-            return $user && in_array($user->email, [
-                //
-            ]);
+            return $user !== null;
         });
     }
 }
