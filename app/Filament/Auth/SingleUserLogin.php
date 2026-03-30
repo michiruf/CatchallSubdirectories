@@ -11,10 +11,9 @@ use SensitiveParameter;
 
 class SingleUserLogin extends Login
 {
-    public function mount(): void
+    public function boot(): void
     {
         $this->injectSingleUserProvider();
-        parent::mount();
     }
 
     public function form(Schema $schema): Schema
