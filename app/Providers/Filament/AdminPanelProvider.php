@@ -34,7 +34,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->login(config('catchall.single_user_mode') ? SingleUserLogin::class : Login::class)
+            ->login(config('app.single_user_mode') ? SingleUserLogin::class : Login::class)
             ->maxContentWidth(Width::Full)
             ->colors([
                 'primary' => Color::Amber,

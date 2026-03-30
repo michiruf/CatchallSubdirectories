@@ -4,6 +4,13 @@ use App\Filament\Auth\SingleUserLogin;
 use App\Models\User;
 use Livewire\Livewire;
 
+beforeEach(function () {
+    config([
+        'app.single_user_mode' => true,
+        'app.single_user_password' => 'password',
+    ]);
+});
+
 it('can render the single user login page', function () {
     $this->get('/admin/login')
         ->assertOk();
@@ -14,7 +21,7 @@ it('creates a user on first login and authenticates with env password', function
 
     Livewire::test(SingleUserLogin::class)
         ->fillForm([
-            'password' => config('catchall.single_user_password'),
+            'password' => config('app.single_user_password'),
             'remember' => false,
         ])
         ->call('authenticate')

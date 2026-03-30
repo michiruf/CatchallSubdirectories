@@ -24,7 +24,7 @@ class SingleUserProvider extends EloquentUserProvider
 
     public function validateCredentials(UserContract $user, #[SensitiveParameter] array $credentials): bool
     {
-        return hash_equals(config('catchall.single_user_password'), $credentials['password']);
+        return hash_equals(config('app.single_user_password'), $credentials['password']);
     }
 
     public function rehashPasswordIfRequired(UserContract $user, #[SensitiveParameter] array $credentials, bool $force = false)
