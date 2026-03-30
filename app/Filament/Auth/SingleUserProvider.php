@@ -6,7 +6,6 @@ use App\Models\User;
 use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Contracts\Auth\Authenticatable as UserContract;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use SensitiveParameter;
 
@@ -16,10 +15,13 @@ class SingleUserProvider extends EloquentUserProvider
 
     public function retrieveByCredentials(#[SensitiveParameter] array $credentials): User|(Model&UserContract)|null
     {
-        return User::updateOrCreate(
+        /** @var User $user */
+        $user = User::updateOrCreate(
             ['email' => SingleUserProvider::EMAIL],
-            ['name' => 'App', 'password' => Str::password()],
+            ['name' => 'App', 'password' => Str::password(256)],
         );
+
+        return $user;
     }
 
     public function validateCredentials(UserContract $user, #[SensitiveParameter] array $credentials): bool
