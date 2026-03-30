@@ -124,7 +124,8 @@ return [
     ],
 
     'force_https' => env('APP_FORCE_HTTPS'),
-
     'simple_gates' => (bool) env('APP_SIMPLE_GATES', false),
+    'single_user_mode' => env('APP_SINGLE_USER_MODE', false),
+    'single_user_password' => env('APP_SINGLE_USER_PASSWORD'),
 
 ];
