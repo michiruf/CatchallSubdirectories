@@ -9,12 +9,8 @@ it('can render the single user login page', function () {
         ->assertOk();
 });
 
-it('creates a user on first visit and authenticates with env password', function () {
+it('creates a user on first login and authenticates with env password', function () {
     expect(User::count())->toBe(0);
-
-    $this->get('/admin/login');
-
-    expect(User::count())->toBe(1);
 
     Livewire::test(SingleUserLogin::class)
         ->fillForm([
@@ -24,7 +20,26 @@ it('creates a user on first visit and authenticates with env password', function
         ->call('authenticate')
         ->assertHasNoFormErrors();
 
+    expect()
+        ->and(User::count())->toBe(1)
+        ->and(User::first()->email)->toBe('single-user@localhost');
+
     $this->assertAuthenticated();
+});
+
+it('rate limits after too many attempts', function () {
+    for ($i = 0; $i < 5; $i++) {
+        Livewire::test(SingleUserLogin::class)
+            ->fillForm(['password' => 'wrong-password', 'remember' => false])
+            ->call('authenticate');
+    }
+
+    Livewire::test(SingleUserLogin::class)
+        ->fillForm(['password' => 'wrong-password', 'remember' => false])
+        ->call('authenticate')
+        ->assertNotified();
+
+    $this->assertGuest();
 });
 
 it('rejects wrong password', function () {

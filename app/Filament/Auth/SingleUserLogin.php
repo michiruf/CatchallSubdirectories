@@ -2,11 +2,10 @@
 
 namespace App\Filament\Auth;
 
-use App\Models\User;
 use Filament\Auth\Pages\Login;
-use Filament\Schemas\Components\Component;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use SensitiveParameter;
 
@@ -14,24 +13,18 @@ class SingleUserLogin extends Login
 {
     public function mount(): void
     {
-        $this->ensureSingleUserExists();
-
+        $this->injectSingleUserProvider();
         parent::mount();
     }
 
     public function form(Schema $schema): Schema
     {
-        return $schema
-            ->components([
-                $this->getPasswordFormComponent(),
-                $this->getRememberFormComponent(),
-            ]);
-    }
+        $passwordComponent = $this->getPasswordFormComponent();
 
-    protected function getPasswordFormComponent(): Component
-    {
-        return parent::getPasswordFormComponent()
-            ->autofocus();
+        return $schema->components([
+            ($passwordComponent instanceof TextInput) ? $passwordComponent->autofocus() : $passwordComponent,
+            $this->getRememberFormComponent(),
+        ]);
     }
 
     /**
@@ -40,10 +33,8 @@ class SingleUserLogin extends Login
      */
     protected function getCredentialsFromFormData(#[SensitiveParameter] array $data): array
     {
-        $user = User::first();
-
         return [
-            'email' => $user->email,
+            'email' => SingleUserProvider::EMAIL,
             'password' => $data['password'],
         ];
     }
@@ -55,23 +46,9 @@ class SingleUserLogin extends Login
         ]);
     }
 
-    private function ensureSingleUserExists(): void
+    private function injectSingleUserProvider(): void
     {
-        $password = config('catchall.single_user_password');
-        $user = User::first();
-
-        if (! $user) {
-            User::create([
-                'name' => 'Admin',
-                'email' => 'admin@localhost',
-                'password' => $password,
-            ]);
-
-            return;
-        }
-
-        if (! Hash::check($password, $user->password)) {
-            $user->update(['password' => $password]);
-        }
+        $guard = Filament::auth();
+        $guard->setProvider(new SingleUserProvider($guard->getProvider()->getHasher(), $guard->getProvider()->getModel()));
     }
 }
