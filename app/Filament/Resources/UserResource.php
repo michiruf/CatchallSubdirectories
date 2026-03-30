@@ -21,12 +21,12 @@ class UserResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        return ! config('catchall.single_user_mode');
+        return ! config('app.single_user_mode');
     }
 
     public static function canAccess(): bool
     {
-        return ! config('catchall.single_user_mode');
+        return ! config('app.single_user_mode');
     }
 
     public static function form(Schema $schema): Schema

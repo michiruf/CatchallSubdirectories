@@ -3,7 +3,7 @@
 use App\Models\User;
 
 beforeEach(function () {
-    config()->set('catchall.single_user_mode', false);
+    config()->set('app.single_user_mode', false);
 });
 
 it('can render the user list page', function () {
@@ -27,7 +27,7 @@ it('can render the user edit page', function () {
 });
 
 it('is hidden in single user mode', function () {
-    config()->set('catchall.single_user_mode', true);
+    config()->set('app.single_user_mode', true);
 
     $this->actingAs(User::factory()->create())
         ->get('/admin/users')
