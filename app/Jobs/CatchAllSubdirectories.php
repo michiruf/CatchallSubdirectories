@@ -68,7 +68,7 @@ class CatchAllSubdirectories implements ShouldQueue
 
             $alias = Alias::where('source_prefix', $prefix)->first();
 
-            $directoryName = Str::title($alias?->destination_prefix ?? $prefix);
+            $directoryName = Str::title($alias?->destination_prefix ?: $prefix);
 
             $directory = app(CreateOrGetImapDirectory::class, [
                 'connection' => $this->smtpConnection,

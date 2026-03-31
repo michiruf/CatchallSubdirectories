@@ -6,6 +6,8 @@ use Filament\Auth\Pages\Login;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
+use Illuminate\Auth\EloquentUserProvider;
+use Illuminate\Auth\SessionGuard;
 use Illuminate\Validation\ValidationException;
 use SensitiveParameter;
 
@@ -47,7 +49,10 @@ class SingleUserLogin extends Login
 
     private function injectSingleUserProvider(): void
     {
+        /** @var SessionGuard $guard */
         $guard = Filament::auth();
-        $guard->setProvider(new SingleUserProvider($guard->getProvider()->getHasher(), $guard->getProvider()->getModel()));
+        /** @var EloquentUserProvider $provider */
+        $provider = $guard->getProvider();
+        $guard->setProvider(new SingleUserProvider($provider->getHasher(), $provider->getModel()));
     }
 }
