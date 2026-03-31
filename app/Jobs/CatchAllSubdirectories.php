@@ -50,12 +50,10 @@ class CatchAllSubdirectories implements ShouldQueue
 
     private function createSubdirectoriesAndMoveMails(): static
     {
-        $mailDomain = $this->settings->mailDomain();
-
-        $this->mails->each(function (MessageInterface $mail) use ($mailDomain) {
+        $this->mails->each(function (MessageInterface $mail) {
             /** @var ?EmailAddress $relevantReceiver */
             $relevantReceiver = collect($mail->getTo())
-                ->first(fn (EmailAddress $address) => Str::lower($address->getHostname()) === $mailDomain);
+                ->first(fn (EmailAddress $address) => Str::lower($address->getHostname()) === $this->settings->mailDomain());
 
             if ($relevantReceiver === null) {
                 return;
