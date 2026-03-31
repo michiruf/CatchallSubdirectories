@@ -29,7 +29,7 @@ class LazyInitializedConnection implements ConnectionInterface
     {
         $server = new Server(
             $this->settings->hostname(),
-            $this->settings->port(),
+            (string) $this->settings->port(),
             $this->settings->validateCert()
                 ? '/imap/ssl/validate-cert'
                 : '/imap/ssl/novalidate-cert'
