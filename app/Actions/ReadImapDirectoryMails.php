@@ -21,6 +21,9 @@ readonly class ReadImapDirectoryMails
      */
     public function execute(): Collection
     {
-        return collect($this->connection->getMailbox($this->settings->inboxName()));
+        $mailbox = $this->connection->getMailbox($this->settings->inboxName());
+
+        /** @phpstan-ignore return.type */
+        return collect($mailbox->getMessages());
     }
 }
