@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use App\Filament\Auth\SingleUserLogin;
 use App\Filament\Pages\Dashboard;
 use App\Filament\Widgets\AppEnvironmentWidget;
+use App\Filament\Widgets\CatchAllStatusWidget;
 use App\Filament\Widgets\HorizonOverviewWidget;
 use App\Filament\Widgets\SmtpOverviewWidget;
 use App\Filament\Widgets\UserCountWidget;
@@ -69,6 +70,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
+                CatchAllStatusWidget::class,
                 SmtpOverviewWidget::class,
                 HorizonOverviewWidget::class,
                 UserCountWidget::class,
