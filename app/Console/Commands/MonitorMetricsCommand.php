@@ -7,7 +7,7 @@ use Ddeboer\Imap\MailboxInterface;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Attribute\AsCommand;
 
-use function Sentry\metrics;
+use function Sentry\traceMetrics;
 
 #[AsCommand(name: 'app:monitor-metrics')]
 class MonitorMetricsCommand extends Command
@@ -22,7 +22,7 @@ class MonitorMetricsCommand extends Command
             ->filter(fn (MailboxInterface $directory) => str($directory->getName())->startsWith('INBOX'))
             ->count();
 
-        metrics()->gauge(
+        traceMetrics()->gauge(
             'imap_directories',
             $directoryCount,
         );
