@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Settings\CatchAllSettings;
 use Ddeboer\Imap\ConnectionInterface;
 use Ddeboer\Imap\MessageInterface;
 use Illuminate\Support\Collection;
@@ -11,8 +12,8 @@ use function collect;
 class ReadImapDirectoryMails
 {
     public function __construct(
+        private readonly CatchAllSettings $settings,
         private readonly ConnectionInterface $connection,
-        private readonly ?string $inboxName = null
     ) {}
 
     /**
@@ -20,10 +21,6 @@ class ReadImapDirectoryMails
      */
     public function execute(): Collection
     {
-        $inboxName = $this->inboxName ?? config('catchall.inbox_name', 'INBOX');
-        $mailbox = $this->connection->getMailbox($inboxName);
-
-        /** @phpstan-ignore-next-line */
-        return collect($mailbox->getMessages());
+        return collect($this->connection->getMailbox($this->settings->inboxName()));
     }
 }

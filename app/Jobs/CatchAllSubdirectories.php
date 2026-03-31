@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Actions\CreateOrGetImapDirectory;
 use App\Actions\ReadImapDirectoryMails;
 use App\Models\Alias;
+use App\Settings\CatchAllSettings;
 use Ddeboer\Imap\ConnectionInterface;
 use Ddeboer\Imap\Message\EmailAddress;
 use Ddeboer\Imap\MessageInterface;
@@ -23,16 +24,15 @@ class CatchAllSubdirectories implements ShouldQueue
 
     private ConnectionInterface $smtpConnection;
 
+    private CatchAllSettings $settings;
+
     /** @var Collection<int, MessageInterface> */
     private Collection $mails;
 
-    public function __construct(
-        private readonly ?string $mailDomain = null
-    ) {}
-
-    public function handle(ConnectionInterface $connection): static
+    public function handle(ConnectionInterface $connection, CatchAllSettings $settings): static
     {
         $this->smtpConnection = $connection;
+        $this->settings = $settings;
 
         return $this
             ->fetchMails()
@@ -50,7 +50,7 @@ class CatchAllSubdirectories implements ShouldQueue
 
     private function createSubdirectoriesAndMoveMails(): static
     {
-        $mailDomain = $this->mailDomain ?? config('catchall.mail_domain');
+        $mailDomain = $this->settings->mailDomain();
 
         $this->mails->each(function (MessageInterface $mail) use ($mailDomain) {
             /** @var ?EmailAddress $relevantReceiver */
@@ -73,7 +73,6 @@ class CatchAllSubdirectories implements ShouldQueue
             $directory = app(CreateOrGetImapDirectory::class, [
                 'connection' => $this->smtpConnection,
                 'directory' => $directoryName,
-                'subscribe' => true,
             ])->execute();
 
             Log::info("Moving mail '{$mail->getSubject()}' sent to {$relevantReceiver->getAddress()} to directory $directoryName");

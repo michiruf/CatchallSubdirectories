@@ -22,9 +22,7 @@ it('can create catch all mail subdirectories', function () {
     expect($connection->getMailbox('INBOX')->getMessages()->count())->toBeGreaterThan(0);
 
     // Perform the subdirectory movement
-    CatchAllSubdirectories::dispatch(
-        mailDomain: 'local',
-    );
+    CatchAllSubdirectories::dispatch();
 
     // Expect inbox has no mails
     // And the specific folders do have mails
@@ -48,9 +46,7 @@ it('redirects mail to aliased directory', function () {
     $this->server->createTestMails();
     $connection = $this->establishImapTestConnection(true);
 
-    CatchAllSubdirectories::dispatch(
-        mailDomain: 'local',
-    );
+    CatchAllSubdirectories::dispatch();
 
     expect($connection->getMailbox('INBOX')->count())->toBe(0, 'Inbox should be empty after sorting')
         ->and($connection->getMailbox('INBOX.Redirected')->count())->toBeGreaterThan(0, 'Aliased folder "Redirected" should have entries')
