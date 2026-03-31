@@ -8,6 +8,7 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class UserCountWidget extends StatsOverviewWidget
 {
+    protected static ?int $sort = 4;
     protected ?string $heading = 'Users';
 
     protected function getStats(): array
