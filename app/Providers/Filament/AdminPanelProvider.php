@@ -37,7 +37,12 @@ class AdminPanelProvider extends PanelProvider
             ->login(config('app.single_user_mode') ? SingleUserLogin::class : Login::class)
             ->maxContentWidth(Width::Full)
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Lime,
+                'danger' => Color::Rose,
+                'gray' => Color::Slate,
+                'info' => Color::Cyan,
+                'success' => Color::Green,
+                'warning' => Color::Yellow,
             ])
             ->navigationItems([
                 NavigationItem::make('Health')
