@@ -23,6 +23,11 @@ class ManageCatchAllSettings extends SettingsPage
 
     protected static string|UnitEnum|null $navigationGroup = 'Settings';
 
+    private static function defaultHint(mixed $value): string
+    {
+        return $value ? 'Default: '.$value : 'Default not set';
+    }
+
     public function form(Schema $schema): Schema
     {
         return $schema
@@ -44,24 +49,25 @@ class ManageCatchAllSettings extends SettingsPage
                     ->schema([
                         TextInput::make('hostname')
                             ->label('Hostname')
-                            ->hint('Default: '.config('catchall.hostname')),
+                            ->hint(self::defaultHint(config('catchall.hostname'))),
                         TextInput::make('port')
                             ->label('Port')
                             ->numeric()
-                            ->hint('Default: '.config('catchall.port')),
+                            ->hint(self::defaultHint(config('catchall.port'))),
                         TextInput::make('username')
                             ->label('Username')
-                            ->hint('Default: '.config('catchall.username')),
+                            ->hint(self::defaultHint(config('catchall.username'))),
                         TextInput::make('password')
                             ->label('Password')
                             ->password()
-                            ->revealable(),
+                            ->revealable()
+                            ->hint(config('catchall.password') ? 'Default set in .env' : 'Default not set'),
                         TextInput::make('inbox_name')
                             ->label('Inbox Name')
-                            ->hint('Default: '.config('catchall.inbox_name')),
+                            ->hint(self::defaultHint(config('catchall.inbox_name'))),
                         TextInput::make('mail_domain')
                             ->label('Mail Domain')
-                            ->hint('Default: '.config('catchall.mail_domain')),
+                            ->hint(self::defaultHint(config('catchall.mail_domain'))),
                         Select::make('validate_cert')
                             ->label('Validate Certificate')
                             ->options([
@@ -69,7 +75,9 @@ class ManageCatchAllSettings extends SettingsPage
                                 false => 'No',
                             ])
                             ->placeholder('Use default')
-                            ->hint('Default: '.(config('catchall.validate_cert', true) ? 'Yes' : 'No')),
+                            ->hint(config('catchall.validate_cert') !== null
+                                ? 'Default: '.(config('catchall.validate_cert') ? 'Yes' : 'No')
+                                : 'Default not set'),
                     ]),
             ]);
     }
