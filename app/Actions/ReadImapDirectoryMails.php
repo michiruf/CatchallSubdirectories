@@ -9,11 +9,11 @@ use Illuminate\Support\Collection;
 
 use function collect;
 
-class ReadImapDirectoryMails
+readonly class ReadImapDirectoryMails
 {
     public function __construct(
-        private readonly CatchAllSettings $settings,
-        private readonly ConnectionInterface $connection,
+        private CatchAllSettings $settings,
+        private ConnectionInterface $connection,
     ) {}
 
     /**

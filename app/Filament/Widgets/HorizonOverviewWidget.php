@@ -9,6 +9,7 @@ use Laravel\Horizon\Contracts\MasterSupervisorRepository;
 class HorizonOverviewWidget extends StatsOverviewWidget
 {
     protected static ?int $sort = 3;
+
     protected ?string $heading = 'Horizon';
 
     protected function getStats(): array

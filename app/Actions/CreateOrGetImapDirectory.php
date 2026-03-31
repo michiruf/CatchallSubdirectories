@@ -8,12 +8,12 @@ use Ddeboer\Imap\MailboxInterface;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
-class CreateOrGetImapDirectory
+readonly class CreateOrGetImapDirectory
 {
     public function __construct(
-        private readonly CatchAllSettings $settings,
-        private readonly ConnectionInterface $connection,
-        private readonly string $directory,
+        private CatchAllSettings $settings,
+        private ConnectionInterface $connection,
+        private string $directory,
     ) {}
 
     public function execute(): MailboxInterface

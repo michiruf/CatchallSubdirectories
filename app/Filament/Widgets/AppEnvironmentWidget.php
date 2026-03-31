@@ -9,6 +9,7 @@ use Illuminate\Foundation\Application;
 class AppEnvironmentWidget extends StatsOverviewWidget
 {
     protected static ?int $sort = 2;
+
     protected ?string $heading = 'Application';
 
     protected function getStats(): array
