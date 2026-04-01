@@ -3,7 +3,7 @@
 [![Run Tests](https://github.com/michiruf/CatchallSubdirectories/actions/workflows/run-tests.yml/badge.svg)](https://github.com/michiruf/CatchallSubdirectories/actions/workflows/run-tests.yml)
 [![Publish Docker Images](https://github.com/michiruf/CatchallSubdirectories/actions/workflows/publish-docker-images.yml/badge.svg)](https://github.com/michiruf/CatchallSubdirectories/actions/workflows/publish-docker-images.yml)
 
-Automatically sort catch-all emails on an SMTP server into IMAP subdirectories.
+Automatically sort catch-all emails on a mail server into subdirectories.
 
 When a catch-all mailbox receives an email addressed to e.g. `newsletter@example.com`, the app extracts the `newsletter`
 prefix and moves the email into a matching IMAP folder (created on-demand). Aliases can optionally remap a prefix to a
