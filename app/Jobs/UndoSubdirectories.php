@@ -19,7 +19,7 @@ class UndoSubdirectories implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private ConnectionInterface $connection;
+    private ConnectionInterface $imapConnection;
 
     private MailboxInterface $targetMailbox;
 
@@ -36,7 +36,7 @@ class UndoSubdirectories implements ShouldQueue
 
     public function handle(ConnectionInterface $connection): static
     {
-        $this->connection = $connection;
+        $this->imapConnection = $connection;
 
         return $this
             ->findTargetMailbox()
@@ -47,14 +47,14 @@ class UndoSubdirectories implements ShouldQueue
 
     private function findTargetMailbox(): static
     {
-        $this->targetMailbox = $this->connection->getMailbox($this->target);
+        $this->targetMailbox = $this->imapConnection->getMailbox($this->target);
 
         return $this;
     }
 
     private function getRelevantMailboxes(): static
     {
-        $this->relevantMailboxes = collect($this->connection->getMailboxes())
+        $this->relevantMailboxes = collect($this->imapConnection->getMailboxes())
             ->filter(fn (MailboxInterface $directory) => Str::startsWith($directory->getName(), $this->prefix));
 
         return $this;
@@ -73,7 +73,7 @@ class UndoSubdirectories implements ShouldQueue
 
         // Finish the transaction by calling expunge
         // https://www.php.net/manual/de/function.imap-expunge.php
-        $this->connection->expunge();
+        $this->imapConnection->expunge();
         Log::info('Expunged transaction');
 
         return $this;
@@ -89,7 +89,7 @@ class UndoSubdirectories implements ShouldQueue
         $this->relevantMailboxes->each(function (MailboxInterface $directory) {
             Log::info("Deleting folder {$directory->getName()}");
             app(DeleteImapDirectory::class, [
-                'connection' => $this->connection,
+                'connection' => $this->imapConnection,
                 'directory' => $directory,
                 'noExpunge' => true,
                 'forceDelete' => $this->forceDelete,
@@ -98,7 +98,7 @@ class UndoSubdirectories implements ShouldQueue
 
         // Finish the transaction by calling expunge
         // https://www.php.net/manual/de/function.imap-expunge.php
-        $this->connection->expunge();
+        $this->imapConnection->expunge();
         Log::info('Expunged transaction');
 
         return $this;

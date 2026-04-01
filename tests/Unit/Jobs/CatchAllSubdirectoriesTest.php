@@ -2,16 +2,16 @@
 
 use App\Jobs\CatchAllSubdirectories;
 use App\Models\Alias;
-use Tests\TestBootstrap\Traits\CanTestSmtpServer;
+use Tests\TestBootstrap\Traits\CanTestMailServer;
 
-uses(CanTestSmtpServer::class);
+uses(CanTestMailServer::class);
 
 beforeEach(function () {
-    $this->startTestSmtp();
+    $this->startTestServer();
 });
 
 afterEach(function () {
-    $this->stopTestSmtp();
+    $this->stopTestServer();
 });
 
 it('can create catch all mail subdirectories', function () {

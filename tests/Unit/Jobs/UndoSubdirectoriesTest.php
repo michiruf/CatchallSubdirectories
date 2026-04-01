@@ -3,16 +3,16 @@
 use App\Jobs\UndoSubdirectories;
 use Ddeboer\Imap\MailboxInterface;
 use Ddeboer\Imap\MessageInterface;
-use Tests\TestBootstrap\Traits\CanTestSmtpServer;
+use Tests\TestBootstrap\Traits\CanTestMailServer;
 
-uses(CanTestSmtpServer::class);
+uses(CanTestMailServer::class);
 
 beforeEach(function () {
-    $this->startTestSmtp();
+    $this->startTestServer();
 });
 
 afterEach(function () {
-    $this->stopTestSmtp();
+    $this->stopTestServer();
 });
 
 it('can undo subdirectories', function () {

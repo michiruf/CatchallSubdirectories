@@ -1,16 +1,16 @@
 <?php
 
 use App\Actions\ReadImapDirectoryMails;
-use Tests\TestBootstrap\Traits\CanTestSmtpServer;
+use Tests\TestBootstrap\Traits\CanTestMailServer;
 
-uses(CanTestSmtpServer::class);
+uses(CanTestMailServer::class);
 
 beforeEach(function () {
-    $this->startTestSmtp();
+    $this->startTestServer();
 });
 
 afterEach(function () {
-    $this->stopTestSmtp();
+    $this->stopTestServer();
 });
 
 it('can read imap directory mails', function () {
@@ -22,7 +22,7 @@ it('can read imap directory mails', function () {
     ])->execute();
 
     expect($mails)
-        ->not->toBeEmpty('There are no test mails set up in the smtp server');
+        ->not->toBeEmpty('There are no test mails set up in the mail server');
 
     $ping = $connection->ping();
     expect($ping)->toBeTrue();

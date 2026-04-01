@@ -2,16 +2,16 @@
 
 use App\Console\Commands\PrintDirectorySummaryCommand;
 use Symfony\Component\Console\Command\Command;
-use Tests\TestBootstrap\Traits\CanTestSmtpServer;
+use Tests\TestBootstrap\Traits\CanTestMailServer;
 
-uses(CanTestSmtpServer::class);
+uses(CanTestMailServer::class);
 
 beforeEach(function () {
-    $this->startTestSmtp();
+    $this->startTestServer();
 });
 
 afterEach(function () {
-    $this->stopTestSmtp();
+    $this->stopTestServer();
 });
 
 it('can invoke command app:print-directory-summary', function () {

@@ -5,15 +5,15 @@ namespace Tests\TestBootstrap\Traits;
 use App\Settings\CatchAllSettings;
 use Ddeboer\Imap\ConnectionInterface;
 use Ddeboer\Imap\Server;
-use Tests\TestBootstrap\TestSmtpServer;
+use Tests\TestBootstrap\TestMailServer;
 
-trait CanTestSmtpServer
+trait CanTestMailServer
 {
-    protected TestSmtpServer $server;
+    protected TestMailServer $server;
 
-    public function startTestSmtp(string $mailDomain = 'local'): void
+    public function startTestServer(string $mailDomain = 'local'): void
     {
-        $this->server = (new TestSmtpServer(timeoutSeconds: 120))
+        $this->server = (new TestMailServer(timeoutSeconds: 120))
             ->start()
             ->awaitStart();
 
@@ -26,7 +26,7 @@ trait CanTestSmtpServer
         $settings->save();
     }
 
-    public function stopTestSmtp(): void
+    public function stopTestServer(): void
     {
         $this->server
             ->stop()

@@ -23,7 +23,7 @@ class CatchAllSubdirectories implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private ConnectionInterface $connection;
+    private ConnectionInterface $imapConnection;
 
     private CatchAllSettings $settings;
 
@@ -32,7 +32,7 @@ class CatchAllSubdirectories implements ShouldQueue
 
     public function handle(ConnectionInterface $connection, CatchAllSettings $settings): static
     {
-        $this->connection = $connection;
+        $this->imapConnection = $connection;
         $this->settings = $settings;
 
         return $this
@@ -44,7 +44,7 @@ class CatchAllSubdirectories implements ShouldQueue
     private function fetchMails(): static
     {
         $this->mails = app(ReadImapDirectoryMails::class, [
-            'connection' => $this->connection,
+            'connection' => $this->imapConnection,
         ])->execute();
 
         return $this;
@@ -71,7 +71,7 @@ class CatchAllSubdirectories implements ShouldQueue
             $directoryName = Str::title($alias?->destination_prefix ?: $prefix);
 
             $directory = app(CreateOrGetImapDirectory::class, [
-                'connection' => $this->connection,
+                'connection' => $this->imapConnection,
                 'directory' => $directoryName,
             ])->execute();
 
@@ -81,7 +81,7 @@ class CatchAllSubdirectories implements ShouldQueue
 
         // Finish the transaction by calling expunge
         // https://www.php.net/manual/de/function.imap-expunge.php
-        $this->connection->expunge();
+        $this->imapConnection->expunge();
 
         return $this;
     }

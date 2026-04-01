@@ -11,7 +11,7 @@ use Symfony\Component\Mime\Email;
 /**
  * @see https://github.com/antespi/docker-imap-devel
  */
-class TestSmtpServer extends TestServer
+class TestMailServer extends TestServer
 {
     public static ?string $startupMessage = 'SSL parameters regeneration completed';
 
