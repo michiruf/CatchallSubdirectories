@@ -2,6 +2,7 @@
 
 namespace App\Imap;
 
+use App\Settings\CatchAllSettings;
 use Ddeboer\Imap\ConnectionInterface;
 use Ddeboer\Imap\ImapResourceInterface;
 use Ddeboer\Imap\MailboxInterface;
@@ -14,11 +15,7 @@ class LazyInitializedConnection implements ConnectionInterface
     private bool $closed = false;
 
     public function __construct(
-        private readonly ?string $hostname = null,
-        private readonly ?int $port = null,
-        private readonly ?string $username = null,
-        private readonly ?string $password = null,
-        private readonly ?bool $validateCert = null
+        private readonly CatchAllSettings $settings,
     ) {}
 
     protected function ensureConnected(): void
@@ -31,16 +28,16 @@ class LazyInitializedConnection implements ConnectionInterface
     protected function establishConnection(): ConnectionInterface
     {
         $server = new Server(
-            $this->hostname ?? config('catchall.hostname'),
-            $this->port ?? config('catchall.port'),
-            ($this->validateCert ?? config('catchall.validate_cert', true))
+            $this->settings->hostname(),
+            (string) $this->settings->port(),
+            $this->settings->validateCert()
                 ? '/imap/ssl/validate-cert'
                 : '/imap/ssl/novalidate-cert'
         );
 
         return $server->authenticate(
-            $this->username ?? config('catchall.username'),
-            $this->password ?? config('catchall.password')
+            $this->settings->username(),
+            $this->settings->password()
         );
     }
 

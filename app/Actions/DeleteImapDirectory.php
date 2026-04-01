@@ -7,13 +7,13 @@ use Ddeboer\Imap\MailboxInterface;
 use Illuminate\Support\Str;
 use RuntimeException;
 
-class DeleteImapDirectory
+readonly class DeleteImapDirectory
 {
     public function __construct(
-        private readonly ConnectionInterface $connection,
-        private readonly string|MailboxInterface $directory,
-        private readonly bool $noExpunge = false,
-        private readonly bool $forceDelete = false,
+        private ConnectionInterface $connection,
+        private string|MailboxInterface $directory,
+        private bool $noExpunge = false,
+        private bool $forceDelete = false,
     ) {}
 
     public function execute(): void

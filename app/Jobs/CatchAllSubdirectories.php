@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Actions\CreateOrGetImapDirectory;
 use App\Actions\ReadImapDirectoryMails;
 use App\Models\Alias;
+use App\Settings\CatchAllSettings;
 use Ddeboer\Imap\ConnectionInterface;
 use Ddeboer\Imap\Message\EmailAddress;
 use Ddeboer\Imap\MessageInterface;
@@ -13,6 +14,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -23,20 +25,20 @@ class CatchAllSubdirectories implements ShouldQueue
 
     private ConnectionInterface $smtpConnection;
 
+    private CatchAllSettings $settings;
+
     /** @var Collection<int, MessageInterface> */
     private Collection $mails;
 
-    public function __construct(
-        private readonly ?string $mailDomain = null
-    ) {}
-
-    public function handle(ConnectionInterface $connection): static
+    public function handle(ConnectionInterface $connection, CatchAllSettings $settings): static
     {
         $this->smtpConnection = $connection;
+        $this->settings = $settings;
 
         return $this
             ->fetchMails()
-            ->createSubdirectoriesAndMoveMails();
+            ->createSubdirectoriesAndMoveMails()
+            ->updateLastRun();
     }
 
     private function fetchMails(): static
@@ -50,12 +52,10 @@ class CatchAllSubdirectories implements ShouldQueue
 
     private function createSubdirectoriesAndMoveMails(): static
     {
-        $mailDomain = $this->mailDomain ?? config('catchall.mail_domain');
-
-        $this->mails->each(function (MessageInterface $mail) use ($mailDomain) {
+        $this->mails->each(function (MessageInterface $mail) {
             /** @var ?EmailAddress $relevantReceiver */
             $relevantReceiver = collect($mail->getTo())
-                ->first(fn (EmailAddress $address) => Str::lower($address->getHostname()) === $mailDomain);
+                ->first(fn (EmailAddress $address) => Str::lower($address->getHostname()) === $this->settings->mailDomain());
 
             if ($relevantReceiver === null) {
                 return;
@@ -73,7 +73,6 @@ class CatchAllSubdirectories implements ShouldQueue
             $directory = app(CreateOrGetImapDirectory::class, [
                 'connection' => $this->smtpConnection,
                 'directory' => $directoryName,
-                'subscribe' => true,
             ])->execute();
 
             Log::info("Moving mail '{$mail->getSubject()}' sent to {$relevantReceiver->getAddress()} to directory $directoryName");
@@ -83,6 +82,14 @@ class CatchAllSubdirectories implements ShouldQueue
         // Finish the transaction by calling expunge
         // https://www.php.net/manual/de/function.imap-expunge.php
         $this->smtpConnection->expunge();
+
+        return $this;
+    }
+
+    private function updateLastRun(): static
+    {
+        $this->settings->last_run_at = Carbon::now()->toImmutable();
+        $this->settings->save();
 
         return $this;
     }

@@ -2,6 +2,7 @@
 
 use App\Console\Commands\CatchAllSubdirectoriesCommand;
 use App\Console\Commands\MonitorMetricsCommand;
+use App\Settings\CatchAllSettings;
 use Illuminate\Support\Facades\Schedule;
 use Spatie\Health\Commands\DispatchQueueCheckJobsCommand;
 use Spatie\Health\Commands\RunHealthChecksCommand;
@@ -11,6 +12,7 @@ use Spatie\Health\Commands\ScheduleCheckHeartbeatCommand;
 Schedule::command(CatchAllSubdirectoriesCommand::class)
     ->withoutOverlapping()
     ->everyFiveMinutes()
+    ->when(fn () => app(CatchAllSettings::class)->enabled)
     ->sentryMonitor();
 Schedule::command(MonitorMetricsCommand::class)
     ->withoutOverlapping()
