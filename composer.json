@@ -1,9 +1,10 @@
 {
     "name": "michiruf/catch-all-subdirectories",
     "type": "project",
-    "description": "Sort mails of an SMTP server into different subdirectories.",
+    "description": "Sort catch-all emails on a mail server automatically into subdirectories.",
     "keywords": [
-        "smtp",
+        "mail",
+        "imap",
         "catchall",
         "laravel"
     ],
