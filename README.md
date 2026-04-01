@@ -71,10 +71,9 @@ Laravel environment variables.
 ```yaml
 services:
   app:
-    container_name: catchall_app
     image: ghcr.io/michiruf/catchall-subdirectories:baked-latest
-    expose:
-      - '80'
+    ports:
+      - '8080:80'
     environment:
       # Laravel standard env
       - LARAVEL_APP_NAME=CatchAllSubdirectories
@@ -148,44 +147,31 @@ services:
       - LARAVEL_CATCHALL_VALIDATE_CERT=true
       - LARAVEL_CATCHALL_INBOX_NAME=INBOX
       - LARAVEL_CATCHALL_MAIL_DOMAIN=example.com
-    volumes:
-      - '/etc/timezone:/etc/timezone:ro'
-    links:
+    depends_on:
       - mysql
       - redis
-    networks:
-      - default
-      - ssl
-    tty: true
     restart: unless-stopped
 
   mysql:
-    container_name: catchall_mysql
-    image: mysql:5.7
+    image: mysql:8.0
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     volumes:
-      - '../DATA/mail-catchall-subdirectories/mysql/:/var/lib/mysql/'
-      - '/etc/timezone:/etc/timezone:ro'
-    tty: true
+      - mysql_data:/var/lib/mysql
     restart: unless-stopped
 
   redis:
-    container_name: catchall_redis
     image: redis:alpine
     volumes:
-      - '../DATA/mail-catchall-subdirectories/redis/:/data/'
-      - '/etc/timezone:/etc/timezone:ro'
-    # command: redis-server --save 20 1 --loglevel warning --requirepass $PASSWORD
-    tty: true
+      - redis_data:/data
     restart: unless-stopped
 
-networks:
-  ssl:
-    external: true
+volumes:
+  mysql_data:
+  redis_data:
 ```
 
 </details>
