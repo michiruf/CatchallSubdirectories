@@ -18,7 +18,8 @@ class SmtpOverviewWidget extends StatsOverviewWidget
 
         return [
             Stat::make('Sorting', $settings->enabled ? 'Active' : 'Inactive')
-                ->color($settings->enabled ? 'success' : 'danger'),
+                ->description($settings->enabled ? 'Schedule is running' : 'Schedule is paused')
+                ->descriptionColor($settings->enabled ? 'success' : 'danger'),
             Stat::make('Hostname', $settings->hostname()),
             Stat::make('Port', $settings->port()),
             Stat::make('Inbox', $settings->inboxName()),

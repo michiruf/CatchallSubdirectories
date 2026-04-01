@@ -19,14 +19,21 @@ class AppEnvironmentWidget extends StatsOverviewWidget
         $masters = app(MasterSupervisorRepository::class)->all();
         $isRunning = count($masters) > 0;
 
-        return [
+        $stats = [
             Stat::make('Environment', app()->environment()),
             Stat::make('PHP Version', PHP_VERSION),
             Stat::make('Laravel Version', Application::VERSION),
-            Stat::make('Users', User::count()),
-            Stat::make('Horizon', $isRunning ? 'Running' : 'Stopped')
-                ->color($isRunning ? 'success' : 'danger'),
-            Stat::make('Pending Jobs', app('queue')->size()),
         ];
+
+        if (! config('app.single_user_mode')) {
+            $stats[] = Stat::make('Users', User::count());
+        }
+
+        $stats[] = Stat::make('Horizon', $isRunning ? 'Running' : 'Stopped')
+                ->description($isRunning ? 'Workers are active' : 'No workers running')
+                ->descriptionColor($isRunning ? 'success' : 'danger');
+        $stats[] = Stat::make('Pending Jobs', app('queue')->size());
+
+        return $stats;
     }
 }
