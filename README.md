@@ -189,7 +189,15 @@ networks:
 
 Accessible at `/admin`. Provides:
 
+- Dashboard with system status, catchall overview, and on-demand sorting
 - Alias management (optionally remap a prefix to a different folder)
+- Catchall settings with overridable connection parameters
 - User management (or single-user mode)
 - Horizon queue dashboard
 - Pulse metrics and health checks
+
+![Dashboard](resources/docs/dashboard.png)
+
+![Aliases](resources/docs/aliases.png)
+
+![Catchall Settings](resources/docs/catchall-settings.png)
