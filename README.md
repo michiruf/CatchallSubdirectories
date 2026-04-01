@@ -66,7 +66,7 @@ stripped. For example, `LARAVEL_APP_DEBUG=false` becomes `APP_DEBUG=false`. This
 Laravel environment variables.
 
 <details>
-<summary>Example docker-compose.yml</summary>
+<summary>Example docker-compose.yml 🐋</summary>
 
 ```yaml
 services:
