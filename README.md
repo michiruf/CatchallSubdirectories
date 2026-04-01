@@ -17,6 +17,11 @@ different folder name. This keeps a single catch-all inbox organized without cre
 3. If an alias exists for that prefix, its destination name is used instead.
 4. The email is moved into the subdirectory (created on-demand).
 
+## Running the App
+
+This is a standard Laravel application. Deploy it however you normally run Laravel (PHP + MySQL + Redis). Pre-built
+Docker images are also available if you prefer a containerized setup. See the [Docker](#docker) section for details.
+
 ## Configuration
 
 Copy [`.env.example`](.env.example) and configure:
