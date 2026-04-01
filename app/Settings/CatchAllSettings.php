@@ -2,7 +2,9 @@
 
 namespace App\Settings;
 
+use Carbon\CarbonImmutable;
 use Spatie\LaravelSettings\Settings;
+use Spatie\LaravelSettings\SettingsCasts\DateTimeInterfaceCast;
 
 class CatchAllSettings extends Settings
 {
@@ -24,9 +26,18 @@ class CatchAllSettings extends Settings
 
     public bool $subscribe_new_folders;
 
+    public ?CarbonImmutable $last_run_at;
+
     public static function group(): string
     {
         return 'catchall';
+    }
+
+    public static function casts(): array
+    {
+        return [
+            'last_run_at' => DateTimeInterfaceCast::class.':'.CarbonImmutable::class,
+        ];
     }
 
     public function hostname(): string

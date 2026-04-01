@@ -30,8 +30,8 @@ class AppEnvironmentWidget extends StatsOverviewWidget
         }
 
         $stats[] = Stat::make('Horizon', $isRunning ? 'Running' : 'Stopped')
-                ->description($isRunning ? 'Workers are active' : 'No workers running')
-                ->descriptionColor($isRunning ? 'success' : 'danger');
+            ->description($isRunning ? 'Workers are active' : 'No workers running')
+            ->descriptionColor($isRunning ? 'success' : 'danger');
         $stats[] = Stat::make('Pending Jobs', app('queue')->size());
 
         return $stats;

@@ -16,6 +16,7 @@ class Dashboard extends BaseDashboard
                 ->label('Run Now')
                 ->icon('heroicon-o-play')
                 ->requiresConfirmation()
+                ->modalDescription('Sort inbox mails into subdirectories based on the recipient prefix.')
                 ->action(function () {
                     CatchAllSubdirectories::dispatchSync();
 

@@ -14,6 +14,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -36,7 +37,8 @@ class CatchAllSubdirectories implements ShouldQueue
 
         return $this
             ->fetchMails()
-            ->createSubdirectoriesAndMoveMails();
+            ->createSubdirectoriesAndMoveMails()
+            ->updateLastRun();
     }
 
     private function fetchMails(): static
@@ -80,6 +82,14 @@ class CatchAllSubdirectories implements ShouldQueue
         // Finish the transaction by calling expunge
         // https://www.php.net/manual/de/function.imap-expunge.php
         $this->smtpConnection->expunge();
+
+        return $this;
+    }
+
+    private function updateLastRun(): static
+    {
+        $this->settings->last_run_at = Carbon::now()->toImmutable();
+        $this->settings->save();
 
         return $this;
     }
