@@ -4,9 +4,11 @@ namespace App\Filament\Pages;
 
 use App\Settings\CatchAllSettings;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Pages\SettingsPage;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -15,6 +17,8 @@ use UnitEnum;
 
 class ManageCatchAllSettings extends SettingsPage
 {
+    private const string PASSWORD_PLACEHOLDER = '********';
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
     protected static string $settings = CatchAllSettings::class;
@@ -26,6 +30,48 @@ class ManageCatchAllSettings extends SettingsPage
     private static function defaultHint(mixed $value): string
     {
         return $value ? 'Default: '.$value : 'Default not set';
+    }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $data['password'] = filled($data['password']) ? self::PASSWORD_PLACEHOLDER : null;
+
+        return $data;
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        if (blank($data['password']) || $data['password'] === self::PASSWORD_PLACEHOLDER) {
+            unset($data['password']);
+        }
+
+        return $data;
+    }
+
+    public function getFormActions(): array
+    {
+        return [
+            $this->getSaveFormAction(),
+            Action::make('clearPasswordOverride')
+                ->label('Clear Password Override')
+                ->icon('heroicon-o-key')
+                ->color('gray')
+                ->requiresConfirmation()
+                ->modalDescription('This will remove the password override and fall back to the .env value.')
+                ->visible(fn () => filled(app(CatchAllSettings::class)->password))
+                ->action(function () {
+                    $settings = app(CatchAllSettings::class);
+                    $settings->password = null;
+                    $settings->save();
+
+                    $this->fillForm();
+
+                    Notification::make()
+                        ->title('Password override cleared')
+                        ->success()
+                        ->send();
+                }),
+        ];
     }
 
     public function form(Schema $schema): Schema
@@ -60,8 +106,9 @@ class ManageCatchAllSettings extends SettingsPage
                         TextInput::make('password')
                             ->label('Password')
                             ->password()
-                            ->revealable()
-                            ->hint(config('catchall.password') ? 'Default set in .env' : 'Default not set'),
+                            ->live()
+                            ->revealable(fn (callable $get): bool => $get('password') !== self::PASSWORD_PLACEHOLDER)
+                            ->hint(app(CatchAllSettings::class)->password ? 'Override is set' : (config('catchall.password') ? 'Default set in .env' : 'Default not set')),
                         TextInput::make('inbox_name')
                             ->label('Inbox Name')
                             ->hint(self::defaultHint(config('catchall.inbox_name'))),
