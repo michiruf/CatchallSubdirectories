@@ -24,7 +24,7 @@ jobs:
       - test
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Publish Base Image
         uses: ./.github/workflows/publish-docker-image
@@ -56,7 +56,7 @@ jobs:
             additional-contexts: src_root=.
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Prepare App for Tests
         uses: michiruf/laravel-ci/prepare-app@main
