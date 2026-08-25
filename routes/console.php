@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Schedule;
 use Spatie\Health\Commands\DispatchQueueCheckJobsCommand;
 use Spatie\Health\Commands\RunHealthChecksCommand;
 use Spatie\Health\Commands\ScheduleCheckHeartbeatCommand;
+use Spatie\Health\Models\HealthCheckResultHistoryItem;
 
 // App
 Schedule::command(CatchAllSubdirectoriesCommand::class)
@@ -20,10 +21,13 @@ Schedule::command(MonitorMetricsCommand::class)
     ->sentryMonitor();
 
 // Horizon
-Schedule::command('horizon:snapshot')->everyFiveMinutes()->sentryMonitor();
+Schedule::command('horizon:snapshot')->everyFiveMinutes();
 
 // Health
-Schedule::command(ScheduleCheckHeartbeatCommand::class)->everyMinute()->sentryMonitor();
-Schedule::command(DispatchQueueCheckJobsCommand::class)->everyMinute()->sentryMonitor();
-Schedule::command(RunHealthChecksCommand::class)->everyMinute()->sentryMonitor();
+Schedule::command(ScheduleCheckHeartbeatCommand::class)->everyMinute();
+Schedule::command(DispatchQueueCheckJobsCommand::class)->everyMinute();
+Schedule::command(RunHealthChecksCommand::class)->everyMinute();
+
+// Cleanup
 Schedule::command('model:prune', ['--model' => [HealthCheckResultHistoryItem::class]])->daily();
+Schedule::command('pulse:clear', ['--force' => true])->weekly();
