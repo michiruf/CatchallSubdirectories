@@ -28,7 +28,7 @@ Schedule::command(ScheduleCheckHeartbeatCommand::class)->everyMinute();
 Schedule::command(DispatchQueueCheckJobsCommand::class)->everyMinute();
 Schedule::command(RunHealthChecksCommand::class)->everyMinute();
 
-// Cleanup
+// Cleanup / pruning
 Schedule::command('model:prune', ['--model' => [HealthCheckResultHistoryItem::class]])->daily();
 Schedule::command('pulse:clear', ['--force' => true])->weekly();
 Schedule::command('telescope:prune')->daily();

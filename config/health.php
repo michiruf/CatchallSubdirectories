@@ -15,7 +15,7 @@ return [
         EloquentHealthResultStore::class => [
             'connection' => env('HEALTH_DB_CONNECTION', env('DB_CONNECTION')),
             'model' => HealthCheckResultHistoryItem::class,
-            'keep_history_for_days' => 5,
+            'keep_history_for_days' => 1,
         ],
 
         /*
