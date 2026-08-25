@@ -1,37 +1,35 @@
-## syntax = devthefuture/dockerfile-x:v1.4.1
-## See https://github.com/devthefuture-org/dockerfile-x
-## See issue https://github.com/devthefuture-org/dockerfile-x/issues/6
-## Also see/update the other docker files in this repo
-#
-#FROM ../Dockerfile
+# Autopull image for CatchAllSubdirectories.
+# Extends the generic Laravel container from https://github.com/michiruf/laravel-docker
+# with the PHP extensions this application needs. The application source is pulled
+# from git at runtime (set GIT_URL / BRANCH), so nothing is copied in here.
+FROM ghcr.io/michiruf/laravel-docker:autopull-nightly
 
-FROM base
-
-# Copy the deploy service
-COPY --chmod=755 laravel-autopull.service.sh /opt/docker/bin/service.d/laravel-autopull.sh
-
-# Register a crontab to periodically call the deploy service
+# Add imap php extension (removed from PHP core in 8.4, needed by ddeboer/imap)
+# and excimer php extension for profiling with sentry.io
+# Build deps are installed once and cleaned up after both extensions are built
 RUN set -x \
-  && echo -e '*\t*\t*\t*\t*\t/opt/docker/bin/service.d/laravel-autopull.sh' >> /etc/crontabs/root
+  && apk-install \
+      linux-headers \
+      make \
+      autoconf \
+      g++ \
+      imap-dev \
+      openssl-dev \
+      krb5-dev \
+  && pecl install imap \
+  && docker-php-ext-enable imap \
+  && (pecl install excimer && docker-php-ext-enable excimer || true) \
+  && apk del -f --purge \
+      autoconf \
+      linux-headers \
+      g++ \
+      make \
+      imap-dev \
+      openssl-dev \
+      krb5-dev \
+  && docker-run-bootstrap \
+  && (docker-image-cleanup || true)
 
-# Set the default branch
+# Deploy the CatchAllSubdirectories repository by default; override at runtime if needed.
+ENV GIT_URL=https://github.com/michiruf/CatchAllSubdirectories.git
 ENV BRANCH=master
-
-# Set the default deploy commands and their separator
-ENV DEPLOY_COMMAND_SEPARATOR=;
-ENV DEPLOY_COMMANDS \
-  artisan:down ; \
-  git:update ; \
-  composer:install --no-progress ; \
-  env:update ; \
-  artisan:storage:link ; \
-  artisan:optimize ; \
-  artisan:migrate --force ; \
-  permissions:fix ; \
-  artisan:up
-ENV INITIAL_DEPLOY_COMMAND_SEPARATOR=;
-ENV INITIAL_DEPLOY_COMMANDS \
-  composer:install --no-progress ; \
-  env:update ; \
-  artisan:key:generate --force ; \
-  permissions:fix

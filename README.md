@@ -56,14 +56,17 @@ Redis is required for queues, cache, and sessions.
 
 ## Docker
 
-Two image variants are published to `ghcr.io`:
+Both variants build on the generic [`michiruf/laravel-docker`](https://github.com/michiruf/laravel-docker) container
+(`ghcr.io/michiruf/laravel-docker`), adding the `imap`/`excimer` PHP extensions this app needs. Two image variants are
+published to `ghcr.io`:
 
-- **Autopull** (`ghcr.io/michiruf/laravel`): pulls code from git on a schedule, runs migrations automatically.
-- **Baked** (`ghcr.io/michiruf/catchall-subdirectories`): application is pre-built into the image.
+- **Autopull** (`ghcr.io/michiruf/catchall-subdirectories:autopull`): pulls code from git on a schedule, runs migrations automatically.
+- **Baked** (`ghcr.io/michiruf/catchall-subdirectories:baked`): application is pre-built into the image.
 
 Environment variables prefixed with `LARAVEL_` are written into the `.env` file at container startup with the prefix
 stripped. For example, `LARAVEL_APP_DEBUG=false` becomes `APP_DEBUG=false`. This avoids collisions between Docker and
-Laravel environment variables.
+Laravel environment variables. See the [`laravel-docker`](https://github.com/michiruf/laravel-docker) README for the
+full provisioning and deploy-command reference.
 
 <details>
 <summary>Example docker-compose.yml 🐋</summary>
