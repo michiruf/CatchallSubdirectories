@@ -31,3 +31,4 @@ Schedule::command(RunHealthChecksCommand::class)->everyMinute();
 // Cleanup
 Schedule::command('model:prune', ['--model' => [HealthCheckResultHistoryItem::class]])->daily();
 Schedule::command('pulse:clear', ['--force' => true])->weekly();
+Schedule::command('telescope:prune')->daily();
