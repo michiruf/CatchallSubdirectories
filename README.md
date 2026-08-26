@@ -63,10 +63,10 @@ published to `ghcr.io`:
 - **Autopull** (`ghcr.io/michiruf/catchall-subdirectories:autopull-latest`): pulls code from git on a schedule, runs migrations automatically.
 - **Baked** (`ghcr.io/michiruf/catchall-subdirectories:baked-latest`): application is pre-built into the image.
 
-Environment variables prefixed with `LARAVEL_` are written into the `.env` file at container startup with the prefix
-stripped. For example, `LARAVEL_APP_DEBUG=false` becomes `APP_DEBUG=false`. This avoids collisions between Docker and
-Laravel environment variables. See the [`laravel-docker`](https://github.com/michiruf/laravel-docker) README for the
-full provisioning and deploy-command reference.
+Environment variables prefixed with `LARAVEL_` are passed to the app with the prefix stripped (for example
+`LARAVEL_APP_DEBUG` becomes `APP_DEBUG`), avoiding collisions between Docker and Laravel variables. See the
+[`laravel-docker`](https://github.com/michiruf/laravel-docker) README and its examples for provisioning and `.env`
+handling.
 
 <details>
 <summary>Example docker-compose.yml 🐋</summary>
