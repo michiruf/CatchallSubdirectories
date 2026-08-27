@@ -1,0 +1,33 @@
+# Keep the baked build context clean: local secrets/state must never be copied in.
+# 'vendor/' IS shipped (from the context) — locally your working install, in CI the
+# publish workflow installs it with '--no-dev' before building.
+.git
+.github
+.idea
+.vscode
+.fleet
+
+# Never shipped: node deps are not baked in, and the app uses no vite build
+# (no @vite directive; it runs on Filament's published assets)
+/node_modules
+/public/build
+/public/hot
+/public/storage
+
+# Secrets and local environment (.env.example is kept: the container builds .env from it)
+.env
+.env.backup
+.env.production
+auth.json
+Homestead.json
+Homestead.yaml
+settings.local.json
+
+# Caches, logs and test artifacts
+/.phpunit.cache
+.phpunit.result.cache
+/storage/*.key
+storage/logs/*.log
+npm-debug.log
+yarn-error.log
+_docker

@@ -13,29 +13,10 @@ env:
 jobs:
   test:
     uses: ./.github/workflows/run-tests.yml
-  build-base:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-      attestations: write
-      id-token: write
-    needs:
-      - test
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
 
-      - name: Publish Base Image
-        uses: ./.github/workflows/publish-docker-image
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          image: ${{ github.repository_owner }}/laravel
-          tag: base
-          build-context: _docker
-
+  # Both variants extend the generic Laravel container from
+  # https://github.com/michiruf/laravel-docker (ghcr.io/michiruf/laravel-docker:<variant>-nightly)
+  # with the imap/excimer php extensions this application needs.
   build-variants:
     runs-on: ubuntu-latest
     permissions:
@@ -44,16 +25,12 @@ jobs:
       attestations: write
       id-token: write
     needs:
-      - build-base
+      - test
     strategy:
       matrix:
         variant:
-          - name: autopull
-            image-scope: laravel
-            additional-contexts:
-          - name: baked
-            image-scope: catchall-subdirectories
-            additional-contexts: src_root=.
+          - baked
+          - autopull
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -65,21 +42,25 @@ jobs:
           php-version: '8.4'
           php-additional-extensions: 'imap'
 
-      - name: Run Tests for Variant '${{ matrix.variant.name }}'
-        run: php artisan test --group=${{ matrix.variant.name }} -v
+      - name: Run Tests for Variant '${{ matrix.variant }}'
+        run: php artisan test --group=${{ matrix.variant }} -v
 
-      - name: Alias Base Image Tag
-        run: |
-          docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/laravel:base-latest
-          docker image tag ${{ env.REGISTRY }}/${{ github.repository_owner }}/laravel:base-latest base
+      # The baked image ships with the vendor directory, therefore we need to prune dev dependencies
+      - name: Prune Dev Dependencies for Baked Image
+        if: matrix.variant == 'baked'
+        uses: michiruf/laravel-ci/prepare-app@main
+        with:
+          php-version: '8.4'
+          php-additional-extensions: 'imap'
+          composer-options: '--no-dev --optimize-autoloader'
 
-      - name: Publish Image Variant '${{ matrix.variant.name }}'
+      - name: Publish Image Variant '${{ matrix.variant }}'
         uses: ./.github/workflows/publish-docker-image
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          image: ${{ github.repository_owner }}/${{ matrix.variant.image-scope }}
-          tag: ${{ matrix.variant.name }}
-          build-context: _docker/${{ matrix.variant.name }}
-          additional-contexts: ${{ matrix.variant.additional-contexts }}
+          image: ${{ github.repository_owner }}/catchall-subdirectories
+          tag: ${{ matrix.variant }}
+          build-context: .
+          dockerfile: _docker/${{ matrix.variant }}/Dockerfile

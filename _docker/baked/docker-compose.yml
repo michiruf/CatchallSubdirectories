@@ -1,25 +1,10 @@
 services:
-  # The base service is a workaround to allow building the base image first,
-  # when we just want to have a compose file that is able to run the containers
-  # Check https://github.com/devthefuture-org/dockerfile-x/issues/6 again to see
-  # if there is any progress on how to use "incremental" Dockerfiles
-  base:
-    container_name: base
-    build:
-      context: ..
-      tags:
-        - base
-    entrypoint: bash -c
-    command: exit 0
-    restart: no
-
   app:
     container_name: app
     build:
-      context: .
-      additional_contexts:
-        src_root: ../..
-        base: service:base
+      # Build context is the repository root so the application source can be baked in
+      context: ../..
+      dockerfile: _docker/baked/Dockerfile
     ports:
       - '8080:80'
       - '8443:443'
@@ -39,13 +24,10 @@ services:
       - LARAVEL_APP_SIMPLE_GATES=true
     volumes:
       - 'app-data:/app/'
-      # Persist host keys:
-      - 'ssh-config-data:/etc/ssh/'
       - '/etc/timezone:/etc/timezone:ro'
     networks:
       - default
     depends_on:
-      - base
       - mysql
       - redis
     restart: unless-stopped
@@ -85,8 +67,6 @@ services:
 
 volumes:
   app-data:
-    driver: local
-  ssh-config-data:
     driver: local
   mysql-data:
     driver: local

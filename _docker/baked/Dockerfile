@@ -1,29 +1,37 @@
-## syntax = devthefuture/dockerfile-x:v1.4.1
-## See https://github.com/devthefuture-org/dockerfile-x
-## See issue https://github.com/devthefuture-org/dockerfile-x/issues/6
-## Also see/update the other docker files in this repo
-#
-#FROM ../Dockerfile
+# Baked image for CatchAllSubdirectories.
+# Extends the generic Laravel container from https://github.com/michiruf/laravel-docker
+# with the PHP extensions this application needs, then bakes the application in.
+FROM ghcr.io/michiruf/laravel-docker:baked-nightly
 
-FROM base
+# Add imap php extension (removed from PHP core in 8.4, needed by ddeboer/imap)
+# and excimer php extension for profiling with sentry.io
+# Build deps are installed once and cleaned up after both extensions are built
+RUN set -x \
+  && apk-install \
+      linux-headers \
+      make \
+      autoconf \
+      g++ \
+      imap-dev \
+      openssl-dev \
+      krb5-dev \
+  && pecl install imap \
+  && docker-php-ext-enable imap \
+  && (pecl install excimer && docker-php-ext-enable excimer || true) \
+  && apk del -f --purge \
+      autoconf \
+      linux-headers \
+      g++ \
+      make \
+      imap-dev \
+      openssl-dev \
+      krb5-dev \
+  && docker-run-bootstrap \
+  && (docker-image-cleanup || true)
 
-# Add project files using a manually defined context of the repository root: src_root
-COPY --from=src_root --chown=$APPLICATION_UID:$APPLICATION_GID . /app-src
-# In case the image was built locally, there might be an .env that was copied over and there might
-# be some secrets, when developing locally
-RUN set -x && \
-    cd /app-src && \
-    git config --global --add safe.directory /app-src && \
-    git clean -f -d -x --dry-run && \
-    composer install --no-progress
-
-COPY --chmod=644 laravel-baked.entrypoint.sh /opt/docker/provision/entrypoint.d/11-laravel-baked.sh
-
-# Set the default deploy commands and their separator
-ENV DEPLOY_COMMAND_SEPARATOR=;
-ENV DEPLOY_COMMANDS \
-  env:update ; \
-  artisan:storage:link ; \
-  artisan:optimize ; \
-  artisan:migrate --force ; \
-  permissions:fix
+# Bake the application in. The build context already contains an installed 'vendor/'
+# (locally your working install; in CI the publish workflow runs 'composer install
+# --no-dev' before building). On first container start the base image moves /app-src
+# into place, generates the APP_KEY and runs the deploy commands (env, storage:link,
+# optimize, migrate).
+COPY --chown=$APPLICATION_UID:$APPLICATION_GID . /app-src
