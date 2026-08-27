@@ -2,7 +2,7 @@
 # Extends the generic Laravel container from https://github.com/michiruf/laravel-docker
 # with the PHP extensions this application needs. The application source is pulled
 # from git at runtime (set GIT_URL / BRANCH), so nothing is copied in here.
-FROM ghcr.io/michiruf/laravel-docker:autopull-nightly
+FROM ghcr.io/michiruf/laravel-docker:autopull-latest
 
 # Add imap php extension (removed from PHP core in 8.4, needed by ddeboer/imap)
 # and excimer php extension for profiling with sentry.io

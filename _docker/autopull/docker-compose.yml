@@ -11,7 +11,7 @@ services:
     environment:
       - GIT_URL=https://github.com/michiruf/CatchAllSubdirectories.git
       - BRANCH=master
-      # Deploy commands are inherited from ghcr.io/michiruf/laravel:autopull-latest;
+      # Deploy commands are inherited from ghcr.io/michiruf/laravel-docker:autopull-latest;
       # override DEPLOY_COMMANDS here only to deviate from the defaults.
 
       # Laravel env (prefixed with 'LARAVEL_')

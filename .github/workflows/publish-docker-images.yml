@@ -15,7 +15,7 @@ jobs:
     uses: ./.github/workflows/run-tests.yml
 
   # Both variants extend the generic Laravel container from
-  # https://github.com/michiruf/laravel-docker (ghcr.io/michiruf/laravel-docker:<variant>-nightly)
+  # https://github.com/michiruf/laravel-docker (ghcr.io/michiruf/laravel-docker:<variant>-latest)
   # with the imap/excimer php extensions this application needs.
   build-variants:
     runs-on: ubuntu-latest

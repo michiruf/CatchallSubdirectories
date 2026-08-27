@@ -1,7 +1,7 @@
 # Baked image for CatchAllSubdirectories.
 # Extends the generic Laravel container from https://github.com/michiruf/laravel-docker
 # with the PHP extensions this application needs, then bakes the application in.
-FROM ghcr.io/michiruf/laravel-docker:baked-nightly
+FROM ghcr.io/michiruf/laravel-docker:baked-latest
 
 # Add imap php extension (removed from PHP core in 8.4, needed by ddeboer/imap)
 # and excimer php extension for profiling with sentry.io
